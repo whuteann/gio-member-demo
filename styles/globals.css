@@ -1,26 +1,95 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fbf7ef;
+  --surface: #ffffff;
+  --surface-muted: #f3ede0;
+  --foreground: #262b21;
+  --foreground-muted: #666f5c;
+  --border: #e6ddc9;
+
+  --primary: #33452f;
+  --primary-foreground: #fbf7ef;
+  --secondary: #8a9b7c;
+  --secondary-foreground: #232a1f;
+  --accent: #c97a4a;
+  --accent-foreground: #fff8f2;
+  --gold: #b9902a;
+  --gold-foreground: #2c2308;
+
+  --energy: #e0704f;
+  --clarity: #3f8f8a;
+  --pressure: #c98f2a;
+  --grounding: #4a6b3d;
+
+  --danger: #b3452f;
+  --success: #3f7a4f;
+
+  --radius-card: 1.75rem;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-border: var(--border);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-gold: var(--gold);
+  --color-gold-foreground: var(--gold-foreground);
+
+  --color-energy: var(--energy);
+  --color-clarity: var(--clarity);
+  --color-pressure: var(--pressure);
+  --color-grounding: var(--grounding);
+
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-jakarta);
+
+  --radius-card: var(--radius-card);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  border-color: var(--color-border);
+}
+
+html {
+  background: var(--color-background);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-accent-foreground);
+}
+
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+}
+
+/* Hide scrollbar for the horizontal question stepper / chip rows */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
