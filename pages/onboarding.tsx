@@ -133,7 +133,7 @@ export default function OnboardingPage() {
               onClick={() => {
                 navigatingAwayRef.current = true;
                 markOnboardingComplete();
-                router.push("/inner-reading");
+                router.push("/inner-reading/session");
               }}
             >
               Start my first Inner Reading

@@ -83,8 +83,23 @@ export default function InnerReadingResultPage() {
             <p className="text-sm leading-relaxed text-foreground-muted">{reading.narrative}</p>
           </Card>
 
+          {reading.insight ? (
+            <Card className="flex flex-col gap-3">
+              <h2 className="font-display text-lg font-semibold text-foreground">Latest Insight</h2>
+              <p className="text-sm font-medium text-foreground">{reading.insight}</p>
+              {reading.reflectionQuestion ? (
+                <div className="flex flex-col gap-1 border-t border-border pt-3">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
+                    💡 Reflection Question
+                  </p>
+                  <p className="text-sm text-foreground-muted">{reading.reflectionQuestion}</p>
+                </div>
+              ) : null}
+            </Card>
+          ) : null}
+
           <div className="flex gap-3">
-            <Link href="/recommendation" className="flex-1">
+            <Link href="/colour-psychology" className="flex-1">
               <Button fullWidth>See recommendations</Button>
             </Link>
             <Link href="/dashboard" className="flex-1">

@@ -59,11 +59,13 @@ export default function RecommendationPage() {
           ) : null}
 
           {colourItem ? (
-            <Card>
-              <h3 className="mb-1 font-display text-lg font-semibold text-foreground">Colour to lean into</h3>
-              <p className="text-sm text-foreground-muted">{colourItem.title}</p>
-              <p className="mt-1 text-xs text-foreground-muted">{colourItem.reason}</p>
-            </Card>
+            <Link href={colourItem.referenceId ? `/colour-psychology/${colourItem.referenceId}` : "/colour-psychology"}>
+              <Card className="transition-shadow hover:shadow-[0_10px_30px_-18px_rgba(38,43,33,0.4)]">
+                <h3 className="mb-1 font-display text-lg font-semibold text-foreground">Colour to lean into</h3>
+                <p className="text-sm text-foreground-muted">{colourItem.title}</p>
+                <p className="mt-1 text-xs text-foreground-muted">{colourItem.reason}</p>
+              </Card>
+            </Link>
           ) : null}
 
           <div>

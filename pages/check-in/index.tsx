@@ -1,143 +1,97 @@
-import { useMemo, useState } from "react";
-import { useRouter } from "next/router";
 import Head from "next/head";
+import Link from "next/link";
 import { useAppGuard } from "@/lib/useAppGuard";
-import { useAppState } from "@/context/AppStateContext";
-import { buildQuestionOrder, CHECKIN_QUESTION_POOL, DIMENSIONS } from "@/lib/blueprints";
-import { newId } from "@/lib/id";
+import { addDays, localDateString, weekStartString } from "@/lib/gamification";
 import AppShell from "@/components/layout/AppShell";
-import QuestionCard from "@/components/ui/QuestionCard";
-import ProgressBar from "@/components/ui/ProgressBar";
-import Button from "@/components/ui/Button";
-import Card from "@/components/ui/Card";
-import Chip from "@/components/ui/Chip";
 
-const QUESTION_COUNT = 4;
+export default function CheckInHubPage() {
+  const { settled, data } = useAppGuard();
+  if (!settled || !data) return null;
 
-export default function CheckInPage() {
-  const { settled } = useAppGuard();
-  const { submitCheckIn } = useAppState();
-  const router = useRouter();
-
-  const questions = useMemo(
-    () => buildQuestionOrder(CHECKIN_QUESTION_POOL, QUESTION_COUNT, newId("checkin-seed")),
-    []
-  );
-  const [step, setStep] = useState(0);
-  const [values, setValues] = useState<Record<number, number>>({});
-  const [note, setNote] = useState("");
-  const [phase, setPhase] = useState<"questions" | "note" | "done">("questions");
-  const [outcome, setOutcome] = useState<ReturnType<typeof submitCheckIn> | null>(null);
-
-  if (!settled) return null;
-
-  const dimensionMeta = DIMENSIONS.find((d) => d.key === questions[step]?.dimension)!;
-
-  function finish() {
-    const answers = questions.map((q, i) => ({
-      questionId: `q-${i}`,
-      dimension: q.dimension,
-      questionText: q.text,
-      value: values[i],
-    }));
-    const result = submitCheckIn(answers, note);
-    setOutcome(result);
-    setPhase("done");
-  }
+  const completed = data.checkIns
+    .filter((session) => session.status === "COMPLETED" && session.completedAt)
+    .sort((a, b) => b.completedAt!.localeCompare(a.completedAt!));
+  const today = localDateString();
+  const completedDays = new Set(completed.map((session) => localDateString(new Date(session.completedAt!))));
+  const checkedInToday = completedDays.has(today);
+  const weekStart = weekStartString(today);
+  const days = Array.from({ length: 7 }, (_, index) => {
+    const date = addDays(weekStart, index);
+    return { date, done: completedDays.has(date) };
+  });
 
   return (
     <>
       <Head><title>Emotional Check-In — Gio</title></Head>
       <AppShell>
-        <div className="mx-auto max-w-lg">
-          {phase === "questions" && (
-            <div className="flex flex-col gap-6">
-              <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-foreground-muted">
-                  Check-In · {step + 1} / {questions.length}
-                </p>
-                <ProgressBar value={step + 1} max={questions.length} colorClassName="bg-accent" />
-              </div>
-              <QuestionCard
-                questionText={questions[step].text}
-                lowLabel={dimensionMeta.lowLabel}
-                highLabel={dimensionMeta.highLabel}
-                value={values[step] ?? null}
-                onChange={(v) => setValues((prev) => ({ ...prev, [step]: v }))}
-              />
-              <div className="flex gap-3">
-                {step > 0 ? (
-                  <Button variant="outline" onClick={() => setStep(step - 1)}>
-                    Back
-                  </Button>
-                ) : null}
-                <Button
-                  fullWidth
-                  disabled={values[step] === undefined}
-                  onClick={() => {
-                    if (step + 1 < questions.length) setStep(step + 1);
-                    else setPhase("note");
-                  }}
-                >
-                  {step + 1 < questions.length ? "Next" : "Continue"}
-                </Button>
-              </div>
-            </div>
-          )}
+        <div className="mx-auto max-w-4xl">
+          <header>
+            <h1 className="font-display text-2xl font-semibold text-foreground lg:text-3xl">Emotional Check-In</h1>
+            <p className="mt-2 text-sm text-foreground-muted">A little space to notice how you feel today.</p>
+          </header>
 
-          {phase === "note" && (
-            <div className="flex flex-col gap-4">
-              <h2 className="font-display text-2xl font-semibold text-foreground">
-                Anything you want to note privately?
-              </h2>
-              <textarea
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                rows={5}
-                placeholder="Optional — this stays private and is never used for recommendations."
-                className="rounded-2xl border border-border bg-surface p-4 text-sm text-foreground outline-none focus:border-primary"
-              />
-              <p className="text-xs text-foreground-muted">
-                Private notes are excluded from AI context and recommendations.
-              </p>
-              <div className="flex gap-3">
-                <Button variant="outline" onClick={() => setPhase("questions")}>
-                  Back
-                </Button>
-                <Button fullWidth onClick={finish}>
-                  Complete Check-In
-                </Button>
+          <section className="mt-8" aria-labelledby="begin-check-in">
+            <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_240px] md:items-center md:gap-10">
+              <div className="rounded-[1.75rem] border border-border bg-white p-6 shadow-[0_10px_30px_-18px_rgba(38,43,33,0.35)] sm:p-8">
+                <p className="mb-3 text-xs font-semibold text-primary">{checkedInToday ? "You've made time for yourself today" : "Your daily moment of reflection"}</p>
+                <h2 id="begin-check-in" className="font-display text-2xl font-semibold text-foreground">{checkedInToday ? "How are you feeling now?" : "How are you feeling today?"}</h2>
+                <p className="mt-3 max-w-md text-sm leading-relaxed text-foreground-muted">Pause for a moment. Notice your energy, your thoughts, and what you need. Every feeling has a place here.</p>
+                <div className="mt-6 flex flex-wrap items-center gap-4">
+                  <Link href="/check-in/session" className="inline-flex items-center justify-center gap-3 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
+                    {checkedInToday ? "Check In Again" : "Begin Check-In"}<span aria-hidden="true">&rarr;</span>
+                  </Link>
+                  <span className="text-xs text-foreground-muted">4 questions · About 1 minute</span>
+                </div>
               </div>
-            </div>
-          )}
 
-          {phase === "done" && outcome && (
-            <div className="flex flex-col items-center gap-5 py-8 text-center">
-              <span className="text-4xl">🌤️</span>
-              <h2 className="font-display text-2xl font-semibold text-foreground">Check-in complete</h2>
-              <div className="flex flex-wrap justify-center gap-2">
-                {outcome.outcome.xpAwarded > 0 ? <Chip tone="gold">+{outcome.outcome.xpAwarded} XP</Chip> : null}
-                {outcome.outcome.bonusAwarded ? <Chip tone="gold">+10 XP quest bonus</Chip> : null}
-                {outcome.outcome.milestone ? <Chip tone="accent">{outcome.outcome.milestone}-day streak!</Chip> : null}
-                {outcome.outcome.newBadges.map((b) => (
-                  <Chip key={b} tone="primary">New badge earned</Chip>
-                ))}
-              </div>
-              <Card className="w-full text-left">
-                <p className="text-sm text-foreground-muted">
-                  Your recommendations have been refreshed based on this check-in.
-                </p>
-              </Card>
-              <div className="flex w-full gap-3">
-                <Button fullWidth variant="outline" onClick={() => router.push("/dashboard")}>
-                  Dashboard
-                </Button>
-                <Button fullWidth onClick={() => router.push("/recommendation")}>
-                  See recommendations
-                </Button>
+              <div className="border-t border-border pt-6 md:border-l md:border-t-0 md:pl-8 md:pt-0">
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className="text-sm font-semibold text-foreground">This week</h3>
+                  <span className="text-xs text-foreground-muted">{days.filter((day) => day.done).length} / 7 days</span>
+                </div>
+                <div className="mt-4 grid grid-cols-7 gap-1">
+                  {days.map((day, index) => (
+                    <div key={day.date} className="flex min-w-0 flex-col items-center gap-2" aria-label={`${day.date}${day.date === today ? ", today" : ""}: ${day.done ? "completed" : "no check-in"}`}>
+                      <span className="text-[10px] text-foreground-muted">{["M", "T", "W", "T", "F", "S", "S"][index]}</span>
+                      <span className={`flex h-6 w-6 items-center justify-center rounded-full text-xs ${day.done ? "bg-primary text-primary-foreground" : day.date === today ? "border border-primary bg-surface text-primary" : "bg-surface-muted text-foreground-muted"}`} aria-hidden="true">{day.done ? "✓" : "·"}</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-4 text-xs leading-relaxed text-foreground-muted">{checkedInToday ? "Today's check-in is complete. Come back whenever you need a moment." : "One small pause, at your own pace."}</p>
               </div>
             </div>
-          )}
+          </section>
+
+          <section className="mt-8" aria-labelledby="recent-check-ins">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 id="recent-check-ins" className="font-display text-lg font-semibold text-foreground">Recent Check-Ins</h2>
+              <Link href="/check-in/history" className="text-sm font-semibold text-primary hover:underline">View history <span aria-hidden="true">&rarr;</span></Link>
+            </div>
+            {completed.length ? (
+              <ul className="mt-3 divide-y divide-border">
+                {completed.slice(0, 3).map((session) => {
+                  const date = new Date(session.completedAt!);
+                  return (
+                    <li key={session.id} className="flex items-start justify-between gap-4 py-5">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-foreground">{localDateString(date) === today ? "Today" : date.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}</p>
+                        <p className="mt-1 text-xs leading-relaxed text-foreground-muted">{session.questions.length} questions answered · {session.source === "WHATSAPP" ? "WhatsApp" : "Web"}</p>
+                      </div>
+                      <div className="flex-none text-right">
+                        <p className="text-xs text-foreground-muted">{date.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}</p>
+                        <p className="mt-1 text-xs font-medium text-primary">Completed</p>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <div className="mt-3 border-b border-border py-8">
+                <p className="text-sm font-medium text-foreground">Your first moment starts here.</p>
+                <p className="mt-2 text-sm text-foreground-muted">Your completed check-ins will appear here as your journey unfolds.</p>
+              </div>
+            )}
+          </section>
         </div>
       </AppShell>
     </>

@@ -2,14 +2,20 @@ import type { AppData } from "./types";
 
 const STORAGE_KEY = "gio-member-demo-v1";
 
+// Bump whenever a persisted AppData/InnerReading/CorePersonality/etc. shape
+// changes — this demo has no real migration path, so a version mismatch just
+// discards the old (now-incompatible) local data and reseeds clean instead of
+// crashing on missing fields.
+const CURRENT_VERSION = 2;
+
 export interface DB {
-  version: 1;
+  version: typeof CURRENT_VERSION;
   accounts: Record<string, AppData>;
   session: { userId: string | null };
 }
 
-function emptyDB(): DB {
-  return { version: 1, accounts: {}, session: { userId: null } };
+export function emptyDB(): DB {
+  return { version: CURRENT_VERSION, accounts: {}, session: { userId: null } };
 }
 
 export function loadDB(): DB {
@@ -18,7 +24,7 @@ export function loadDB(): DB {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return emptyDB();
     const parsed = JSON.parse(raw) as DB;
-    if (!parsed || parsed.version !== 1) return emptyDB();
+    if (!parsed || parsed.version !== CURRENT_VERSION) return emptyDB();
     return parsed;
   } catch {
     return emptyDB();

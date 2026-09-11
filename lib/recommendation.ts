@@ -1,48 +1,47 @@
-import { PRODUCTS } from "./blueprints";
+import { ARCHETYPES, COLOUR_LIBRARY, PRODUCTS } from "./blueprints";
 import type {
+  ColourKey,
   CorePersonality,
   InnerStateSnapshot,
   RecommendationItem,
   RecommendationProfile,
   RecommendationTrigger,
 } from "./types";
-import { ARCHETYPES } from "./blueprints";
 
 const FOCUS_PROFILE: Record<
   string,
-  { tags: string[]; colour: string; colourName: string; routine: string }
+  { tags: string[]; colourKey: ColourKey; routine: string }
 > = {
   "Rebuilding energy": {
     tags: ["energy", "lift"],
-    colour: "#e0704f",
-    colourName: "Warm coral",
+    colourKey: "scarlet",
     routine: "A 10-minute walk before noon, away from screens.",
   },
   "Finding clarity": {
     tags: ["clarity", "focus"],
-    colour: "#3f8f8a",
-    colourName: "Cool teal",
+    colourKey: "ocean",
     routine: "Write down the one thing that matters most today, before anything else.",
   },
   "Releasing pressure": {
     tags: ["release", "calm"],
-    colour: "#6b7280",
-    colourName: "Soft slate",
+    colourKey: "forest",
     routine: "Set a 15-minute timer to do nothing but breathe and let your shoulders drop.",
   },
   "Regaining grounding": {
     tags: ["grounding", "steadiness"],
-    colour: "#b9902a",
-    colourName: "Warm amber",
+    colourKey: "russet",
     routine: "Stand barefoot for two minutes and name five things you can feel.",
   },
   "Sustaining balance": {
     tags: ["calm", "reflection"],
-    colour: "#4a6b3d",
-    colourName: "Grounded moss",
+    colourKey: "gold",
     routine: "Keep doing what's working — a short reflection tonight will reinforce it.",
   },
 };
+
+export function colourKeyForFocus(currentFocus: string): ColourKey {
+  return (FOCUS_PROFILE[currentFocus] ?? FOCUS_PROFILE["Sustaining balance"]).colourKey;
+}
 
 export function buildRecommendation(params: {
   id: string;
@@ -55,6 +54,7 @@ export function buildRecommendation(params: {
 }): RecommendationProfile {
   const { state, personality, isPremium } = params;
   const profile = FOCUS_PROFILE[state.currentFocus] ?? FOCUS_PROFILE["Sustaining balance"];
+  const colour = COLOUR_LIBRARY[profile.colourKey];
   const archetypeName = ARCHETYPES[personality.archetype].name;
 
   const items: RecommendationItem[] = [];
@@ -62,8 +62,8 @@ export function buildRecommendation(params: {
   items.push({
     id: `${params.id}-colour`,
     type: "COLOUR",
-    referenceId: null,
-    title: profile.colourName,
+    referenceId: profile.colourKey,
+    title: colour.name,
     reason: `Matched to your current focus — ${state.currentFocus.toLowerCase()}.`,
     rank: 1,
   });
@@ -90,7 +90,7 @@ export function buildRecommendation(params: {
       referenceId: m.product.id,
       title: m.product.title,
       reason: isPremium
-        ? `Chosen from your recent history and current ${state.currentFocus.toLowerCase()} — pairs with ${profile.colourName.toLowerCase()}.`
+        ? `Chosen from your recent history and current ${state.currentFocus.toLowerCase()} — pairs with ${colour.name.toLowerCase()}.`
         : `A simple match for ${state.currentFocus.toLowerCase()}.`,
       rank: 3 + i,
       imageUrl: `https://picsum.photos/seed/${m.product.imageSeed}/480/480`,
@@ -110,7 +110,7 @@ export function buildRecommendation(params: {
     summary: isPremium
       ? `Based on your full history, ${state.summary.toLowerCase()} As ${archetypeName.toLowerCase()}, focusing here tends to pay off fastest.`
       : state.summary,
-    primaryColour: profile.colour,
+    primaryColour: colour.swatch,
     status: "READY",
     items,
     generatedAt: new Date().toISOString(),

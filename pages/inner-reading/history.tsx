@@ -23,7 +23,7 @@ export default function InnerReadingHistoryPage() {
       <Head><title>Inner Reading History — Gio</title></Head>
       <AppShell title="Inner Reading History">
         <div className="flex flex-col gap-3">
-          <Link href="/inner-reading" className="self-start">
+          <Link href="/inner-reading/session" className="self-start">
             <Chip tone={gate === "MEMBERSHIP_GATE" ? "gold" : "primary"}>
               {gate === "MEMBERSHIP_GATE" ? "🔒 New reading (Premium)" : "+ New Inner Reading"}
             </Chip>

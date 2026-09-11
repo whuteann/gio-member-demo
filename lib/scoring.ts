@@ -2,6 +2,9 @@ import {
   ARCHETYPES,
   ASSESSMENT_VERSION,
   BASELINE_ASSESSMENT,
+  HEADLINE_LIBRARY,
+  INSIGHT_LIBRARY,
+  pickPhrasing,
 } from "./blueprints";
 import type {
   AnsweredQuestion,
@@ -61,6 +64,18 @@ const FOCUS_COPY: Record<string, { focus: string; summary: string }> = {
   },
 };
 
+export function resolveFocusKey(dims: Record<DimensionKey, number>): string {
+  const needs: { key: string; need: number }[] = [
+    { key: "emotional_energy", need: 100 - dims.emotional_energy },
+    { key: "mental_clarity", need: 100 - dims.mental_clarity },
+    { key: "inner_pressure", need: dims.inner_pressure },
+    { key: "grounding", need: 100 - dims.grounding },
+  ];
+  needs.sort((a, b) => b.need - a.need);
+  const top = needs[0];
+  return top.need >= 55 ? top.key : "balanced";
+}
+
 export function buildInnerState(params: {
   id: string;
   userId: string;
@@ -73,16 +88,7 @@ export function buildInnerState(params: {
     (dims.emotional_energy + dims.mental_clarity + (100 - dims.inner_pressure) + dims.grounding) / 4
   );
 
-  const needs: { key: string; need: number }[] = [
-    { key: "emotional_energy", need: 100 - dims.emotional_energy },
-    { key: "mental_clarity", need: 100 - dims.mental_clarity },
-    { key: "inner_pressure", need: dims.inner_pressure },
-    { key: "grounding", need: 100 - dims.grounding },
-  ];
-  needs.sort((a, b) => b.need - a.need);
-  const top = needs[0];
-  const focusKey = top.need >= 55 ? top.key : "balanced";
-  const copy = FOCUS_COPY[focusKey];
+  const copy = FOCUS_COPY[resolveFocusKey(dims)];
 
   return {
     id: params.id,
@@ -120,6 +126,25 @@ export function buildReadingNarrative(
     `As ${archetypeName}, this pattern tends to show up as a quiet pull toward whatever restores your footing fastest, rather than the loudest fix in the room.`,
     "Use this reading as a mirror, not a verdict — it reflects this moment, and it will keep moving as you do.",
   ].join(" ");
+}
+
+export function buildReadingInsight(
+  dims: Record<DimensionKey, number>,
+  seed: string
+): { insight: string; reflectionQuestion: string } {
+  const variants = INSIGHT_LIBRARY[resolveFocusKey(dims)];
+  const insight = pickPhrasing(`${seed}-insight`, variants.map((v) => v.insight));
+  const match = variants.find((v) => v.insight === insight)!;
+  return { insight, reflectionQuestion: match.reflectionQuestion };
+}
+
+export function buildReadingHeadline(
+  dims: Record<DimensionKey, number>,
+  seed: string
+): { title: string; subtitle: string } {
+  const variants = HEADLINE_LIBRARY[resolveFocusKey(dims)];
+  const title = pickPhrasing(`${seed}-headline`, variants.map((v) => v.title));
+  return variants.find((v) => v.title === title)!;
 }
 
 export interface BaselineAnswer {
@@ -162,6 +187,7 @@ export function scoreBaseline(
     userId: params.userId,
     version: params.version,
     archetype,
+    icon: pickPhrasing(params.id, copy.icons),
     thinking: average(pillarValues.thinking),
     emotionalSensitivity: average(pillarValues.emotionalSensitivity),
     adaptability: average(pillarValues.adaptability),
