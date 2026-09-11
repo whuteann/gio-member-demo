@@ -1,6 +1,8 @@
 import type {
   ArchetypeKey,
   BadgeDefinition,
+  ColourKey,
+  ColourMeaning,
   DimensionKey,
   Product,
   QuestionVariant,
@@ -12,11 +14,11 @@ export const READING_BLUEPRINT_VERSION = "reading-v1";
 export const SCORING_VERSION = "score-v1";
 export const ASSESSMENT_VERSION = "baseline-v1";
 
-export const DIMENSIONS: { key: DimensionKey; label: string; lowLabel: string; highLabel: string }[] = [
-  { key: "emotional_energy", label: "Emotional Energy", lowLabel: "Drained", highLabel: "Energised" },
-  { key: "mental_clarity", label: "Mental Clarity", lowLabel: "Foggy", highLabel: "Clear" },
-  { key: "inner_pressure", label: "Inner Pressure", lowLabel: "Light", highLabel: "Heavy" },
-  { key: "grounding", label: "Grounding", lowLabel: "Unsteady", highLabel: "Rooted" },
+export const DIMENSIONS: { key: DimensionKey; label: string; lowLabel: string; highLabel: string; color: string }[] = [
+  { key: "emotional_energy", label: "Emotional Energy", lowLabel: "Drained", highLabel: "Energised", color: "var(--color-energy)" },
+  { key: "mental_clarity", label: "Mental Clarity", lowLabel: "Foggy", highLabel: "Clear", color: "var(--color-clarity)" },
+  { key: "inner_pressure", label: "Inner Pressure", lowLabel: "Light", highLabel: "Heavy", color: "var(--color-pressure)" },
+  { key: "grounding", label: "Grounding", lowLabel: "Unsteady", highLabel: "Rooted", color: "var(--color-grounding)" },
 ];
 
 // Each dimension has several phrasing variants to simulate AI-generated wording
@@ -65,6 +67,178 @@ export const READING_QUESTION_POOL: Record<DimensionKey, string[]> = {
     "When things shift around you, how solid does your footing stay?",
     "How connected do you feel to your own rhythm this week?",
   ],
+};
+
+// Insight + reflection question variants for Inner Reading results, keyed by the
+// same focus key that lib/scoring.ts#resolveFocusKey derives from a reading's
+// dimension scores. One is picked per reading via a seeded hash (see
+// lib/blueprints.ts#pickPhrasing) so results feel varied but stay reproducible.
+export const INSIGHT_LIBRARY: Record<string, { insight: string; reflectionQuestion: string }[]> = {
+  emotional_energy: [
+    {
+      insight: "You tend to keep giving even after your own tank runs low. Today's reading shows your reserves could use real refilling, not just a pause.",
+      reflectionQuestion: "Where could you let your energy be the priority today, instead of last on the list?",
+    },
+    {
+      insight: "There's a quiet tiredness running under today's reading — the kind that doesn't always show on the surface.",
+      reflectionQuestion: "What would it look like to rest before you're running on empty, rather than after?",
+    },
+  ],
+  mental_clarity: [
+    {
+      insight: "Your thoughts have been carrying more static than usual. Today's reading suggests the fog is about bandwidth, not ability.",
+      reflectionQuestion: "What's one thing you could set down today just to think a little more clearly?",
+    },
+    {
+      insight: "You're circling a few decisions without quite landing on them. That's less indecision than an overloaded plate.",
+      reflectionQuestion: "If you only had to make one decision well today, which one would matter most?",
+    },
+  ],
+  inner_pressure: [
+    {
+      insight: "You tend to take responsibility seriously. Today's reading shows you may be carrying tasks that aren't entirely yours to manage.",
+      reflectionQuestion: "Which responsibility are you carrying because it's necessary, and which have you accepted out of habit?",
+    },
+    {
+      insight: "There's more weight in today's reading than usual — the kind that builds quietly when nothing gets set down.",
+      reflectionQuestion: "What's one thing you're holding onto today that you could hand off, delay, or simply let go?",
+    },
+  ],
+  grounding: [
+    {
+      insight: "You've been moving fast enough that today's reading shows a little distance between you and your own footing.",
+      reflectionQuestion: "What's one small, familiar routine that could bring you back to yourself today?",
+    },
+    {
+      insight: "Today's reading suggests you're a little more untethered than usual — reacting to the day rather than rooted in it.",
+      reflectionQuestion: "Where in your day could you slow down just enough to feel your own ground again?",
+    },
+  ],
+  balanced: [
+    {
+      insight: "You're in a steady place across the board today — a good moment to build on momentum rather than just maintain it.",
+      reflectionQuestion: "What's one thing you'd like to grow while things feel steady, rather than wait for a harder moment?",
+    },
+    {
+      insight: "Today's reading shows things holding evenly. Steadiness like this is worth noticing, not just passing through.",
+      reflectionQuestion: "What helped you get to this steady place, and how could you protect it going forward?",
+    },
+  ],
+};
+
+// Short title + subtitle variants for a reading's card/list appearance, keyed
+// by the same focus key as INSIGHT_LIBRARY and picked the same seeded way.
+export const HEADLINE_LIBRARY: Record<string, { title: string; subtitle: string }[]> = {
+  emotional_energy: [
+    { title: "Need for Recovery", subtitle: "You appeared to need more personal space and mental rest." },
+    { title: "Running on Reserve", subtitle: "You're giving from a tank that hasn't had a real refill in a while." },
+  ],
+  mental_clarity: [
+    { title: "Uncertainty Before Decision", subtitle: "You were seeking clarity and trying to avoid making the wrong choice." },
+    { title: "Thoughts in Motion", subtitle: "Your mind was circling a few things without quite landing on them." },
+  ],
+  inner_pressure: [
+    { title: "Responsibility & Mental Overload", subtitle: "Focused and capable, but your emotional energy was lower than usual." },
+    { title: "Carrying More Than Usual", subtitle: "You were holding a heavier load than the day really asked for." },
+  ],
+  grounding: [
+    { title: "Finding Your Footing", subtitle: "You felt a little more untethered than usual today." },
+    { title: "Steadying the Ground", subtitle: "A few small routines could bring you back to your own rhythm." },
+  ],
+  balanced: [
+    { title: "Steady Across the Board", subtitle: "Things were holding evenly — a good moment to build on." },
+    { title: "Quiet Momentum", subtitle: "Nothing urgent stood out — just steady, sustainable footing." },
+  ],
+};
+
+// Colour Psychology catalog. Each colour is its own "article" — traits,
+// a short description (for the meaning grid) and a longer article body (for
+// its detail page) — plus the copy used when a colour is surfaced as the
+// current supportive recommendation (benefit + affirmations).
+export const COLOUR_LIBRARY: Record<ColourKey, ColourMeaning> = {
+  scarlet: {
+    key: "scarlet",
+    name: "Scarlet",
+    swatch: "#c0392b",
+    traits: ["Vitality", "Passion", "Courage"],
+    description: "A bold, energising red that awakens motivation and physical vitality.",
+    article:
+      "Scarlet is the colour of movement — it's what the body reaches for when energy is running low and momentum needs a spark. Where cooler colours ask you to slow down, scarlet asks you to begin: to take the first step before you feel fully ready. It's associated with vitality, passion and courage — not recklessness, but the willingness to act on what matters. When your reserves feel drained, small doses of scarlet (a walk outdoors, a piece of clothing, a warm meal) can help rekindle the energy you need to re-engage with your day.",
+    benefit: "You may benefit from more energy, motivation and a spark of courage.",
+    affirmations: [
+      "I welcome energy and momentum back into my day.",
+      "I act with courage, even in small steps.",
+    ],
+  },
+  russet: {
+    key: "russet",
+    name: "Russet",
+    swatch: "#8b4a2b",
+    traits: ["Stability", "Warmth", "Resilience"],
+    description: "A warm, earthy brown-red that steadies you and restores a sense of resilience.",
+    article:
+      "Russet is the colour of solid ground — the warm brown-red of autumn leaves, worn leather and turned soil. It carries none of scarlet's urgency; instead it offers stability, the kind that comes from being rooted rather than rushing. Russet is linked to resilience and warmth, a reminder that steadiness is built slowly, through repetition, not through a single grand gesture. When you feel scattered or unmoored, russet points back toward routine, toward the small and familiar things that hold you together.",
+    benefit: "You may benefit from more stability, warmth and steady resilience.",
+    affirmations: [
+      "I am steady, even when the ground feels uncertain.",
+      "I build resilience one grounded step at a time.",
+    ],
+  },
+  gold: {
+    key: "gold",
+    name: "Gold",
+    swatch: "var(--color-gold)",
+    traits: ["Confidence", "Abundance", "Radiance"],
+    description: "A warm, radiant gold that reflects confidence and sustained, balanced progress.",
+    article:
+      "Gold is the colour of quiet achievement — not the loud win, but the steady accumulation of effort that's finally visible. It's associated with confidence, abundance and radiance, the sense that what you've built is real and worth recognising. Gold doesn't ask you to strive further; it asks you to notice what's already working. When your readings show a steady, balanced pattern, gold is a signal to consolidate rather than chase — to let the progress you've made shine before adding anything new.",
+    benefit: "You may benefit from recognising your own progress and letting it build quiet confidence.",
+    affirmations: [
+      "I trust the progress I've already made.",
+      "I let my steady effort shine.",
+    ],
+  },
+  forest: {
+    key: "forest",
+    name: "Forest",
+    swatch: "var(--color-grounding)",
+    traits: ["Grounding", "Growth", "Renewal"],
+    description: "A deep, grounding green that supports steadiness, emotional recovery and sustainable growth.",
+    article:
+      "Forest is the colour of steady, unhurried growth — the deep green of old trees rather than the bright green of a new sprout. It's tied to grounding, growth and renewal, the sense that recovery doesn't have to be dramatic to be real. Forest is especially supportive when pressure has been building: it doesn't ask you to push harder, but to root down, slow your pace and let recovery happen at its own speed. Time spent around real greenery, or simply making space to breathe, echoes what this colour represents.",
+    benefit: "You may benefit from more grounding, balance and emotional recovery.",
+    affirmations: [
+      "I choose steady progress over unnecessary rush.",
+      "I create space to grow with clarity and calm.",
+    ],
+  },
+  ocean: {
+    key: "ocean",
+    name: "Ocean",
+    swatch: "var(--color-clarity)",
+    traits: ["Calm", "Clarity", "Communication"],
+    description: "A cool, clear blue-teal that supports calm thinking and honest communication.",
+    article:
+      "Ocean is the colour of a clear mind — cool, spacious and unclouded. It's linked to calm, clarity and communication, the ability to think a thought all the way through and say what you actually mean. When your mind feels foggy or decisions feel tangled, ocean points toward stillness rather than more input: fewer tabs open, one conversation instead of many. It's a colour that rewards quiet — a few minutes of unhurried thought tend to do more for clarity than any amount of pushing through.",
+    benefit: "You may benefit from a calmer mind and clearer, more honest communication.",
+    affirmations: [
+      "I think clearly and speak with calm honesty.",
+      "I create quiet space for my mind to settle.",
+    ],
+  },
+};
+
+export const COLOUR_ORDER: ColourKey[] = ["scarlet", "russet", "gold", "forest", "ocean"];
+
+// First reasoning bullet on the Colour Psychology page — keyed by the same
+// currentFocus label produced by lib/scoring.ts#buildInnerState, describing
+// the specific pattern in recent readings that drove this recommendation.
+export const FOCUS_COLOUR_REASON: Record<string, { icon: string; text: string }> = {
+  "Rebuilding energy": { icon: "⚡", text: "Your emotional energy has been running low in recent readings." },
+  "Finding clarity": { icon: "🌫️", text: "Your mental clarity has felt foggy in recent readings." },
+  "Releasing pressure": { icon: "🔥", text: "Your inner pressure has been elevated in recent readings." },
+  "Regaining grounding": { icon: "🌪️", text: "You've felt a little less grounded in recent readings." },
+  "Sustaining balance": { icon: "✨", text: "Your recent readings show a steady, balanced pattern." },
 };
 
 export interface PillarPrompt {
@@ -131,6 +305,11 @@ export interface ArchetypeCopy {
   key: ArchetypeKey;
   name: string;
   tagline: string;
+  traits: [string, string, string];
+  reminder: string;
+  icons: string[];
+  circleClassName: string;
+  colourReason: string;
   overall: string;
   pillars: Record<
     "thinking" | "emotionalSensitivity" | "adaptability" | "willpower",
@@ -143,6 +322,11 @@ export const ARCHETYPES: Record<ArchetypeKey, ArchetypeCopy> = {
     key: "steady_anchor",
     name: "The Steady Anchor",
     tagline: "Grounded, dependable, quietly unshakeable.",
+    traits: ["Grounded", "Dependable", "Composed"],
+    reminder: "Being capable doesn't mean you must manage everything alone.",
+    icons: ["🌳", "⚓️", "🪨"],
+    circleClassName: "bg-grounding",
+    colourReason: "You tend to carry more responsibility than you let on.",
     overall:
       "You hold steady when things get loud around you. Others lean on your calm the way a ship leans on its anchor — you don't need the spotlight to be the reason a room feels safe.",
     pillars: {
@@ -156,6 +340,11 @@ export const ARCHETYPES: Record<ArchetypeKey, ArchetypeCopy> = {
     key: "bright_spark",
     name: "The Bright Spark",
     tagline: "Vivid, expressive, alive in the moment.",
+    traits: ["Expressive", "Vivid", "Spontaneous"],
+    reminder: "Your feelings are information, not something to manage away.",
+    icons: ["✨", "🔥", "🌟"],
+    circleClassName: "bg-energy",
+    colourReason: "Your feelings move quickly, which can be tiring to sustain.",
     overall:
       "You move through the world in colour. Your feelings arrive fast and full, and that same aliveness is what lets you connect, create and light up a room without even trying.",
     pillars: {
@@ -169,6 +358,11 @@ export const ARCHETYPES: Record<ArchetypeKey, ArchetypeCopy> = {
     key: "quiet_strategist",
     name: "The Quiet Strategist",
     tagline: "Thoughtful, patient, always three steps ahead.",
+    traits: ["Observant", "Patient", "Analytical"],
+    reminder: "Not every plan needs to be perfect before you begin.",
+    icons: ["🦉", "♟️", "🧩"],
+    circleClassName: "bg-clarity",
+    colourReason: "You tend to think things through more than you rest.",
     overall:
       "You see the shape of things before others do. You'd rather understand a system fully than rush an answer — patience is one of your quiet superpowers.",
     pillars: {
@@ -182,6 +376,11 @@ export const ARCHETYPES: Record<ArchetypeKey, ArchetypeCopy> = {
     key: "open_horizon",
     name: "The Open Horizon",
     tagline: "Curious, flexible, drawn to what's next.",
+    traits: ["Curious", "Flexible", "Open-Minded"],
+    reminder: "It's okay to finish what you started before chasing what's next.",
+    icons: ["🧭", "🌅", "🦋"],
+    circleClassName: "bg-gold",
+    colourReason: "You're often moving toward what's next, rarely pausing fully.",
     overall:
       "You're energised by possibility. New ground doesn't scare you — it invites you. Your flexibility is a genuine strength, letting you move where rigid people get stuck.",
     pillars: {
@@ -247,6 +446,12 @@ export const PRODUCTS: Product[] = [
   { id: "p_soak_release", title: "Pressure Release Salt Soak", colourTag: "slate", elementTag: ["release", "calm"], price: 32, imageSeed: "gio-soak-slate", available: true },
   { id: "p_wrap_horizon", title: "Open Horizon Wrap Ring", colourTag: "gold", elementTag: ["adaptability", "lift"], price: 46, imageSeed: "gio-ring-gold", available: false },
 ];
+
+// A real backend would derive these from the entry's content (sentiment /
+// topic extraction). For this mockup they're assigned deterministically from
+// the entry id via pickPhrasing, simulating that analysis without one.
+export const JOURNAL_MOODS = ["Calm", "Hopeful", "Tired", "Anxious", "Grateful", "Content", "Overwhelmed", "Energised"];
+export const JOURNAL_THEMES = ["Growth", "Responsibility", "Relationships", "Self-Care", "Work", "Clarity", "Rest", "Gratitude"];
 
 export function pickPhrasing(seed: string, options: string[]): string {
   let hash = 0;

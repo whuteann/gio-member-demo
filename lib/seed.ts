@@ -4,8 +4,9 @@ import {
   CHECKIN_BLUEPRINT_VERSION,
   READING_BLUEPRINT_VERSION,
 } from "./blueprints";
-import { buildInnerState, buildReadingNarrative, scoreBaseline } from "./scoring";
+import { buildInnerState, buildReadingHeadline, buildReadingInsight, buildReadingNarrative, scoreBaseline } from "./scoring";
 import { buildRecommendation } from "./recommendation";
+import { tagJournalEntry } from "./journal";
 import {
   awardXP,
   completeQuest,
@@ -23,6 +24,7 @@ import type {
   CheckInSession,
   DimensionKey,
   InnerReading,
+  JournalEntry,
   Language,
   User,
 } from "./types";
@@ -51,6 +53,7 @@ export function createEmptyAppData(user: User): AppData {
     garden: { weekStart: weekStartString(localDateString()), stage: 0, actionsThisWeek: 0 },
     badges: [],
     rewards: [],
+    journalEntries: [],
   };
 }
 
@@ -209,8 +212,11 @@ export function createDemoAppData(): AppData {
       inner_pressure: Math.round((questions[2].normalizedValue + questions[6].normalizedValue) / 2),
       grounding: Math.round((questions[3].normalizedValue + questions[7].normalizedValue) / 2),
     };
+    const readingId = newId("reading");
+    const { insight, reflectionQuestion } = buildReadingInsight(dims, readingId);
+    const { title, subtitle } = buildReadingHeadline(dims, readingId);
     const reading: InnerReading = {
-      id: newId("reading"),
+      id: readingId,
       userId: user.id,
       status: "COMPLETED",
       blueprintVersion: READING_BLUEPRINT_VERSION,
@@ -218,8 +224,13 @@ export function createDemoAppData(): AppData {
       dimensionScores: dims,
       resultSummary: "A steady, grounded reading.",
       narrative: buildReadingNarrative(dims, personality.overallExplanation.split(".")[0]),
+      insight,
+      reflectionQuestion,
+      title,
+      subtitle,
       startedAt: day.toISOString(),
       completedAt: day.toISOString(),
+      createdAt: day.toISOString(),
     };
     innerReadings.push(reading);
     const snapshot = buildInnerState({
@@ -263,6 +274,21 @@ export function createDemoAppData(): AppData {
     badges: badgeResult.newlyEarned,
   });
 
+  const journalNotes: { daysAgo: number; hour: number; minute: number; content: string }[] = [
+    { daysAgo: 0, hour: 22, minute: 45, content: "I felt a lot of pressure today carrying multiple responsibilities. But I also noticed moments where I chose to slow down and breathe instead of pushing through." },
+    { daysAgo: 1, hour: 21, minute: 15, content: "Today I made a decision that I had been postponing for a while. It feels good to take action, even if it's just one small step." },
+    { daysAgo: 3, hour: 20, minute: 20, content: "A quiet morning, a good coffee, a kind message from a friend. Little things that remind me life is already good." },
+    { daysAgo: 6, hour: 23, minute: 0, content: "Some things didn't go as planned today. I reminded myself that not everything is within my control, and that's okay." },
+  ];
+  const journalEntries: JournalEntry[] = journalNotes.map(({ daysAgo, hour, minute, content }) => {
+    const day = new Date(now);
+    day.setDate(day.getDate() - daysAgo);
+    day.setHours(hour, minute, 0, 0);
+    const id = newId("journal");
+    const { mood, theme } = tagJournalEntry(id);
+    return { id, userId: user.id, content, mood, theme, createdAt: day.toISOString() };
+  });
+
   return {
     user,
     subscription: {
@@ -286,5 +312,6 @@ export function createDemoAppData(): AppData {
     garden,
     badges: badgeResult.badges,
     rewards,
+    journalEntries,
   };
 }

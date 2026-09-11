@@ -7,12 +7,12 @@ import {
   useState,
 } from "react";
 import type { ReactNode } from "react";
-import { loadDB, saveDB, type DB } from "@/lib/storage";
+import { emptyDB, loadDB, saveDB, type DB } from "@/lib/storage";
 import { createDemoAppData, createEmptyAppData, createUser, DEMO_EMAIL } from "@/lib/seed";
 import { hashPassword, verifyPassword } from "@/lib/auth";
 import { newId } from "@/lib/id";
 import { BASELINE_ASSESSMENT } from "@/lib/blueprints";
-import { buildInnerState, buildReadingNarrative, scoreBaseline, type BaselineAnswer } from "@/lib/scoring";
+import { buildInnerState, buildReadingHeadline, buildReadingInsight, buildReadingNarrative, scoreBaseline, type BaselineAnswer } from "@/lib/scoring";
 import { buildRecommendation } from "@/lib/recommendation";
 import {
   allThreeQuestsComplete,
@@ -28,6 +28,7 @@ import {
   updateStreakForReflection,
 } from "@/lib/gamification";
 import { isPremiumActive, innerReadingGate, type InnerReadingGate } from "@/lib/entitlement";
+import { tagJournalEntry } from "@/lib/journal";
 import type {
   AnsweredQuestion,
   AppData,
@@ -36,6 +37,7 @@ import type {
   CorePersonality,
   DimensionKey,
   InnerReading,
+  JournalEntry,
   Language,
   User,
 } from "@/lib/types";
@@ -76,6 +78,8 @@ interface AppStateValue {
 
   redeemReward: (key: string) => void;
   updateProfile: (partial: Partial<Pick<User, "displayName" | "preferredLanguage" | "timezone">>) => void;
+
+  addJournalEntry: (content: string) => { entryId: string };
 }
 
 const AppStateContext = createContext<AppStateValue | null>(null);
@@ -85,7 +89,7 @@ function currentPersonality(data: AppData): CorePersonality | null {
 }
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
-  const [db, setDb] = useState<DB>({ version: 1, accounts: {}, session: { userId: null } });
+  const [db, setDb] = useState<DB>(emptyDB());
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -378,8 +382,11 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       const dims = dimensionAverage(questions);
       const now = new Date().toISOString();
       const personality = currentPersonality(cur);
+      const newReadingId = newId("reading");
+      const { insight, reflectionQuestion } = buildReadingInsight(dims, newReadingId);
+      const { title, subtitle } = buildReadingHeadline(dims, newReadingId);
       const reading: InnerReading = {
-        id: newId("reading"),
+        id: newReadingId,
         userId: cur.user.id,
         status: "COMPLETED",
         blueprintVersion: "reading-v1",
@@ -387,8 +394,13 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         dimensionScores: dims,
         resultSummary: "Inner Reading complete.",
         narrative: buildReadingNarrative(dims, personality ? personality.archetype : "steady_anchor"),
+        insight,
+        reflectionQuestion,
+        title,
+        subtitle,
         startedAt: now,
         completedAt: now,
+        createdAt: now,
       };
       readingId = reading.id;
       const { data: withEffects, outcome: o } = applyReflectionSideEffects(cur, {
@@ -500,6 +512,25 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     mutateCurrent((cur) => ({ ...cur, user: { ...cur.user, ...partial } }));
   }, [mutateCurrent]);
 
+  const addJournalEntry = useCallback<AppStateValue["addJournalEntry"]>((content) => {
+    let entryId = "";
+    mutateCurrent((cur) => {
+      const id = newId("journal");
+      entryId = id;
+      const { mood, theme } = tagJournalEntry(id);
+      const entry: JournalEntry = {
+        id,
+        userId: cur.user.id,
+        content,
+        mood,
+        theme,
+        createdAt: new Date().toISOString(),
+      };
+      return { ...cur, journalEntries: [...cur.journalEntries, entry] };
+    });
+    return { entryId };
+  }, [mutateCurrent]);
+
   const value = useMemo<AppStateValue>(() => ({
     ready,
     user,
@@ -523,6 +554,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     reactivateSubscription,
     redeemReward,
     updateProfile,
+    addJournalEntry,
   }), [
     ready,
     user,
@@ -543,6 +575,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     reactivateSubscription,
     redeemReward,
     updateProfile,
+    addJournalEntry,
   ]);
 
   return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>;

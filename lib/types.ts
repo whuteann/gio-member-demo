@@ -85,8 +85,13 @@ export interface InnerReading {
   dimensionScores: Record<DimensionKey, number> | null;
   resultSummary: string | null;
   narrative: string | null;
+  insight: string | null;
+  reflectionQuestion: string | null;
+  title: string | null;
+  subtitle: string | null;
   startedAt: string;
   completedAt: string | null;
+  createdAt: string;
 }
 
 export type InnerStateSourceType = "CHECK_IN" | "INNER_READING";
@@ -117,6 +122,7 @@ export interface CorePersonality {
   userId: string;
   version: number;
   archetype: ArchetypeKey;
+  icon: string;
   thinking: number;
   emotionalSensitivity: number;
   adaptability: number;
@@ -149,6 +155,19 @@ export interface RecommendationItem {
   imageUrl?: string;
   price?: number;
   destinationUrl?: string;
+}
+
+export type ColourKey = "scarlet" | "russet" | "gold" | "forest" | "ocean";
+
+export interface ColourMeaning {
+  key: ColourKey;
+  name: string;
+  swatch: string;
+  traits: [string, string, string];
+  description: string;
+  article: string;
+  benefit: string;
+  affirmations: [string, string];
 }
 
 export type RecommendationTrigger = "CHECK_IN" | "INNER_READING";
@@ -247,6 +266,15 @@ export interface Product {
   available: boolean;
 }
 
+export interface JournalEntry {
+  id: string;
+  userId: string;
+  content: string;
+  mood: string;
+  theme: string;
+  createdAt: string;
+}
+
 export interface AppData {
   user: User;
   subscription: Subscription;
@@ -261,4 +289,5 @@ export interface AppData {
   garden: GardenProgress;
   badges: UserBadge[];
   rewards: UserReward[];
+  journalEntries: JournalEntry[];
 }

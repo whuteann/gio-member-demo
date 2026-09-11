@@ -10,7 +10,7 @@ const TABS = [
   { href: "/dashboard", label: "Home", icon: "🏠" },
   { href: "/check-in", label: "Check-In", icon: "💬" },
   { href: "/inner-reading", label: "Reading", icon: "🔮" },
-  { href: "/recommendation", label: "For You", icon: "✨" },
+  { href: "/colour-psychology", label: "For You", icon: "✨" },
   { href: "/progress", label: "Progress", icon: "🌿" },
 ];
 
@@ -18,6 +18,8 @@ const MENU_LINKS = [
   { href: "/profile", label: "Profile", icon: "🧑" },
   { href: "/membership", label: "Membership", icon: "💳" },
   { href: "/core-personality", label: "Core Personality", icon: "🧭" },
+  { href: "/journal", label: "Journal", icon: "📓" },
+  { href: "/colour-psychology", label: "Colour Psychology", icon: "💧" },
   // { href: "/rewards", label: "Rewards", icon: "🎁" },
   { href: "/check-in/history", label: "Check-In History", icon: "📜" },
   { href: "/inner-reading/history", label: "Reading History", icon: "📖" },
