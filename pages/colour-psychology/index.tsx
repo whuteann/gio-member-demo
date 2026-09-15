@@ -8,6 +8,7 @@ import AppShell from "@/components/layout/AppShell";
 import Card from "@/components/ui/Card";
 import Chip from "@/components/ui/Chip";
 import ProductCard from "@/components/ui/ProductCard";
+import ColourOfTheDay from "@/components/ui/ColourOfTheDay";
 
 const HOW_TO_USE = [
   { icon: "👕", title: "Wear it", body: "Use it in your clothing or everyday accessories." },
@@ -56,11 +57,9 @@ export default function ColourPsychologyPage() {
           <div className="flex flex-col gap-5 lg:col-span-2">
             {currentColour ? (
               <Card className="flex flex-col gap-5 sm:flex-row">
-                <div
-                  className="h-40 w-full flex-none rounded-2xl sm:h-auto sm:w-40"
-                  style={{ background: currentColour.swatch }}
-                  aria-hidden
-                />
+                <div className="flex h-40 w-full flex-none items-center justify-center rounded-2xl sm:h-auto sm:w-40">
+                  <ColourOfTheDay colourKey={currentColour.key} swatch={currentColour.swatch} size={152} />
+                </div>
                 <div className="flex flex-1 flex-col gap-3">
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-foreground-muted">
                     Your current supportive colour

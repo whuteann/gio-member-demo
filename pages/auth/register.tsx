@@ -5,7 +5,9 @@ import Head from "next/head";
 import AuthLayout from "@/components/layout/AuthLayout";
 import TextField from "@/components/ui/TextField";
 import Button from "@/components/ui/Button";
+import LanguageSlider from "@/components/ui/LanguageSlider";
 import { useAppState } from "@/context/AppStateContext";
+import type { Language } from "@/lib/types";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -13,6 +15,8 @@ export default function RegisterPage() {
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [language, setLanguage] = useState<Language>("en");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -23,8 +27,12 @@ export default function RegisterPage() {
       setError("Password must be at least 6 characters.");
       return;
     }
+    if (password !== confirmPassword) {
+      setError("Passwords don't match.");
+      return;
+    }
     setSubmitting(true);
-    const result = register({ email, password, displayName, language: "en" });
+    const result = register({ email, password, displayName, language });
     setSubmitting(false);
     if (!result.ok) {
       setError(result.error);
@@ -48,6 +56,7 @@ export default function RegisterPage() {
           </>
         }
       >
+        <LanguageSlider value={language} onChange={setLanguage} className="mb-5" />
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <TextField
             label="Display name"
@@ -70,6 +79,15 @@ export default function RegisterPage() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+          />
+          <TextField
+            label="Confirm password"
+            type="password"
+            autoComplete="new-password"
+            required
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            error={confirmPassword.length > 0 && confirmPassword !== password ? "Passwords don't match." : undefined}
           />
           {error ? <p className="text-sm font-medium text-danger">{error}</p> : null}
           <p className="text-xs leading-relaxed text-foreground-muted">

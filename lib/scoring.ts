@@ -5,6 +5,7 @@ import {
   HEADLINE_LIBRARY,
   INSIGHT_LIBRARY,
   pickPhrasing,
+  seededHash,
 } from "./blueprints";
 import type {
   AnsweredQuestion,
@@ -108,7 +109,7 @@ export function buildInnerState(params: {
 
 export function buildReadingNarrative(
   dims: Record<DimensionKey, number>,
-  archetypeName: string
+  archetype: ArchetypeKey
 ): string {
   const balance = Math.round(
     (dims.emotional_energy + dims.mental_clarity + (100 - dims.inner_pressure) + dims.grounding) / 4
@@ -119,11 +120,17 @@ export function buildReadingNarrative(
       : balance >= 45
         ? "You're holding things together, though a few threads feel a little stretched."
         : "This has clearly been a heavier stretch than usual.";
+  // ARCHETYPES[key].name reads "The Steady Anchor" — drop the leading
+  // article so it drops cleanly into "As the steady anchor, ..." instead of
+  // doubling up, and so callers never need to pass an already-humanized
+  // string (a raw ArchetypeKey like "steady_anchor" was leaking into the
+  // narrative unformatted before this took the key directly).
+  const archetypeName = ARCHETYPES[archetype].name.replace(/^the\s+/i, "").toLowerCase();
 
   return [
     tone,
     `Your energy sits around ${dims.emotional_energy}/100, your clarity around ${dims.mental_clarity}/100, and the pressure you're carrying reads ${dims.inner_pressure}/100 — with grounding at ${dims.grounding}/100.`,
-    `As ${archetypeName}, this pattern tends to show up as a quiet pull toward whatever restores your footing fastest, rather than the loudest fix in the room.`,
+    `As the ${archetypeName} you are, this pattern tends to show up as a quiet pull toward whatever restores your footing fastest, rather than the loudest fix in the room.`,
     "Use this reading as a mirror, not a verdict — it reflects this moment, and it will keep moving as you do.",
   ].join(" ");
 }
@@ -198,5 +205,42 @@ export function scoreBaseline(
     isCurrent: true,
     generatedAt: new Date().toISOString(),
     recalibratedAt: params.version > 1 ? new Date().toISOString() : null,
+  };
+}
+
+// Onboarding no longer runs a Q&A baseline (that quiz still powers the
+// Recalibrate flow on the Core Personality page via scoreBaseline above) —
+// instead a member's very first Core Personality is derived straight from
+// their birthdate, framed in the product as an AI reading. This is that
+// simulation: the same birthdate always yields the same archetype and pillar
+// spread, standing in for a real model call in this client-only demo.
+export function scoreFromBirthdate(
+  birthdate: string,
+  params: { id: string; userId: string; version: number }
+): CorePersonality {
+  const archetypeKeys = Object.keys(ARCHETYPES) as ArchetypeKey[];
+  const archetype = archetypeKeys[seededHash(birthdate) % archetypeKeys.length];
+  const copy = ARCHETYPES[archetype];
+
+  // Independent-feeling but reproducible pillar values, biased into a
+  // plausible "healthy adult" band rather than the full 0-100 range.
+  const pillar = (name: string) => 42 + (seededHash(`${birthdate}:${name}`) % 49);
+
+  return {
+    id: params.id,
+    userId: params.userId,
+    version: params.version,
+    archetype,
+    icon: pickPhrasing(params.id, copy.icons),
+    thinking: pillar("thinking"),
+    emotionalSensitivity: pillar("emotionalSensitivity"),
+    adaptability: pillar("adaptability"),
+    willpower: pillar("willpower"),
+    overallExplanation: copy.overall,
+    pillarExplanations: copy.pillars,
+    assessmentVersion: ASSESSMENT_VERSION,
+    isCurrent: true,
+    generatedAt: new Date().toISOString(),
+    recalibratedAt: null,
   };
 }

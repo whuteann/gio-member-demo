@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import Head from "next/head";
+import Link from "next/link";
 import { useAppGuard } from "@/lib/useAppGuard";
 import { useAppState, useCurrentPersonality } from "@/context/AppStateContext";
-import { ARCHETYPES, BASELINE_ASSESSMENT } from "@/lib/blueprints";
+import { ARCHETYPES, BASELINE_ASSESSMENT, buildColourPersonalityInsight, COLOUR_LIBRARY } from "@/lib/blueprints";
+import { colourKeyForFocus } from "@/lib/recommendation";
 import type { BaselineAnswer } from "@/lib/scoring";
 import AppShell from "@/components/layout/AppShell";
 import Card from "@/components/ui/Card";
-import Chip from "@/components/ui/Chip";
+import ColourOfTheDay from "@/components/ui/ColourOfTheDay";
 import Button from "@/components/ui/Button";
 import ProgressBar from "@/components/ui/ProgressBar";
 import EntitlementGate from "@/components/ui/EntitlementGate";
@@ -26,7 +28,7 @@ function formatCountdown(ms: number): string {
 }
 
 export default function CorePersonalityPage() {
-  const { settled } = useAppGuard();
+  const { settled, data } = useAppGuard();
   const { isPremiumActive, recalibratePersonality, cooldownRemainingMs } = useAppState();
   const personality = useCurrentPersonality();
   const [recalibrating, setRecalibrating] = useState(false);
@@ -39,11 +41,22 @@ export default function CorePersonalityPage() {
     return () => clearInterval(t);
   }, []);
 
-  if (!settled || !personality) return null;
+  if (!settled || !personality || !data) return null;
 
   const cooldownMs = cooldownRemainingMs();
   const canRecalibrate = cooldownMs <= 0;
   const archetype = ARCHETYPES[personality.archetype];
+  const latestRecommendation = data.recommendations[data.recommendations.length - 1] ?? null;
+  const colourAffinity = latestRecommendation
+    ? {
+        colour: COLOUR_LIBRARY[colourKeyForFocus(latestRecommendation.currentFocus)],
+        insight: buildColourPersonalityInsight(
+          COLOUR_LIBRARY[colourKeyForFocus(latestRecommendation.currentFocus)],
+          archetype,
+          `${personality.id}-${latestRecommendation.id}`
+        ),
+      }
+    : null;
 
   function chooseAnswer(choice: "A" | "B") {
     const nextAnswers = [...answers, { index: step, choice }];
@@ -95,7 +108,9 @@ export default function CorePersonalityPage() {
       <AppShell title="Core Personality">
         <div className="mx-auto flex max-w-lg flex-col gap-5">
           <Card className="flex flex-col items-center gap-2 text-center">
-            <Chip tone="primary">Version {personality.version}</Chip>
+            {colourAffinity ? (
+              <ColourOfTheDay colourKey={colourAffinity.colour.key} swatch={colourAffinity.colour.swatch} size={112} />
+            ) : null}
             <h2 className="font-display text-3xl font-semibold text-foreground">{archetype.name}</h2>
             <p className="text-sm text-foreground-muted">{archetype.tagline}</p>
           </Card>
@@ -104,6 +119,37 @@ export default function CorePersonalityPage() {
             <h3 className="mb-2 font-display text-lg font-semibold text-foreground">Overview</h3>
             <p className="text-sm leading-relaxed text-foreground-muted">{personality.overallExplanation}</p>
           </Card>
+
+          {colourAffinity ? (
+            <Card className="flex flex-col gap-3">
+              <h3 className="font-display text-lg font-semibold text-foreground">Your colour affinity</h3>
+              <div className="flex items-center gap-3">
+                <span
+                  className="h-10 w-10 flex-none rounded-full border border-border"
+                  style={{ background: colourAffinity.colour.swatch }}
+                  aria-hidden
+                />
+                <div>
+                  <p className="text-sm font-semibold text-foreground">{colourAffinity.colour.name}</p>
+                  <p className="text-xs text-foreground-muted">{colourAffinity.colour.traits.join(" • ")}</p>
+                </div>
+              </div>
+              <p className="text-sm leading-relaxed text-foreground-muted">{colourAffinity.insight}</p>
+              <Link
+                href={`/colour-psychology/${colourAffinity.colour.key}`}
+                className="text-sm font-semibold text-primary"
+              >
+                Learn more about {colourAffinity.colour.name.toLowerCase()} →
+              </Link>
+            </Card>
+          ) : (
+            <Card className="flex flex-col gap-2">
+              <h3 className="font-display text-lg font-semibold text-foreground">Your colour affinity</h3>
+              <p className="text-sm text-foreground-muted">
+                Complete a check-in or Inner Reading to see how your recommended colour connects to your personality.
+              </p>
+            </Card>
+          )}
 
           {isPremiumActive ? (
             <Card className="flex flex-col gap-4">

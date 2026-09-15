@@ -12,7 +12,7 @@ import { createDemoAppData, createEmptyAppData, createUser, DEMO_EMAIL } from "@
 import { hashPassword, verifyPassword } from "@/lib/auth";
 import { newId } from "@/lib/id";
 import { BASELINE_ASSESSMENT } from "@/lib/blueprints";
-import { buildInnerState, buildReadingHeadline, buildReadingInsight, buildReadingNarrative, scoreBaseline, type BaselineAnswer } from "@/lib/scoring";
+import { buildInnerState, buildReadingHeadline, buildReadingInsight, buildReadingNarrative, scoreBaseline, scoreFromBirthdate, type BaselineAnswer } from "@/lib/scoring";
 import { buildRecommendation } from "@/lib/recommendation";
 import {
   allThreeQuestsComplete,
@@ -63,7 +63,7 @@ interface AppStateValue {
   logout: () => void;
   resetPassword: (params: { email: string; newPassword: string }) => { ok: true } | { ok: false; error: string };
 
-  completeOnboardingBaseline: (answers: BaselineAnswer[]) => void;
+  completeOnboardingBirthdate: (birthdate: string) => CorePersonality;
   markOnboardingComplete: () => void;
 
   submitCheckIn: (answers: { questionId: string; dimension: DimensionKey; questionText: string; value: number }[], privateNote: string | null) => { sessionId: string; outcome: CompletionOutcome };
@@ -198,11 +198,18 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     return { ok: true };
   }, [db.accounts]);
 
-  const completeOnboardingBaseline = useCallback((answers: BaselineAnswer[]) => {
+  // Onboarding's Core Personality moment: derived from the birthdate the
+  // member enters rather than a Q&A quiz (see lib/scoring.ts#scoreFromBirthdate).
+  // Returns the created profile so the reveal screen can render it immediately
+  // without waiting on a re-render from context.
+  const completeOnboardingBirthdate = useCallback<AppStateValue["completeOnboardingBirthdate"]>((birthdate) => {
+    let created: CorePersonality | null = null;
     mutateCurrent((cur) => {
-      const personality = scoreBaseline(answers, { id: newId("cp"), userId: cur.user.id, version: 1 });
+      const personality = scoreFromBirthdate(birthdate, { id: newId("cp"), userId: cur.user.id, version: 1 });
+      created = personality;
       return { ...cur, corePersonalities: [personality] };
     });
+    return created!;
   }, [mutateCurrent]);
 
   const markOnboardingComplete = useCallback(() => {
@@ -543,7 +550,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     loginDemo,
     logout,
     resetPassword,
-    completeOnboardingBaseline,
+    completeOnboardingBirthdate,
     markOnboardingComplete,
     submitCheckIn,
     submitInnerReading,
@@ -564,7 +571,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     loginDemo,
     logout,
     resetPassword,
-    completeOnboardingBaseline,
+    completeOnboardingBirthdate,
     markOnboardingComplete,
     submitCheckIn,
     submitInnerReading,

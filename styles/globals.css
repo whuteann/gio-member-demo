@@ -25,6 +25,10 @@
   --danger: #b3452f;
   --success: #3f7a4f;
 
+  /* Solid disabled state — never rely on opacity, so backgrounds cannot show through. */
+  --disabled: #a4a99b;
+  --disabled-foreground: #fbf7ef;
+
   --radius-card: 1.75rem;
 }
 
@@ -52,6 +56,8 @@
 
   --color-danger: var(--danger);
   --color-success: var(--success);
+  --color-disabled: var(--disabled);
+  --color-disabled-foreground: var(--disabled-foreground);
 
   --font-display: var(--font-fraunces);
   --font-sans: var(--font-jakarta);
@@ -65,12 +71,20 @@
 
 html {
   background: var(--color-background);
+  /* Always reserve the vertical scrollbar's space, so its presence/absence
+     (page-to-page, or as content height changes) never shifts centered
+     content left/right by the scrollbar's width. */
+  scrollbar-gutter: stable;
 }
 
 body {
   background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  /* Guards against any stray element (now or in the future) that's wider
+     than the viewport creating horizontal scroll, which would otherwise
+     make centered content look shifted relative to the visible window. */
+  overflow-x: hidden;
 }
 
 ::selection {
@@ -92,4 +106,16 @@ button {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Shared by the Check-In and Inner Reading question flows: fills the main
+   area so each page's ambient field reaches the bottom of the viewport.
+   Offsets = header/top padding + bottom padding. */
+.session-stage {
+  min-height: calc(100dvh - 12.25rem);
+}
+@media (min-width: 64rem) {
+  .session-stage {
+    min-height: calc(100dvh - 4.5rem);
+  }
 }

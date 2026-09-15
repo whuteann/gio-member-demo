@@ -453,10 +453,49 @@ export const PRODUCTS: Product[] = [
 export const JOURNAL_MOODS = ["Calm", "Hopeful", "Tired", "Anxious", "Grateful", "Content", "Overwhelmed", "Energised"];
 export const JOURNAL_THEMES = ["Growth", "Responsibility", "Relationships", "Self-Care", "Work", "Clarity", "Rest", "Gratitude"];
 
-export function pickPhrasing(seed: string, options: string[]): string {
+// Deterministic string hash used everywhere this file simulates "AI variety"
+// without a real model call: the same seed always produces the same pick, so
+// demo content is reproducible while still varying across seeds.
+export function seededHash(seed: string): number {
   let hash = 0;
   for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
-  return options[hash % options.length];
+  return hash;
+}
+
+export function pickPhrasing(seed: string, options: string[]): string {
+  return options[seededHash(seed) % options.length];
+}
+
+// Onboarding's birthdate-derived "supportive colour" reveal (see
+// lib/scoring.ts#scoreFromBirthdate) picks from the same 5-colour library
+// used everywhere else, keyed off the birthdate string.
+export function colourKeyFromSeed(seed: string): ColourKey {
+  return COLOUR_ORDER[seededHash(seed) % COLOUR_ORDER.length];
+}
+
+// Connects a person's Core Personality archetype to their currently
+// recommended colour, for the "colour affinity" breakdown shown on the Core
+// Personality page. A real backend would generate this paragraph per person
+// with an LLM; here `pickPhrasing` simulates that by re-rolling a seeded pick
+// across a handful of template phrasings, so the copy varies with each new
+// archetype/colour pairing (and re-rolls whenever a fresh recommendation
+// comes in) while staying reproducible for a given seed.
+export function buildColourPersonalityInsight(colour: ColourMeaning, archetype: ArchetypeCopy, seed: string): string {
+  // archetype.name already reads "The Steady Anchor" etc. — strip the
+  // leading article so it drops cleanly into the middle of a sentence
+  // ("the steady anchor you are") instead of doubling up ("Your the...").
+  const archetypeName = archetype.name.replace(/^the\s+/i, "").toLowerCase();
+  const [traitA, traitB] = colour.traits.map((t) => t.toLowerCase());
+  const colourName = colour.name;
+  const colourNameLower = colourName.toLowerCase();
+
+  const templates = [
+    `As the ${archetypeName} you are, you already lean on ${archetype.traits[0].toLowerCase()} — ${colourName} builds on that by bringing more ${traitA} and ${traitB} into how you move through your day.`,
+    `${colourName} pairs naturally with the ${archetypeName} type. ${archetype.colourReason} ${colourName} answers that directly, offering ${traitA} exactly where you tend to run low.`,
+    `Your ${archetypeName} nature and ${colourNameLower} share the same instinct toward ${traitB}. Leaning into this colour right now reinforces a strength you already carry, rather than asking you to become someone else.`,
+    `${archetype.colourReason} That's exactly where ${colourNameLower} is useful — its ${traitA} and ${traitB} give the ${archetypeName} in you a small, concrete way to rebalance.`,
+  ];
+  return pickPhrasing(seed, templates);
 }
 
 export function buildQuestionOrder(pool: Record<DimensionKey, string[]>, count: number, seed: string): QuestionVariant[] {

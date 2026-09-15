@@ -223,7 +223,7 @@ export function createDemoAppData(): AppData {
       questions,
       dimensionScores: dims,
       resultSummary: "A steady, grounded reading.",
-      narrative: buildReadingNarrative(dims, personality.overallExplanation.split(".")[0]),
+      narrative: buildReadingNarrative(dims, personality.archetype),
       insight,
       reflectionQuestion,
       title,
