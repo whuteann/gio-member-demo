@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
-type Variant = "primary" | "secondary" | "accent" | "outline" | "ghost" | "danger";
+type Variant = "primary" | "secondary" | "accent" | "outline" | "outline-solid" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -15,6 +15,7 @@ const VARIANT_CLASSES: Record<Variant, string> = {
   secondary: "bg-secondary text-secondary-foreground hover:opacity-90",
   accent: "bg-accent text-accent-foreground hover:opacity-90",
   outline: "border border-border bg-transparent text-foreground hover:bg-surface-muted",
+  "outline-solid": "border border-border bg-surface text-foreground hover:bg-surface-muted",
   ghost: "bg-transparent text-foreground hover:bg-surface-muted",
   danger: "bg-danger text-white hover:opacity-90",
 };
@@ -37,7 +38,7 @@ export default function Button({
 }: ButtonProps) {
   return (
     <button
-      className={`inline-flex items-center justify-center rounded-full font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${VARIANT_CLASSES[variant]} ${SIZE_CLASSES[size]} ${fullWidth ? "w-full" : ""} ${className}`}
+      className={`inline-flex items-center justify-center rounded-full font-semibold transition-colors disabled:pointer-events-none disabled:border-disabled disabled:bg-disabled disabled:text-disabled-foreground ${VARIANT_CLASSES[variant]} ${SIZE_CLASSES[size]} ${fullWidth ? "w-full" : ""} ${className}`}
       disabled={disabled}
       {...rest}
     >

@@ -9,11 +9,13 @@ import AppShell from "@/components/layout/AppShell";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Chip from "@/components/ui/Chip";
-import MultiRingGauge from "@/components/ui/MultiRingGauge";
+import ColourOfTheDay from "@/components/ui/ColourOfTheDay";
+import FallingLeaves from "@/components/ui/FallingLeaves";
 import StreakFlame from "@/components/ui/StreakFlame";
 import GardenIllustration from "@/components/ui/GardenIllustration";
 import ProductCard from "@/components/ui/ProductCard";
-import { ARCHETYPES, DIMENSIONS } from "@/lib/blueprints";
+import { ARCHETYPES, COLOUR_LIBRARY, DIMENSIONS } from "@/lib/blueprints";
+import { colourKeyForFocus } from "@/lib/recommendation";
 
 const DATE_BADGE_TONES = ["bg-secondary/20 text-primary", "bg-accent/15 text-accent", "bg-gold/15 text-gold-foreground"];
 
@@ -29,6 +31,12 @@ export default function DashboardPage() {
   const today = localDateString();
   const checkedInToday = data.checkIns.some((c) => c.completedAt?.startsWith(today));
   const latestState = data.stateSnapshots[data.stateSnapshots.length - 1] ?? null;
+  const previousState = data.stateSnapshots[data.stateSnapshots.length - 2] ?? null;
+  // Today's "Color of the Day" — shared by the falling-leaves backdrop and
+  // the inner-state card's tree badge, so the two always agree. "Sustaining
+  // balance" (gold) is the same default the rest of the app falls back to
+  // when there's no check-in or reading yet.
+  const currentColourKey = latestState ? colourKeyForFocus(latestState.currentFocus) : "gold";
   const latestReading = data.innerReadings[data.innerReadings.length - 1] ?? null;
   const latestRecommendation = data.recommendations[data.recommendations.length - 1] ?? null;
   const recentReadings = [...data.innerReadings]
@@ -40,6 +48,7 @@ export default function DashboardPage() {
   return (
     <>
       <Head><title>Dashboard — Gio</title></Head>
+      <FallingLeaves colourKey={currentColourKey} />
       <AppShell title={`Hi, ${data.user.displayName.split(" ")[0]}`}>
         <div className="grid gap-5 lg:grid-cols-3">
           <Card className="lg:col-span-2">
@@ -48,51 +57,89 @@ export default function DashboardPage() {
               {latestState ? <Chip tone="primary">{latestState.currentFocus}</Chip> : null}
             </div>
             {latestState ? (
-              <div className="mt-4 flex flex-col gap-5 sm:flex-row sm:items-center">
-                <MultiRingGauge
-                  size={128}
-                  strokeWidth={8}
-                  gap={3}
-                  rings={DIMENSIONS.map((dim) => ({
-                    value:
-                      dim.key === "emotional_energy"
-                        ? latestState.emotionalEnergy
-                        : dim.key === "mental_clarity"
-                          ? latestState.mentalClarity
-                          : dim.key === "inner_pressure"
-                            ? latestState.innerPressure
-                            : latestState.grounding,
-                    color: dim.color,
-                  }))}
-                >
-                  <span className="font-display text-xl font-semibold text-foreground">
-                    {Math.round(latestState.balance)}
-                  </span>
-                </MultiRingGauge>
-                <div className="grid flex-1 grid-cols-2 gap-3">
-                  {DIMENSIONS.map((dim) => {
-                    const value =
-                      dim.key === "emotional_energy"
-                        ? latestState.emotionalEnergy
-                        : dim.key === "mental_clarity"
-                          ? latestState.mentalClarity
-                          : dim.key === "inner_pressure"
-                            ? latestState.innerPressure
-                            : latestState.grounding;
+              <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-5">
+                {(() => {
+                  const dimValueOf = (state: NonNullable<typeof latestState>, dim: (typeof DIMENSIONS)[number]) =>
+                    dim.key === "emotional_energy"
+                      ? state.emotionalEnergy
+                      : dim.key === "mental_clarity"
+                        ? state.mentalClarity
+                        : dim.key === "inner_pressure"
+                          ? state.innerPressure
+                          : state.grounding;
+                  const dimValue = (dim: (typeof DIMENSIONS)[number]) => dimValueOf(latestState, dim);
+                  // How much each dimension moved since the previous check-in
+                  // or reading, shown next to the number. null (not 0) means
+                  // "no previous entry to compare against" — that's the only
+                  // case that hides the indicator entirely.
+                  const dimDelta = (dim: (typeof DIMENSIONS)[number]) =>
+                    previousState ? dimValue(dim) - dimValueOf(previousState, dim) : null;
+                  // Force a break after the first word for two-word labels
+                  // ("Mental Clarity" → "Mental" / "Clarity") instead of
+                  // leaving it to wrap on its own — at this column width it
+                  // would otherwise fit on one line while its neighbours
+                  // don't, so every label reads as two lines the same way.
+                  const stackedLabel = (label: string) => {
+                    const [first, ...rest] = label.split(" ");
+                    if (rest.length === 0) return label;
                     return (
-                      <div key={dim.key}>
-                        <p className="flex items-center gap-1.5 text-xs font-semibold text-foreground-muted">
-                          <span
-                            className="inline-block h-2 w-2 rounded-full"
-                            style={{ background: dim.color }}
-                          />
-                          {dim.label}
-                        </p>
-                        <p className="font-display text-xl font-semibold text-foreground">{value}</p>
-                      </div>
+                      <>
+                        {first}
+                        <br />
+                        {rest.join(" ")}
+                      </>
                     );
-                  })}
-                </div>
+                  };
+                  const stat = (dim: (typeof DIMENSIONS)[number]) => (
+                    <div key={dim.key} className="min-w-0">
+                      {/* min-h still reserves two lines for "Grounding",
+                          the one label with no second word to break onto. */}
+                      <p className="flex items-start gap-1.5 text-[10px] font-semibold leading-snug text-foreground-muted min-h-[27.5px]">
+                        <span
+                          className="mt-0.5 inline-block h-2 w-2 shrink-0 rounded-full"
+                          style={{ background: dim.color }}
+                        />
+                        <span>{stackedLabel(dim.label)}</span>
+                      </p>
+                      <p className="flex items-baseline gap-1.5 font-display text-xl font-semibold text-foreground">
+                        <span>{dimValue(dim)}</span>
+                        {(() => {
+                          const delta = dimDelta(dim);
+                          if (delta === null) return null;
+                          const isUp = delta >= 0;
+                          return (
+                            <span
+                              className={`font-sans text-[11px] font-semibold tracking-tight ${
+                                isUp ? "text-success" : "text-danger"
+                              }`}
+                            >
+                              ({isUp ? "+" : ""}{delta})
+                            </span>
+                          );
+                        })()}
+                      </p>
+                    </div>
+                  );
+                  // Mirrors the previous 2x2 grid's columns: energy/pressure on
+                  // the left, clarity/grounding on the right, now flanking the
+                  // orb instead of sitting to its side.
+                  const left = [DIMENSIONS[0], DIMENSIONS[2]];
+                  const right = [DIMENSIONS[1], DIMENSIONS[3]];
+                  const recommendedColour = COLOUR_LIBRARY[currentColourKey];
+                  return (
+                    <>
+                      {/* min-w-0 on both columns keeps the 1fr/1fr grid tracks
+                          genuinely equal — without it, a CSS grid track's
+                          default min-width is its content's natural size, so
+                          two 1fr columns with differently-sized content can
+                          silently end up unequal widths instead of staying
+                          symmetric. */}
+                      <div className="flex min-w-0 flex-col gap-4">{left.map(stat)}</div>
+                      <ColourOfTheDay colourKey={recommendedColour.key} swatch={recommendedColour.swatch} size={92} />
+                      <div className="flex min-w-0 flex-col items-end gap-4 text-right">{right.map(stat)}</div>
+                    </>
+                  );
+                })()}
               </div>
             ) : (
               <p className="mt-3 text-sm text-foreground-muted">

@@ -5,14 +5,17 @@ import Head from "next/head";
 import AuthLayout from "@/components/layout/AuthLayout";
 import TextField from "@/components/ui/TextField";
 import Button from "@/components/ui/Button";
+import LanguageSlider from "@/components/ui/LanguageSlider";
 import { useAppState } from "@/context/AppStateContext";
 import { DEMO_EMAIL, DEMO_PASSWORD } from "@/lib/seed";
+import type { Language } from "@/lib/types";
 
 export default function LoginPage() {
   const router = useRouter();
   const { login, loginDemo } = useAppState();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [language, setLanguage] = useState<Language>("en");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -44,6 +47,7 @@ export default function LoginPage() {
           </>
         }
       >
+        <LanguageSlider value={language} onChange={setLanguage} className="mb-5" />
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <TextField
             label="Email"
