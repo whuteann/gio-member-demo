@@ -36,6 +36,11 @@ export interface User {
   corePersonalityLastRecalibratedAt: string | null;
   lastLoginAt: string | null;
   createdAt: string;
+  // Collected once during onboarding (see AppStateContext#completeOnboardingBirthdate)
+  // and kept for the life of the account — it's what the Core Personality
+  // page's numerology and Colour Breakdown sections are derived from, so it
+  // survives recalibration even though recalibration itself doesn't use it.
+  birthdate: string | null;
 }
 
 export type DimensionKey =
@@ -159,6 +164,8 @@ export interface RecommendationItem {
 
 export type ColourKey = "scarlet" | "russet" | "gold" | "forest" | "ocean";
 
+export type FiveTraits = [string, string, string, string, string];
+
 export interface ColourMeaning {
   key: ColourKey;
   name: string;
@@ -168,6 +175,9 @@ export interface ColourMeaning {
   article: string;
   benefit: string;
   affirmations: [string, string];
+  // Colour Breakdown detail panel (see components/ui/ColourBreakdown).
+  positiveTraits: FiveTraits;
+  negativeTraits: FiveTraits;
 }
 
 export type RecommendationTrigger = "CHECK_IN" | "INNER_READING";

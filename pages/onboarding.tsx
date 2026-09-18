@@ -8,10 +8,12 @@ import { EASE_OUT, EASE_IN_OUT, EASE_SOFT_BACK } from "@/lib/sessionMotion";
 import type { ColourKey, CorePersonality, Language } from "@/lib/types";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
-import Chip from "@/components/ui/Chip";
 import ProgressBar from "@/components/ui/ProgressBar";
 import BalanceOrb from "@/components/ui/BalanceOrb";
 import ColourOfTheDay from "@/components/ui/ColourOfTheDay";
+import NumerologySection from "@/components/ui/NumerologySection";
+import ColourBreakdown from "@/components/ui/ColourBreakdown";
+import SectionRail from "@/components/ui/SectionRail";
 import AmbientField from "@/components/session/AmbientField";
 
 type Step = "language" | "birthdate" | "reading" | "reveal";
@@ -28,6 +30,16 @@ const PILLARS = [
   { key: "emotionalSensitivity" as const, label: "Emotional Sensitivity" },
   { key: "adaptability" as const, label: "Adaptability" },
   { key: "willpower" as const, label: "Willpower" },
+];
+
+const REVEAL_SECTIONS = [
+  { id: "reveal-overview", label: "Overview" },
+  { id: "reveal-colour", label: "Colour" },
+  { id: "reveal-pillars", label: "Pillars" },
+  { id: "numerology-birthday", label: "Birthday" },
+  { id: "numerology-lifepath", label: "Life Path" },
+  { id: "numerology-talent", label: "Talent" },
+  { id: "reveal-colourbreakdown", label: "Colours" },
 ];
 
 const phaseVariants = {
@@ -205,8 +217,7 @@ export default function OnboardingPage() {
               <motion.div key="reveal" variants={phaseVariants} initial="enter" animate="center" exit="exit" className="flex flex-col gap-5">
                 <motion.div variants={stagger} initial="hidden" animate="show" className="flex flex-col gap-5">
                   <motion.div variants={rise}>
-                    <Card className="flex flex-col items-center gap-2 text-center">
-                      <Chip tone="gold">🤖 AI-derived from your birthdate</Chip>
+                    <Card id="reveal-overview" className="flex flex-col items-center gap-2 text-center">
                       <ColourOfTheDay colourKey={colour.key} swatch={colour.swatch} size={112} />
                       <h2 className="font-display text-2xl font-semibold text-foreground">{archetype.name}</h2>
                       <p className="text-sm text-foreground-muted">{archetype.tagline}</p>
@@ -214,7 +225,7 @@ export default function OnboardingPage() {
                   </motion.div>
 
                   <motion.div variants={rise}>
-                    <Card className="flex flex-col gap-3">
+                    <Card id="reveal-colour" className="flex flex-col gap-3">
                       <h3 className="font-display text-lg font-semibold text-foreground">Your supportive colour</h3>
                       <div className="flex items-center gap-3">
                         <span
@@ -234,7 +245,7 @@ export default function OnboardingPage() {
                   </motion.div>
 
                   <motion.div variants={rise}>
-                    <Card className="flex flex-col gap-4">
+                    <Card id="reveal-pillars" className="flex flex-col gap-4">
                       <h3 className="font-display text-lg font-semibold text-foreground">The four pillars</h3>
                       {PILLARS.map((pillar) => (
                         <div key={pillar.key}>
@@ -256,6 +267,30 @@ export default function OnboardingPage() {
                     </Card>
                   </motion.div>
 
+                  {/* Animates itself rather than inheriting the parent stagger's
+                      "rise" variant — with 6+ staggered siblings, the
+                      inherited variant intermittently never fired for this
+                      one (stuck at its hidden state indefinitely; verified
+                      via computed styles, not just a slow transition). An
+                      explicit initial/animate sidesteps that entirely. */}
+                  <motion.div
+                    initial={{ y: 18, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.55, ease: EASE_OUT, delay: 0.3 }}
+                    className="flex flex-col gap-5"
+                  >
+                    <NumerologySection birthdate={birthdate} />
+                  </motion.div>
+
+                  <motion.div
+                    id="reveal-colourbreakdown"
+                    initial={{ y: 18, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.55, ease: EASE_OUT, delay: 0.4 }}
+                  >
+                    <ColourBreakdown birthdate={birthdate} />
+                  </motion.div>
+
                   <motion.div variants={rise}>
                     <Button
                       fullWidth
@@ -273,6 +308,7 @@ export default function OnboardingPage() {
             )}
           </AnimatePresence>
         </div>
+        {step === "reveal" ? <SectionRail sections={REVEAL_SECTIONS} /> : null}
       </div>
     </>
   );

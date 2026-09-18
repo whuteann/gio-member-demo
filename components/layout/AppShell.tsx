@@ -36,9 +36,11 @@ export default function AppShell({ children, title }: { children: ReactNode; tit
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-background lg:flex">
-      {/* Desktop sidebar */}
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-surface px-5 py-6 lg:flex">
+    <div className="min-h-screen bg-background lg:flex lg:h-screen lg:overflow-hidden">
+      {/* Desktop sidebar — stays put at viewport height while <main> scrolls
+          independently below; its own content is short enough it never
+          needs a scrollbar of its own. */}
+      <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-surface px-5 py-6 lg:flex lg:h-screen lg:overflow-y-auto">
         <Link href="/dashboard" className="mb-8 flex items-center gap-2 px-1">
           <span className="text-2xl" aria-hidden>🌿</span>
           <span className="font-display text-xl font-semibold text-primary">Gio</span>
@@ -89,7 +91,7 @@ export default function AppShell({ children, title }: { children: ReactNode; tit
         </button>
       </aside>
 
-      <div className="flex min-h-screen flex-1 flex-col">
+      <div className="flex min-h-screen flex-1 flex-col lg:h-screen lg:min-h-0">
         {/* Mobile top bar */}
         <header className="flex items-center justify-between border-b border-border bg-surface px-4 py-3.5 lg:hidden">
           <Link href="/dashboard" className="flex items-center gap-2">
@@ -108,7 +110,7 @@ export default function AppShell({ children, title }: { children: ReactNode; tit
           </div>
         </header>
 
-        <main className="flex-1 px-4 pb-28 pt-5 lg:px-10 lg:pb-10 lg:pt-8">
+        <main className="flex-1 px-4 pb-28 pt-5 lg:min-h-0 lg:overflow-y-auto lg:px-10 lg:pb-10 lg:pt-8">
           {title ? <h1 className="mb-5 font-display text-2xl font-semibold text-foreground lg:text-3xl">{title}</h1> : null}
           <div className="mx-auto w-full max-w-6xl">{children}</div>
         </main>

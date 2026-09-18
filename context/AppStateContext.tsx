@@ -207,7 +207,10 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     mutateCurrent((cur) => {
       const personality = scoreFromBirthdate(birthdate, { id: newId("cp"), userId: cur.user.id, version: 1 });
       created = personality;
-      return { ...cur, corePersonalities: [personality] };
+      // Saved on the user (not just used in the moment) so Core Personality's
+      // numerology and Colour Breakdown sections keep working on every later
+      // visit, not just during this one onboarding pass.
+      return { ...cur, corePersonalities: [personality], user: { ...cur.user, birthdate } };
     });
     return created!;
   }, [mutateCurrent]);

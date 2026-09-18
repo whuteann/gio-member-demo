@@ -77,6 +77,8 @@ export function createUser(params: {
     corePersonalityLastRecalibratedAt: null,
     lastLoginAt: now,
     createdAt: now,
+    // Collected during onboarding's birthdate step, not at registration.
+    birthdate: null,
   };
 }
 
@@ -112,6 +114,7 @@ export function createDemoAppData(): AppData {
     corePersonalityLastRecalibratedAt: null,
     lastLoginAt: nowIso,
     createdAt: new Date(now.getTime() - 12 * 86400000).toISOString(),
+    birthdate: "1994-06-15",
   };
 
   const personality = scoreBaseline(
