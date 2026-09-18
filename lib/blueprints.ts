@@ -4,6 +4,7 @@ import type {
   ColourKey,
   ColourMeaning,
   DimensionKey,
+  FiveTraits,
   Product,
   QuestionVariant,
   RewardDefinition,
@@ -169,6 +170,20 @@ export const COLOUR_LIBRARY: Record<ColourKey, ColourMeaning> = {
       "I welcome energy and momentum back into my day.",
       "I act with courage, even in small steps.",
     ],
+    positiveTraits: [
+      "🔥 Your energy motivates the people working alongside you.",
+      "🚀 You take action while others are still deliberating.",
+      "💪 You recover from setbacks with real physical resilience.",
+      "🎯 Passion gives your work a genuine sense of urgency.",
+      "🦁 Courage lets you speak up when it actually matters.",
+    ],
+    negativeTraits: [
+      "🔥 Impatience can flare up before you've heard the full story.",
+      "⚡ Impulsive decisions can outrun careful thought.",
+      "🌋 Frustration can surface faster than you'd like it to.",
+      "🏃 Restlessness can make it hard to sit with stillness.",
+      "🎭 A drive to act can override a need to just feel first.",
+    ],
   },
   russet: {
     key: "russet",
@@ -182,6 +197,20 @@ export const COLOUR_LIBRARY: Record<ColourKey, ColourMeaning> = {
     affirmations: [
       "I am steady, even when the ground feels uncertain.",
       "I build resilience one grounded step at a time.",
+    ],
+    positiveTraits: [
+      "🌳 You bring steadiness to situations that feel unstable.",
+      "🍂 Your resilience helps you recover from setbacks patiently.",
+      "🏡 You create a genuine sense of home wherever you land.",
+      "🤎 Warmth makes people feel comfortable being honest with you.",
+      "🪵 Your consistency is something others quietly rely on.",
+    ],
+    negativeTraits: [
+      "🪨 A love of routine can turn into resistance toward change.",
+      "🧱 Caution can slow you down when speed is actually needed.",
+      "🕰️ You may stay in familiar situations past their useful life.",
+      "🌫️ Reluctance to disrupt things can mean tolerating too much.",
+      "🐌 Momentum can be harder for you to build than to sustain.",
     ],
   },
   gold: {
@@ -197,6 +226,20 @@ export const COLOUR_LIBRARY: Record<ColourKey, ColourMeaning> = {
       "I trust the progress I've already made.",
       "I let my steady effort shine.",
     ],
+    positiveTraits: [
+      "✨ Confidence lets you take up space you've genuinely earned.",
+      "🏆 You recognise your own progress instead of dismissing it.",
+      "🌟 Your radiance draws people toward what you're building.",
+      "💰 You have a healthy relationship with abundance and worth.",
+      "🎖️ Steady effort, for you, actually compounds into results.",
+    ],
+    negativeTraits: [
+      "👑 Confidence can tip into overestimating your own certainty.",
+      "💸 A focus on results can crowd out enjoying the process.",
+      "🪞 Recognition can start to matter more than the work itself.",
+      "🏔️ Comparing your progress to others can quietly undercut it.",
+      "🎗️ Pride can make it harder to hear useful criticism.",
+    ],
   },
   forest: {
     key: "forest",
@@ -211,6 +254,20 @@ export const COLOUR_LIBRARY: Record<ColourKey, ColourMeaning> = {
       "I choose steady progress over unnecessary rush.",
       "I create space to grow with clarity and calm.",
     ],
+    positiveTraits: [
+      "🌲 You recover from hard periods without needing drama to do it.",
+      "🌿 Growth, for you, is steady rather than sudden or forced.",
+      "🍃 You're genuinely restored by time spent in quiet or nature.",
+      "🌱 You give yourself permission to grow at your own pace.",
+      "🪴 Your groundedness helps other people feel steadier too.",
+    ],
+    negativeTraits: [
+      "🌫️ Slow recovery can be mistaken by others for disengagement.",
+      "🍂 You may avoid necessary change to protect your stability.",
+      "🌾 Patience with yourself can tip into avoiding real urgency.",
+      "🪨 Staying grounded can sometimes mean staying too long.",
+      "🌙 Quiet processing can look like withdrawal from the outside.",
+    ],
   },
   ocean: {
     key: "ocean",
@@ -224,6 +281,20 @@ export const COLOUR_LIBRARY: Record<ColourKey, ColourMeaning> = {
     affirmations: [
       "I think clearly and speak with calm honesty.",
       "I create quiet space for my mind to settle.",
+    ],
+    positiveTraits: [
+      "🌊 Intuition guides you to make insightful decisions.",
+      "💧 Adaptability helps you flow gracefully through life's changes.",
+      "🦋 Emotional depth enriches your connections with others.",
+      "🌌 Imagination fuels your creativity and vision.",
+      "🧘 Calmness allows you to navigate stress with ease.",
+    ],
+    negativeTraits: [
+      "🌫️ Emotional fluctuation can cloud your judgment at times.",
+      "🕳️ Tendency to withdraw may limit your engagement with others.",
+      "🌧️ Sensitivity can make you vulnerable to external negativity.",
+      "🌊 Over-absorption of others' emotions may drain your energy.",
+      "🦑 Ambiguity in direction can lead to feeling lost or unfocused.",
     ],
   },
 };
@@ -472,6 +543,402 @@ export function pickPhrasing(seed: string, options: string[]): string {
 export function colourKeyFromSeed(seed: string): ColourKey {
   return COLOUR_ORDER[seededHash(seed) % COLOUR_ORDER.length];
 }
+
+// --- Onboarding/Core Personality numerology --------------------------------
+// A birthdate feeds three classic numerology-style numbers, each mapped to
+// its own trait library below. Like everything else derived from a
+// birthdate in this file, the maths is deterministic (same date, same
+// numbers every time) and stands in for what a real model would compute.
+
+function digitalRoot(n: number): number {
+  let value = Math.abs(Math.trunc(n));
+  while (value > 9) {
+    value = String(value)
+      .split("")
+      .reduce((sum, d) => sum + Number(d), 0);
+  }
+  return value === 0 ? 9 : value;
+}
+
+// Reduces the day of birth alone — e.g. the 23rd becomes 2+3 = 5.
+export function birthdayNumber(birthdate: string): number {
+  const day = Number(birthdate.slice(8, 10));
+  return digitalRoot(day);
+}
+
+// Reduces every digit of the full YYYY-MM-DD date.
+export function lifePathNumber(birthdate: string): number {
+  const digits = birthdate.replace(/-/g, "").split("").map(Number);
+  return digitalRoot(digits.reduce((sum, d) => sum + d, 0));
+}
+
+// Month + day, kept unreduced ("raw") alongside its single-digit reduction —
+// shown in the UI as "26 → 8" to make the derivation visible.
+export function talentNumber(birthdate: string): { raw: number; reduced: number } {
+  const month = Number(birthdate.slice(5, 7));
+  const day = Number(birthdate.slice(8, 10));
+  const raw = month + day;
+  return { raw, reduced: digitalRoot(raw) };
+}
+
+// Five 0-100 "how in tune are you with this colour" scores for the Colour
+// Breakdown chart, seeded from the birthdate. The colour colourKeyFromSeed
+// already picks as this person's supportive colour is always the highest,
+// so the two features never contradict each other.
+export function colourAffinityScores(birthdate: string): Record<ColourKey, number> {
+  const dominant = colourKeyFromSeed(birthdate);
+  const scores = {} as Record<ColourKey, number>;
+  COLOUR_ORDER.forEach((key) => {
+    if (key === dominant) {
+      scores[key] = 88 + (seededHash(`${birthdate}:${key}:dominant`) % 10); // 88-97
+    } else {
+      scores[key] = 34 + (seededHash(`${birthdate}:${key}:affinity`) % 47); // 34-80
+    }
+  });
+  return scores;
+}
+
+export const BIRTHDAY_NUMBER_TRAITS: Record<number, { light: FiveTraits; dark: FiveTraits }> = {
+  1: {
+    light: [
+      "🔥 You lead with confidence and aren't afraid to go first.",
+      "🎯 Your focus and drive turn ideas into real progress.",
+      "🧭 You trust your own judgement, even when the path is unclear.",
+      "🌱 You inspire others simply by taking initiative.",
+      "⚡ Your independence gives you the courage to start over when needed.",
+    ],
+    dark: [
+      "🦁 A strong need to lead can tip into impatience with others' pace.",
+      "🧱 Independence can shade into difficulty asking for help.",
+      "🎭 You may dismiss input that challenges your own view.",
+      "🔥 Impatience can flare when things move slower than you'd like.",
+      "🏔️ A drive to be first can leave you isolated at the top.",
+    ],
+  },
+  2: {
+    light: [
+      "🤝 You build trust quickly through genuine warmth and tact.",
+      "🕊️ You sense what others need before they say it.",
+      "🎨 Your patience helps fragile situations come together gently.",
+      "💞 You create harmony in groups that might otherwise drift apart.",
+      "🌙 Your intuition often catches what logic alone would miss.",
+    ],
+    dark: [
+      "🌊 A wish to keep the peace can mean swallowing your own needs.",
+      "🪞 You may second-guess decisions long after they're made.",
+      "🫥 Sensitivity to conflict can push you to avoid it altogether.",
+      "🎈 You can lean too heavily on others for reassurance.",
+      "🧵 Over-accommodating can leave your own voice thin.",
+    ],
+  },
+  3: {
+    light: [
+      "🎨 Your imagination turns ordinary moments into something vivid.",
+      "🗣️ You express feelings and ideas with natural charm.",
+      "🎉 You bring lightness and joy into rooms you enter.",
+      "✨ You see creative possibilities others miss entirely.",
+      "📖 Your optimism helps you recover quickly from setbacks.",
+    ],
+    dark: [
+      "🎈 Enthusiasm can scatter into a dozen unfinished ideas.",
+      "🎭 You may perform a mood rather than sit with it honestly.",
+      "🌪️ Restless energy can make follow-through hard to sustain.",
+      "🪁 A need for attention can crowd out quieter listening.",
+      "🍃 Depth can get traded for the next exciting distraction.",
+    ],
+  },
+  4: {
+    light: [
+      "🧱 You build things that last through patient, steady effort.",
+      "📐 Your discipline turns big goals into manageable steps.",
+      "🛠️ You're the person others rely on to actually finish.",
+      "🗂️ You bring order to chaos without losing your calm.",
+      "🌳 Your reliability makes you a foundation for those around you.",
+    ],
+    dark: [
+      "🔒 A love of structure can turn into resistance to any change.",
+      "🧊 You may hold so tightly to a plan that you miss a better one.",
+      "🪨 Stubbornness can make compromise feel like defeat.",
+      "⚙️ Overwork can quietly become your default setting.",
+      "🚧 Rules can matter more to you than the people they're meant to serve.",
+    ],
+  },
+  5: {
+    light: [
+      "🌍 You thrive on variety and seek out new horizons wherever you go.",
+      "🦋 Change excites you, and you adapt quickly to shifting circumstances.",
+      "🚀 Your adventurous spirit inspires others to break free from routine.",
+      "🎒 You are a natural explorer, always eager to learn and experience more.",
+      "💡 Your curiosity leads you to discover unique solutions and fresh ideas.",
+    ],
+    dark: [
+      "🌪️ Restlessness can make it hard for you to commit or settle down.",
+      "🧩 You may scatter your energy, leaving projects unfinished.",
+      "🎭 A craving for excitement can lead to impulsive or risky choices.",
+      "🕳️ You might avoid routine responsibilities, seeking escape instead.",
+      "🌫️ Inconsistency can make it difficult for others to rely on you.",
+    ],
+  },
+  6: {
+    light: [
+      "🏡 You create a sense of home wherever you are.",
+      "💗 You care for others with real, unglamorous consistency.",
+      "🌸 Your presence brings comfort to people under stress.",
+      "🤲 You take responsibility seriously and follow through on it.",
+      "🎼 You have a natural sense for restoring balance in a room.",
+    ],
+    dark: [
+      "🪢 Caring for everyone else can leave your own needs last.",
+      "🧶 You may take on responsibilities nobody actually asked you to carry.",
+      "🕯️ Self-sacrifice can quietly slide into resentment.",
+      "🗝️ A wish to fix things can tip into controlling how others live.",
+      "🪞 You can measure your worth by how needed you are.",
+    ],
+  },
+  7: {
+    light: [
+      "🔭 You think deeply and rarely accept things at face value.",
+      "🌌 Solitude recharges you rather than draining you.",
+      "📚 Your analysis uncovers patterns others walk straight past.",
+      "🕯️ You bring a quiet, grounded wisdom to hard questions.",
+      "🧘 You trust process over shortcuts, and it usually pays off.",
+    ],
+    dark: [
+      "🏝️ A need for solitude can drift into real isolation.",
+      "🌫️ Overthinking can stall decisions that just need to be made.",
+      "🧊 Skepticism can come across as distance or coldness.",
+      "🕳️ You may retreat rather than say what's actually bothering you.",
+      "🔍 Analysis can become a way of avoiding a feeling entirely.",
+    ],
+  },
+  8: {
+    light: [
+      "🏛️ You think in terms of long-term impact, not quick wins.",
+      "📊 You manage resources and responsibility with real competence.",
+      "🎯 Your ambition is backed by genuine follow-through.",
+      "🧱 You build systems and structures that outlast you.",
+      "🤝 People trust you with authority because you use it well.",
+    ],
+    dark: [
+      "⚖️ Ambition can tip into measuring life mostly by results.",
+      "🪤 You may feel weighed down by expectations you set for yourself.",
+      "🧰 Control can become a substitute for trust in others.",
+      "💼 Work can quietly consume time meant for rest or people.",
+      "🏔️ Status can start to matter more than the reason you wanted it.",
+    ],
+  },
+  9: {
+    light: [
+      "🌏 You see the bigger picture and care about it genuinely.",
+      "💝 Generosity comes naturally to you, without keeping score.",
+      "🎇 You inspire people toward something larger than themselves.",
+      "🕊️ You forgive easily and rarely hold onto grudges.",
+      "🌈 Your idealism gives others permission to hope, too.",
+    ],
+    dark: [
+      "🫧 Giving without limits can leave you quietly depleted.",
+      "🌪️ Letting go of people or plans can be harder than it should be.",
+      "🎭 Idealism can curdle into disappointment when reality falls short.",
+      "🧳 You may carry others' burdens well past your own capacity.",
+      "🌫️ A wish to help everyone can mean helping no one well.",
+    ],
+  },
+};
+
+export const LIFE_PATH_CAREERS: Record<number, FiveTraits> = {
+  1: [
+    "🚀 You thrive founding or leading something entirely your own.",
+    "🎯 Roles that reward independent decision-making suit you well.",
+    "🏗️ You're built for pioneering new products, teams or markets.",
+    "🧭 Leadership positions let your natural initiative do its work.",
+    "⚡ Fast-moving, high-autonomy environments bring out your best.",
+  ],
+  2: [
+    "🤝 Mediation, HR and counselling roles fit your natural diplomacy.",
+    "🎨 Collaborative creative work lets your sensitivity become an asset.",
+    "🕊️ You do well in partnership-based roles — co-founding, coaching, pairing.",
+    "📋 Coordination and support roles benefit from your attentiveness.",
+    "💬 Client-facing work rewards your gift for making people feel heard.",
+  ],
+  3: [
+    "🎭 Performance, writing and design careers suit your expressive nature.",
+    "📣 Marketing and communications let your creativity reach an audience.",
+    "🎨 You thrive in roles where original ideas are the actual product.",
+    "🎤 Teaching, hosting or public speaking play to your natural charisma.",
+    "🖌️ Any career built around storytelling will hold your interest.",
+  ],
+  4: [
+    "📐 Engineering, architecture and planning suit your systematic mind.",
+    "🧮 Accounting, operations and logistics reward your attention to detail.",
+    "🛠️ Project management lets your discipline turn plans into results.",
+    "🏛️ Roles with clear structure and process fit you naturally.",
+    "📊 You do well anywhere reliability and precision are the point.",
+  ],
+  5: [
+    "🌍 Travel, sales and business development suit your adaptable energy.",
+    "📈 Marketing roles that shift constantly keep you genuinely engaged.",
+    "🎪 Event work and hospitality reward your comfort with variety.",
+    "🧳 Careers with built-in movement or travel play to your strengths.",
+    "🔀 Fast-changing industries suit you better than stable, slow ones.",
+  ],
+  6: [
+    "🏡 Teaching, healthcare and counselling suit your caring instincts.",
+    "🌸 Community and non-profit work rewards your sense of responsibility.",
+    "👨‍👩‍👧 Family-oriented businesses or services fit your nurturing style.",
+    "🎼 Roles focused on harmony — HR, mediation, hospitality — suit you.",
+    "🩺 You thrive wherever looking after people is the actual job.",
+  ],
+  7: [
+    "🔬 Research, analysis and data-driven roles reward your depth.",
+    "📚 Academia and writing suit your need to think things through fully.",
+    "🧘 Spiritual, therapeutic or advisory work fits your introspective nature.",
+    "🕵️ Investigative or technical roles reward your pattern-finding mind.",
+    "🔭 You do well in specialist roles that reward sustained focus.",
+  ],
+  8: [
+    "🏢 You excel in leadership roles that require strategic vision and authority.",
+    "💼 Business, finance, and management are natural arenas for your ambition.",
+    "🏆 You thrive in competitive environments where results and recognition matter.",
+    "📈 Your practical mindset suits careers in entrepreneurship and resource management.",
+    "🤝 You are effective in roles that involve negotiation, influence, and building networks.",
+  ],
+  9: [
+    "🌏 Non-profit and humanitarian work suit your genuine idealism.",
+    "🎨 Careers in the arts let your compassion shape something larger.",
+    "🕊️ Counselling and advocacy roles reward your empathy at scale.",
+    "🌱 Environmental or social-impact work fits your bigger-picture instincts.",
+    "📖 Teaching or mentoring lets your wisdom reach beyond yourself.",
+  ],
+};
+
+export const TALENT_NUMBER_TRAITS: Record<number, { abilities: FiveTraits; weaknesses: [string, string, string] }> = {
+  1: {
+    abilities: [
+      "🚀 You can turn a raw idea into a moving project almost on your own.",
+      "🎯 Decisive action under pressure comes naturally to you.",
+      "🧭 You find your own direction rather than waiting to be told.",
+      "🔥 You bring energy that gets stalled efforts moving again.",
+      "🏆 Independent problem-solving is a genuine strength.",
+    ],
+    weaknesses: [
+      "🪨 You may struggle to hand off control, even when you should.",
+      "⏳ Patience with slower collaborators can wear thin fast.",
+      "🧱 Asking for help can feel harder than it needs to be.",
+    ],
+  },
+  2: {
+    abilities: [
+      "🤝 You build strong partnerships and foster lasting trust with others.",
+      "🕊️ You defuse tension before it becomes a real conflict.",
+      "🎨 Your sensitivity helps you read a room accurately.",
+      "💞 You make collaborators feel genuinely safe to contribute.",
+      "🌙 Your intuition often flags problems before they surface.",
+    ],
+    weaknesses: [
+      "🌊 Keeping the peace can mean your own opinion goes unspoken.",
+      "🪞 You may replay decisions long after they're settled.",
+      "🫥 Conflict-avoidance can let real issues quietly fester.",
+    ],
+  },
+  3: {
+    abilities: [
+      "🎨 You communicate ideas in ways that genuinely land with people.",
+      "🗣️ You lift the energy of any group you're part of.",
+      "✨ You generate more creative options than most people consider.",
+      "🎉 You recover from setbacks faster than most.",
+      "📖 You make complex things feel approachable and fun.",
+    ],
+    weaknesses: [
+      "🎈 Follow-through can lag behind your enthusiasm.",
+      "🪁 Attention can scatter across too many ideas at once.",
+      "🌪️ Consistency is harder for you than starting something new.",
+    ],
+  },
+  4: {
+    abilities: [
+      "🧱 You excel at creating stable foundations for long-term growth.",
+      "📐 You turn ambitious goals into concrete, doable steps.",
+      "🛠️ You catch details that others miss under time pressure.",
+      "🗂️ You bring calm, reliable order to messy situations.",
+      "🌳 People trust you to actually finish what you start.",
+    ],
+    weaknesses: [
+      "🔒 Sudden change can throw off your whole rhythm.",
+      "🧊 You may resist a better plan just because it's not yours.",
+      "⚙️ Overworking quietly becomes your default response to stress.",
+    ],
+  },
+  5: {
+    abilities: [
+      "🌍 You adapt to new environments faster than almost anyone.",
+      "🦋 You stay resourceful when plans change at the last minute.",
+      "🚀 Your energy makes routine tasks feel less like a grind.",
+      "🎒 You pick up new skills quickly out of genuine curiosity.",
+      "💡 You find workarounds that more rigid thinkers miss.",
+    ],
+    weaknesses: [
+      "🌪️ Sticking with one thing long enough to finish it is hard.",
+      "🧩 Your attention can fragment across too many directions.",
+      "🕳️ Routine responsibilities are easy for you to quietly avoid.",
+    ],
+  },
+  6: {
+    abilities: [
+      "🏡 You create genuine stability for the people around you.",
+      "💗 You notice what people need before they ask.",
+      "🌸 You calm tense situations just by being present.",
+      "🤲 You follow through on commitments others have forgotten.",
+      "🎼 You restore balance to groups that have drifted off course.",
+    ],
+    weaknesses: [
+      "🪢 Your own needs tend to come last on the list.",
+      "🧶 You take on more responsibility than anyone actually asked for.",
+      "🕯️ Unspoken self-sacrifice can build into quiet resentment.",
+    ],
+  },
+  7: {
+    abilities: [
+      "🔭 You find the pattern underneath a confusing problem.",
+      "🌌 You do your best thinking away from noise and crowds.",
+      "📚 You research a subject more thoroughly than most people bother to.",
+      "🕯️ You bring calm, considered judgement to high-pressure moments.",
+      "🧘 You trust a slow process even when others want a shortcut.",
+    ],
+    weaknesses: [
+      "🏝️ Solitude can tip into real disconnection from others.",
+      "🌫️ Overanalysis can delay decisions that need to be made.",
+      "🧊 Reserve can be mistaken for indifference by people around you.",
+    ],
+  },
+  8: {
+    abilities: [
+      "🤝 You build strong partnerships and foster lasting trust with others.",
+      "💎 Your sense for value helps you manage resources with care and foresight.",
+      "🧭 You navigate complex relationships with emotional intelligence and tact.",
+      "🏗️ You excel at creating stable foundations for long-term growth and security.",
+      "🛡️ Your loyalty and responsibility make you a reliable steward in business and family matters.",
+    ],
+    weaknesses: [
+      "🪤 You may feel weighed down by others' expectations or financial pressures.",
+      "🧱 Overcommitting to relationships can blur your boundaries and drain your energy.",
+      "⚖️ Measuring your worth by results can leave quieter wins unnoticed.",
+    ],
+  },
+  9: {
+    abilities: [
+      "🌏 You keep sight of the bigger picture when others get lost in detail.",
+      "💝 You give generously without expecting anything back.",
+      "🎇 You rally people around a cause bigger than any one person.",
+      "🕊️ You let go of grudges faster than most, freeing up real energy.",
+      "🌈 You make people feel hope is a reasonable thing to have.",
+    ],
+    weaknesses: [
+      "🫧 Giving without limits can leave you quietly running on empty.",
+      "🌪️ Letting go of a plan or a person can take far longer than it should.",
+      "🧳 You can end up carrying weight that was never really yours.",
+    ],
+  },
+};
 
 // Connects a person's Core Personality archetype to their currently
 // recommended colour, for the "colour affinity" breakdown shown on the Core
