@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { COLOUR_LIBRARY, COLOUR_ORDER, colourAffinityScores, colourKeyFromSeed } from "@/lib/blueprints";
+import { COLOUR_LIBRARY, COLOUR_ORDER } from "@/lib/blueprints";
 import type { ColourKey } from "@/lib/types";
 import Card from "@/components/ui/Card";
 import Chip from "@/components/ui/Chip";
@@ -23,15 +23,20 @@ function ringPoints(radius: number) {
 
 /**
  * "Colour Breakdown" — a five-axis chart showing how in tune the member is
- * with each of Gio's five supportive colours, derived from their birthdate
- * (see lib/blueprints.ts#colourAffinityScores). The colour already
- * recommended as their Colour of the Day is always the highest point, so
- * this never contradicts the rest of the app. Tapping a colour shows its
- * Positive/Negative traits below.
+ * with each of Gio's five supportive colours, driven by the real per-user
+ * scores generated on CorePersonality (gio-backend's
+ * calculate_colour_weights — see docs/behaviour_log_0004.md), not a client-
+ * side computation. The highest-scoring colour is the dominant point.
+ * Tapping a colour shows its Positive/Negative traits below.
  */
-export default function ColourBreakdown({ birthdate }: { birthdate: string }) {
-  const scores = colourAffinityScores(birthdate);
-  const dominant = colourKeyFromSeed(birthdate);
+export default function ColourBreakdown({
+  scores,
+  maxScore = 30,
+}: {
+  scores: Record<ColourKey, number>;
+  maxScore?: number;
+}) {
+  const dominant = COLOUR_ORDER.reduce((best, key) => (scores[key] > scores[best] ? key : best), COLOUR_ORDER[0]);
   const [selected, setSelected] = useState<ColourKey>(dominant);
   const selectedColour = COLOUR_LIBRARY[selected];
 
@@ -59,7 +64,7 @@ export default function ColourBreakdown({ birthdate }: { birthdate: string }) {
 
           <polygon
             points={COLOUR_ORDER.map((key, i) => {
-              const p = pointAt(i, (scores[key] / 100) * MAX_RADIUS);
+              const p = pointAt(i, (scores[key] / maxScore) * MAX_RADIUS);
               return `${p.x.toFixed(2)},${p.y.toFixed(2)}`;
             }).join(" ")}
             fill="var(--color-primary)"
@@ -70,7 +75,7 @@ export default function ColourBreakdown({ birthdate }: { birthdate: string }) {
 
           {COLOUR_ORDER.map((key, i) => {
             const colour = COLOUR_LIBRARY[key];
-            const p = pointAt(i, (scores[key] / 100) * MAX_RADIUS);
+            const p = pointAt(i, (scores[key] / maxScore) * MAX_RADIUS);
             const isDominant = key === dominant;
             const labelPoint = pointAt(i, MAX_RADIUS + 22);
             const anchor = Math.abs(labelPoint.x - CENTRE) < 4 ? "middle" : labelPoint.x > CENTRE ? "start" : "end";
@@ -94,7 +99,7 @@ export default function ColourBreakdown({ birthdate }: { birthdate: string }) {
           })}
         </svg>
         <Chip tone="gold">
-          {selectedColour.key === dominant ? "🌟" : "✨"} Colour of the Day — {COLOUR_LIBRARY[dominant].name}
+          {selectedColour.key === dominant ? "🌟" : "✨"} Your dominant colour — {COLOUR_LIBRARY[dominant].name}
         </Chip>
       </Card>
 

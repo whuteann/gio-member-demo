@@ -6,12 +6,15 @@ import AuthLayout from "@/components/layout/AuthLayout";
 import TextField from "@/components/ui/TextField";
 import Button from "@/components/ui/Button";
 import LanguageSlider from "@/components/ui/LanguageSlider";
-import { useAppState } from "@/context/AppStateContext";
+import { useAppDispatch } from "@/store/hooks";
+import { setCredentials } from "@/store/authSlice";
+import { getMe, register as apiRegister } from "@/lib/api/auth";
+import { ApiError } from "@/lib/api/client";
 import type { Language } from "@/lib/types";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { register } = useAppState();
+  const dispatch = useAppDispatch();
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,7 +23,7 @@ export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  function onSubmit(e: FormEvent) {
+  async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
     if (password.length < 6) {
@@ -32,13 +35,16 @@ export default function RegisterPage() {
       return;
     }
     setSubmitting(true);
-    const result = register({ email, password, displayName, language });
-    setSubmitting(false);
-    if (!result.ok) {
-      setError(result.error);
-      return;
+    try {
+      const { access_token, refresh_token } = await apiRegister({ email, password, display_name: displayName, language });
+      const me = await getMe(access_token);
+      dispatch(setCredentials({ token: access_token, refreshToken: refresh_token, user: me.user, subscription: me.subscription }));
+      router.push("/onboarding");
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
-    router.push("/onboarding");
   }
 
   return (

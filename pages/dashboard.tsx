@@ -1,10 +1,8 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useState } from "react";
-import { useAppState, useCurrentPersonality } from "@/context/AppStateContext";
-import { useAppGuard } from "@/lib/useAppGuard";
-import { localDateString } from "@/lib/gamification";
-import { innerReadingGate } from "@/lib/entitlement";
+import { useAuthGuard } from "@/lib/useAuthGuard";
+import { useApiResource } from "@/lib/useApiResource";
 import AppShell from "@/components/layout/AppShell";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
@@ -14,71 +12,144 @@ import FallingLeaves from "@/components/ui/FallingLeaves";
 import StreakFlame from "@/components/ui/StreakFlame";
 import GardenIllustration from "@/components/ui/GardenIllustration";
 import ProductCard from "@/components/ui/ProductCard";
-import { ARCHETYPES, COLOUR_LIBRARY, DIMENSIONS } from "@/lib/blueprints";
-import { colourKeyForFocus } from "@/lib/recommendation";
+import TrendChart from "@/components/ui/TrendChart";
+import { COLOUR_LIBRARY, DIMENSIONS } from "@/lib/blueprints";
+import { localized, topColourKey } from "@/lib/corePersonalityDisplay";
+import { localizedSnapshot } from "@/lib/snapshotDisplay";
+import type { ColourKey, Language } from "@/lib/types";
+import { INNER_READING_WEEKLY_FREE_LIMIT, isPremiumActive, readingsUsedThisWeek } from "@/lib/api/entitlement";
+import { getLatestSnapshot, getTrend, listCheckIns, listInnerReadings } from "@/lib/api/reflections";
+import { getLatestRecommendation } from "@/lib/api/recommendations";
+import { getCurrentCorePersonality } from "@/lib/api/corePersonality";
+import { getProgress } from "@/lib/api/progress";
+import { createJournalEntry } from "@/lib/api/journal";
+import { ApiError } from "@/lib/api/client";
+import type {
+  CorePersonalityResultOut,
+  InnerReadingOut,
+  InnerStateSnapshotOut,
+  ProgressOut,
+  RecommendationOut,
+  TrendOut,
+} from "@/lib/api/types";
 
 const DATE_BADGE_TONES = ["bg-secondary/20 text-primary", "bg-accent/15 text-accent", "bg-gold/15 text-gold-foreground"];
 
+interface DashboardData {
+  snapshot: InnerStateSnapshotOut | null;
+  readings: InnerReadingOut[];
+  checkedInToday: boolean;
+  recommendation: RecommendationOut | null;
+  personality: CorePersonalityResultOut | null;
+  progress: ProgressOut;
+  trend: TrendOut;
+}
+
 export default function DashboardPage() {
-  const { settled, data } = useAppGuard();
-  const { isPremiumActive, xpTotal, addJournalEntry } = useAppState();
-  const personality = useCurrentPersonality();
+  const { settled, token, user, subscription } = useAuthGuard();
   const [journalDraft, setJournalDraft] = useState("");
   const [justSaved, setJustSaved] = useState(false);
+  const [trendPeriod, setTrendPeriod] = useState<"weekly" | "monthly">("weekly");
 
-  if (!settled || !data) return null;
+  const premium = subscription ? isPremiumActive(subscription) : false;
+  const effectiveTrendPeriod = premium ? trendPeriod : "weekly";
 
-  const today = localDateString();
-  const checkedInToday = data.checkIns.some((c) => c.completedAt?.startsWith(today));
-  const latestState = data.stateSnapshots[data.stateSnapshots.length - 1] ?? null;
-  const previousState = data.stateSnapshots[data.stateSnapshots.length - 2] ?? null;
-  // Today's "Color of the Day" — shared by the falling-leaves backdrop and
-  // the inner-state card's tree badge, so the two always agree. "Sustaining
-  // balance" (gold) is the same default the rest of the app falls back to
-  // when there's no check-in or reading yet.
-  const currentColourKey = latestState ? colourKeyForFocus(latestState.currentFocus) : "gold";
-  const latestReading = data.innerReadings[data.innerReadings.length - 1] ?? null;
-  const latestRecommendation = data.recommendations[data.recommendations.length - 1] ?? null;
-  const recentReadings = [...data.innerReadings]
-    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-    .slice(0, 3);
-  const gate = innerReadingGate(data.subscription);
-  const questsToday = data.quests.filter((q) => q.date === today).map((q) => q.quest);
+  const { data, loading, error } = useApiResource<DashboardData>(
+    token
+      ? async () => {
+          const today = new Date().toISOString().slice(0, 10);
+          const [snapshot, readings, checkIns, recommendation, personality, progress, trend] = await Promise.all([
+            getLatestSnapshot(token).catch((e) => (e instanceof ApiError && e.status === 404 ? null : Promise.reject(e))),
+            listInnerReadings(token),
+            listCheckIns(token),
+            getLatestRecommendation(token).catch((e) => (e instanceof ApiError && e.status === 404 ? null : Promise.reject(e))),
+            getCurrentCorePersonality(token).catch((e) => (e instanceof ApiError && e.status === 404 ? null : Promise.reject(e))),
+            getProgress(token),
+            getTrend(token, effectiveTrendPeriod),
+          ]);
+          return {
+            snapshot,
+            readings,
+            checkedInToday: checkIns.some((c) => c.completed_at?.startsWith(today)),
+            recommendation,
+            personality,
+            progress,
+            trend,
+          };
+        }
+      : null,
+    [token, effectiveTrendPeriod]
+  );
+
+  if (!settled || !token) return null;
+  if (loading) {
+    return (
+      <AppShell title={user ? `Hi, ${user.display_name.split(" ")[0]}` : undefined}>
+        <p className="text-sm text-foreground-muted">Loading your dashboard…</p>
+      </AppShell>
+    );
+  }
+  // Checked before `!data`: a failed fetch also leaves data null forever,
+  // and that combination used to fall through to the "Loading" branch
+  // above instead of ever showing the error — looked identical to a stuck
+  // spinner from the outside.
+  if (error) {
+    return (
+      <AppShell title="Dashboard">
+        <p className="text-sm text-danger">{error}</p>
+      </AppShell>
+    );
+  }
+  if (!data) return null;
+
+  const { snapshot, readings, checkedInToday, recommendation, personality, progress } = data;
+  const latestReading = readings[0] ?? null;
+  const recentReadings = readings.slice(0, 3);
+  const currentColourKey = (recommendation?.colour_key as ColourKey | undefined) ?? "gold";
+  const recommendedColour = COLOUR_LIBRARY[currentColourKey];
+  const personalityLanguage: Language = (personality?.primary_language as Language) ?? "en";
+  const userLanguage: Language = (user?.preferred_language as Language) ?? "en";
+  const atWeeklyLimit = !premium && readingsUsedThisWeek(readings) >= INNER_READING_WEEKLY_FREE_LIMIT;
+  const trendPoints = data.trend.points.map((p) => ({ date: p.date, label: p.label }));
+  const trendSeries = {
+    emotional_energy: data.trend.points.map((p) => p.emotional_energy),
+    mental_clarity: data.trend.points.map((p) => p.mental_clarity),
+    inner_pressure: data.trend.points.map((p) => p.inner_pressure),
+    grounding: data.trend.points.map((p) => p.grounding),
+  };
+
+  function dimValueOf(state: InnerStateSnapshotOut, key: string) {
+    if (key === "emotional_energy") return state.emotional_energy;
+    if (key === "mental_clarity") return state.mental_clarity;
+    if (key === "inner_pressure") return state.inner_pressure;
+    return state.grounding;
+  }
+
+  async function saveJournalDraft() {
+    if (!token || !journalDraft.trim()) return;
+    await createJournalEntry(token, journalDraft.trim());
+    setJournalDraft("");
+    setJustSaved(true);
+    setTimeout(() => setJustSaved(false), 2000);
+  }
 
   return (
     <>
       <Head><title>Dashboard — Gio</title></Head>
       <FallingLeaves colourKey={currentColourKey} />
-      <AppShell title={`Hi, ${data.user.displayName.split(" ")[0]}`}>
+      <AppShell title={`Hi, ${user?.display_name.split(" ")[0] ?? ""}`}>
         <div className="grid gap-5 lg:grid-cols-3">
           <Card className="lg:col-span-2">
             <div className="flex items-center justify-between">
               <h2 className="font-display text-lg font-semibold text-foreground">Your inner state</h2>
-              {latestState ? <Chip tone="primary">{latestState.currentFocus}</Chip> : null}
+              {snapshot ? (
+                <Chip tone="primary">{localizedSnapshot(snapshot, "current_focus", userLanguage) ?? "Sustaining balance"}</Chip>
+              ) : null}
             </div>
-            {latestState ? (
+            {snapshot ? (
               <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-5">
                 {(() => {
-                  const dimValueOf = (state: NonNullable<typeof latestState>, dim: (typeof DIMENSIONS)[number]) =>
-                    dim.key === "emotional_energy"
-                      ? state.emotionalEnergy
-                      : dim.key === "mental_clarity"
-                        ? state.mentalClarity
-                        : dim.key === "inner_pressure"
-                          ? state.innerPressure
-                          : state.grounding;
-                  const dimValue = (dim: (typeof DIMENSIONS)[number]) => dimValueOf(latestState, dim);
-                  // How much each dimension moved since the previous check-in
-                  // or reading, shown next to the number. null (not 0) means
-                  // "no previous entry to compare against" — that's the only
-                  // case that hides the indicator entirely.
-                  const dimDelta = (dim: (typeof DIMENSIONS)[number]) =>
-                    previousState ? dimValue(dim) - dimValueOf(previousState, dim) : null;
-                  // Force a break after the first word for two-word labels
-                  // ("Mental Clarity" → "Mental" / "Clarity") instead of
-                  // leaving it to wrap on its own — at this column width it
-                  // would otherwise fit on one line while its neighbours
-                  // don't, so every label reads as two lines the same way.
+                  const dimValue = (dim: (typeof DIMENSIONS)[number]) => dimValueOf(snapshot, dim.key);
                   const stackedLabel = (label: string) => {
                     const [first, ...rest] = label.split(" ");
                     if (rest.length === 0) return label;
@@ -92,48 +163,19 @@ export default function DashboardPage() {
                   };
                   const stat = (dim: (typeof DIMENSIONS)[number]) => (
                     <div key={dim.key} className="min-w-0">
-                      {/* min-h still reserves two lines for "Grounding",
-                          the one label with no second word to break onto. */}
                       <p className="flex items-start gap-1.5 text-[10px] font-semibold leading-snug text-foreground-muted min-h-[27.5px]">
-                        <span
-                          className="mt-0.5 inline-block h-2 w-2 shrink-0 rounded-full"
-                          style={{ background: dim.color }}
-                        />
+                        <span className="mt-0.5 inline-block h-2 w-2 shrink-0 rounded-full" style={{ background: dim.color }} />
                         <span>{stackedLabel(dim.label)}</span>
                       </p>
                       <p className="flex items-baseline gap-1.5 font-display text-xl font-semibold text-foreground">
                         <span>{dimValue(dim)}</span>
-                        {(() => {
-                          const delta = dimDelta(dim);
-                          if (delta === null) return null;
-                          const isUp = delta >= 0;
-                          return (
-                            <span
-                              className={`font-sans text-[11px] font-semibold tracking-tight ${
-                                isUp ? "text-success" : "text-danger"
-                              }`}
-                            >
-                              ({isUp ? "+" : ""}{delta})
-                            </span>
-                          );
-                        })()}
                       </p>
                     </div>
                   );
-                  // Mirrors the previous 2x2 grid's columns: energy/pressure on
-                  // the left, clarity/grounding on the right, now flanking the
-                  // orb instead of sitting to its side.
                   const left = [DIMENSIONS[0], DIMENSIONS[2]];
                   const right = [DIMENSIONS[1], DIMENSIONS[3]];
-                  const recommendedColour = COLOUR_LIBRARY[currentColourKey];
                   return (
                     <>
-                      {/* min-w-0 on both columns keeps the 1fr/1fr grid tracks
-                          genuinely equal — without it, a CSS grid track's
-                          default min-width is its content's natural size, so
-                          two 1fr columns with differently-sized content can
-                          silently end up unequal widths instead of staying
-                          symmetric. */}
                       <div className="flex min-w-0 flex-col gap-4">{left.map(stat)}</div>
                       <ColourOfTheDay colourKey={recommendedColour.key} swatch={recommendedColour.swatch} size={92} />
                       <div className="flex min-w-0 flex-col items-end gap-4 text-right">{right.map(stat)}</div>
@@ -146,17 +188,16 @@ export default function DashboardPage() {
                 Complete a check-in or Inner Reading to see your first snapshot.
               </p>
             )}
-            <p className="mt-4 text-sm text-foreground-muted">{latestState?.summary}</p>
+            {snapshot ? (
+              <p className="mt-4 text-sm text-foreground-muted">{localizedSnapshot(snapshot, "insight", userLanguage)}</p>
+            ) : null}
           </Card>
 
           <Card className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
               <h2 className="font-display text-lg font-semibold text-foreground">Latest Insight</h2>
               {latestReading ? (
-                <Link
-                  href={`/inner-reading/${latestReading.id}/result`}
-                  className="text-sm font-semibold text-primary"
-                >
+                <Link href={`/inner-reading/${latestReading.id}/result`} className="text-sm font-semibold text-primary">
                   View Full Reading
                 </Link>
               ) : null}
@@ -165,12 +206,12 @@ export default function DashboardPage() {
               <>
                 <p className="text-2xl leading-none text-accent">&ldquo;</p>
                 <p className="-mt-3 text-sm font-medium text-foreground">{latestReading.insight}</p>
-                {latestReading.reflectionQuestion ? (
+                {latestReading.reflection_question ? (
                   <div className="mt-1 flex flex-col gap-1 border-t border-border pt-3">
                     <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
                       💡 Reflection Question
                     </p>
-                    <p className="text-sm text-foreground-muted">{latestReading.reflectionQuestion}</p>
+                    <p className="text-sm text-foreground-muted">{latestReading.reflection_question}</p>
                   </div>
                 ) : null}
               </>
@@ -188,7 +229,7 @@ export default function DashboardPage() {
               {checkedInToday ? <Chip tone="success">Done</Chip> : <Chip tone="neutral">Pending</Chip>}
             </div>
             {!checkedInToday ? (
-              <Link href="/check-in">
+              <Link href="/check-in/session">
                 <Button fullWidth>Check in now</Button>
               </Link>
             ) : (
@@ -212,8 +253,8 @@ export default function DashboardPage() {
                 {latestReading ? "View latest reading" : "Start free reading"}
               </Button>
             </Link>
-            {gate === "MEMBERSHIP_GATE" ? (
-              <p className="text-xs text-foreground-muted">Repeat readings need Premium.</p>
+            {atWeeklyLimit ? (
+              <p className="text-xs text-foreground-muted">You&apos;ve used your 3 free readings this week.</p>
             ) : null}
           </Card>
 
@@ -228,33 +269,22 @@ export default function DashboardPage() {
               <>
                 <div className="flex items-center gap-3">
                   <div
-                    className={`flex h-14 w-14 flex-none items-center justify-center rounded-full text-2xl ${ARCHETYPES[personality.archetype].circleClassName}`}
-                  >
-                    <span aria-hidden>{personality.icon}</span>
-                  </div>
+                    className="flex h-14 w-14 flex-none items-center justify-center rounded-full border border-border"
+                    style={{ background: COLOUR_LIBRARY[topColourKey(personality)].swatch }}
+                    aria-hidden
+                  />
                   <div className="min-w-0">
                     <p className="truncate font-display text-base font-semibold text-foreground">
-                      {ARCHETYPES[personality.archetype].name}
+                      {localized(personality, "title", personalityLanguage)}
                     </p>
                     <p className="truncate text-xs text-foreground-muted">
-                      {ARCHETYPES[personality.archetype].traits.join(" • ")}
+                      {localized(personality, "subtitle", personalityLanguage)}
                     </p>
                   </div>
                 </div>
                 <p className="line-clamp-3 text-xs text-foreground-muted">
-                  {ARCHETYPES[personality.archetype].overall}
+                  {localized(personality, "overview", personalityLanguage)}
                 </p>
-                <div className="flex items-start gap-2 rounded-xl bg-surface-muted px-3 py-2.5">
-                  <span aria-hidden>🌿</span>
-                  <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-wide text-foreground-muted">
-                      Reminder for you
-                    </p>
-                    <p className="text-xs font-medium text-foreground">
-                      {ARCHETYPES[personality.archetype].reminder}
-                    </p>
-                  </div>
-                </div>
               </>
             ) : (
               <p className="text-sm text-foreground-muted">
@@ -266,14 +296,27 @@ export default function DashboardPage() {
           <Card className="flex flex-col gap-3 lg:col-span-2">
             <div className="flex items-center justify-between">
               <h2 className="font-display text-lg font-semibold text-foreground">For you</h2>
-              <Link href="/recommendation" className="text-sm font-semibold text-primary">
+              <Link href="/colour-psychology" className="text-sm font-semibold text-primary">
                 See all
               </Link>
             </div>
-            {latestRecommendation ? (
+            {recommendation ? (
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {latestRecommendation.items.slice(0, 3).map((item) => (
-                  <ProductCard key={item.id} item={item} />
+                {recommendation.items.slice(0, 3).map((item) => (
+                  <ProductCard
+                    key={`${item.type}-${item.rank}`}
+                    item={{
+                      id: String(item.rank),
+                      type: item.type as "COLOUR" | "ROUTINE" | "SCENT" | "WEARABLE" | "PRODUCT",
+                      referenceId: item.reference_id,
+                      title: item.title,
+                      reason: item.reason,
+                      rank: item.rank,
+                      imageUrl: item.image_url ?? undefined,
+                      price: item.price ?? undefined,
+                      destinationUrl: item.destination_url ?? undefined,
+                    }}
+                  />
                 ))}
               </div>
             ) : (
@@ -283,20 +326,64 @@ export default function DashboardPage() {
             )}
           </Card>
 
+          <Card className="flex flex-col gap-4 lg:col-span-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="font-display text-lg font-semibold text-foreground">Progress Trend</h2>
+                <p className="text-xs text-foreground-muted">
+                  {effectiveTrendPeriod === "weekly" ? "This week" : "This month"}, one point per day.
+                </p>
+              </div>
+              <div className="flex items-center gap-1 rounded-full bg-surface-muted p-1">
+                <button
+                  type="button"
+                  onClick={() => setTrendPeriod("weekly")}
+                  className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+                    effectiveTrendPeriod === "weekly" ? "bg-surface text-foreground shadow-sm" : "text-foreground-muted"
+                  }`}
+                >
+                  Weekly
+                </button>
+                <button
+                  type="button"
+                  onClick={() => (premium ? setTrendPeriod("monthly") : undefined)}
+                  disabled={!premium}
+                  title={premium ? undefined : "Monthly trends need Premium"}
+                  className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed ${
+                    effectiveTrendPeriod === "monthly" ? "bg-surface text-foreground shadow-sm" : "text-foreground-muted"
+                  }`}
+                >
+                  {!premium ? <span aria-hidden>🔒</span> : null}
+                  Monthly
+                </button>
+              </div>
+            </div>
+            <TrendChart points={trendPoints} series={trendSeries} dimensions={DIMENSIONS} />
+            {!premium ? (
+              <p className="text-xs text-foreground-muted">
+                Free shows your weekly trend.{" "}
+                <Link href="/membership" className="font-semibold text-primary">
+                  Upgrade to Premium
+                </Link>{" "}
+                to switch to a full monthly view.
+              </p>
+            ) : null}
+          </Card>
+
           <Card className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <h2 className="font-display text-lg font-semibold text-foreground">Progress</h2>
-              <Chip tone="gold">{xpTotal} XP</Chip>
+              <Chip tone="gold">{progress.xp_total} XP</Chip>
             </div>
             <div className="flex items-center justify-between">
-              <StreakFlame current={data.streak.current} />
-              <GardenIllustration stage={data.garden.stage} size="sm" />
+              <StreakFlame current={progress.streak.current} />
+              <GardenIllustration stage={progress.garden.stage} size="sm" />
             </div>
             <div className="flex gap-1.5">
               {(["LOGIN", "CHECK_IN", "INNER_READING"] as const).map((q) => (
                 <span
                   key={q}
-                  className={`h-1.5 flex-1 rounded-full ${questsToday.includes(q) ? "bg-primary" : "bg-surface-muted"}`}
+                  className={`h-1.5 flex-1 rounded-full ${progress.quests_today.includes(q) ? "bg-primary" : "bg-surface-muted"}`}
                 />
               ))}
             </div>
@@ -315,13 +402,11 @@ export default function DashboardPage() {
             {recentReadings.length > 0 ? (
               <div className="flex flex-col divide-y divide-border">
                 {recentReadings.map((reading, i) => {
-                  const created = new Date(reading.createdAt);
+                  const created = new Date(reading.created_at);
                   return (
                     <Link key={reading.id} href={`/inner-reading/${reading.id}/result`}>
                       <div className="flex items-center gap-3 py-4">
-                        <div
-                          className={`flex h-12 w-12 flex-none flex-col items-center justify-center rounded-xl ${DATE_BADGE_TONES[i % DATE_BADGE_TONES.length]}`}
-                        >
+                        <div className={`flex h-12 w-12 flex-none flex-col items-center justify-center rounded-xl ${DATE_BADGE_TONES[i % DATE_BADGE_TONES.length]}`}>
                           <span className="text-[10px] font-semibold uppercase tracking-wide">
                             {created.toLocaleDateString(undefined, { month: "short" })}
                           </span>
@@ -343,9 +428,7 @@ export default function DashboardPage() {
                 })}
               </div>
             ) : (
-              <p className="text-sm text-foreground-muted">
-                Your completed Inner Readings will show up here.
-              </p>
+              <p className="text-sm text-foreground-muted">Your completed Inner Readings will show up here.</p>
             )}
             <Link href="/inner-reading/history" className="text-sm font-semibold text-primary">
               Explore all your readings →
@@ -371,27 +454,17 @@ export default function DashboardPage() {
               <Link href="/journal" className="text-sm font-semibold text-primary">
                 View Journal
               </Link>
-              <Button
-                size="sm"
-                disabled={!journalDraft.trim()}
-                onClick={() => {
-                  addJournalEntry(journalDraft.trim());
-                  setJournalDraft("");
-                  setJustSaved(true);
-                  setTimeout(() => setJustSaved(false), 2000);
-                }}
-              >
+              <Button size="sm" disabled={!journalDraft.trim()} onClick={saveJournalDraft}>
                 {justSaved ? "Saved ✓" : "🔒 Save Privately"}
               </Button>
             </div>
           </Card>
 
-          {!isPremiumActive ? (
+          {!premium ? (
             <Card className="flex flex-col gap-3 border-accent/40 bg-accent/5 lg:col-span-3">
               <h2 className="font-display text-lg font-semibold text-foreground">Go Premium</h2>
               <p className="text-sm text-foreground-muted">
-                Unlock repeat Inner Readings, full history, full recommendations and full Core
-                Personality detail.
+                Unlock repeat Inner Readings, full history, full recommendations and full Core Personality detail.
               </p>
               <Link href="/membership" className="w-full sm:w-auto">
                 <Button variant="accent">View plans</Button>

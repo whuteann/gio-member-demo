@@ -3,19 +3,22 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import Head from "next/head";
 import { useAppState } from "@/context/AppStateContext";
+import { useAppSelector } from "@/store/hooks";
 import Button from "@/components/ui/Button";
 
 export default function Home() {
   const router = useRouter();
-  const { ready, user, loginDemo } = useAppState();
+  const { loginDemo } = useAppState();
+  const token = useAppSelector((s) => s.auth.token);
+  const user = useAppSelector((s) => s.auth.user);
 
   useEffect(() => {
-    if (ready && user) {
-      router.replace(user.onboardingCompletedAt ? "/dashboard" : "/onboarding");
+    if (token && user) {
+      router.replace(user.onboarding_completed_at ? "/dashboard" : "/onboarding");
     }
-  }, [ready, user, router]);
+  }, [token, user, router]);
 
-  if (ready && user) return null;
+  if (token && user) return null;
 
   return (
     <>
@@ -40,11 +43,11 @@ export default function Home() {
           <button
             onClick={() => {
               loginDemo();
-              router.push("/dashboard");
+              router.push("/inner-reading");
             }}
             className="mt-2 text-sm font-semibold text-accent underline-offset-4 hover:underline"
           >
-            Continue as Demo Member →
+            Preview Mock Demo Data →
           </button>
         </div>
       </div>

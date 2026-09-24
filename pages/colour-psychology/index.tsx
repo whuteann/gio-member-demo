@@ -1,7 +1,11 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useAppGuard } from "@/lib/useAppGuard";
-import { useCurrentPersonality } from "@/context/AppStateContext";
+import { useAuthGuard } from "@/lib/useAuthGuard";
+import { useApiResource } from "@/lib/useApiResource";
+import { getLatestRecommendation, listRecommendations } from "@/lib/api/recommendations";
+import { getCurrentPersonality } from "@/lib/api/personality";
+import { isPremiumActive } from "@/lib/api/entitlement";
+import { ApiError } from "@/lib/api/client";
 import { ARCHETYPES, COLOUR_LIBRARY, COLOUR_ORDER, FOCUS_COLOUR_REASON } from "@/lib/blueprints";
 import { colourKeyForFocus } from "@/lib/recommendation";
 import AppShell from "@/components/layout/AppShell";
@@ -9,6 +13,7 @@ import Card from "@/components/ui/Card";
 import Chip from "@/components/ui/Chip";
 import ProductCard from "@/components/ui/ProductCard";
 import ColourOfTheDay from "@/components/ui/ColourOfTheDay";
+import EntitlementGate from "@/components/ui/EntitlementGate";
 
 const HOW_TO_USE = [
   { icon: "👕", title: "Wear it", body: "Use it in your clothing or everyday accessories." },
@@ -18,26 +23,42 @@ const HOW_TO_USE = [
 ];
 
 export default function ColourPsychologyPage() {
-  const { settled, data } = useAppGuard();
-  const personality = useCurrentPersonality();
-  if (!settled || !data) return null;
+  const { settled, token, subscription } = useAuthGuard();
+  const premium = subscription ? isPremiumActive(subscription) : false;
 
-  const latestRecommendation = data.recommendations[data.recommendations.length - 1] ?? null;
-  const currentColourKey = latestRecommendation ? colourKeyForFocus(latestRecommendation.currentFocus) : null;
+  const { data, loading } = useApiResource(
+    token
+      ? async () => {
+          const [recommendation, personality, history] = await Promise.all([
+            getLatestRecommendation(token).catch((e) => (e instanceof ApiError && e.status === 404 ? null : Promise.reject(e))),
+            getCurrentPersonality(token).catch((e) => (e instanceof ApiError && e.status === 404 ? null : Promise.reject(e))),
+            listRecommendations(token).catch((e) => (e instanceof ApiError && e.status === 404 ? [] : Promise.reject(e))),
+          ]);
+          return { recommendation, personality, history };
+        }
+      : null,
+    [token]
+  );
+
+  if (!settled || !token) return null;
+  if (loading || !data) {
+    return (
+      <AppShell>
+        <p className="text-sm text-foreground-muted">Loading your colour profile…</p>
+      </AppShell>
+    );
+  }
+
+  const { recommendation, personality, history } = data;
+  const currentColourKey = recommendation ? colourKeyForFocus(recommendation.current_focus) : null;
   const currentColour = currentColourKey ? COLOUR_LIBRARY[currentColourKey] : null;
-  const focusReason = latestRecommendation ? FOCUS_COLOUR_REASON[latestRecommendation.currentFocus] : null;
-  const archetype = personality ? ARCHETYPES[personality.archetype] : null;
-  const productItems = latestRecommendation?.items.filter((i) => i.type === "PRODUCT") ?? [];
-
-  const history = [...data.recommendations]
-    .sort((a, b) => b.generatedAt.localeCompare(a.generatedAt))
-    .slice(0, 8)
-    .map((rec) => ({
-      id: rec.id,
-      colourKey: colourKeyForFocus(rec.currentFocus),
-      focus: rec.currentFocus,
-      date: new Date(rec.generatedAt),
-    }));
+  const focusReason = recommendation ? FOCUS_COLOUR_REASON[recommendation.current_focus] : null;
+  const archetype = personality ? ARCHETYPES[personality.archetype as keyof typeof ARCHETYPES] : null;
+  const productItems = recommendation?.items.filter((i) => i.type === "PRODUCT") ?? [];
+  // "Your colour history" is premium-only — history from the API is already
+  // limited to 1 (today's) for free users server-side, so the earlier
+  // entries beyond that only ever exist for premium.
+  const patternHistory = history.filter((h) => h.id !== recommendation?.id);
 
   return (
     <>
@@ -82,22 +103,31 @@ export default function ColourPsychologyPage() {
                 </div>
                 <div className="flex w-full flex-none flex-col gap-3 sm:w-56">
                   <p className="text-sm font-semibold text-foreground">Why this colour for you?</p>
-                  {focusReason ? (
+                  {premium ? (
+                    <>
+                      {focusReason ? (
+                        <div className="flex items-start gap-2">
+                          <span aria-hidden>{focusReason.icon}</span>
+                          <p className="text-xs text-foreground-muted">{focusReason.text}</p>
+                        </div>
+                      ) : null}
+                      {archetype ? (
+                        <div className="flex items-start gap-2">
+                          <span aria-hidden>{personality?.icon}</span>
+                          <p className="text-xs text-foreground-muted">{archetype.colourReason}</p>
+                        </div>
+                      ) : null}
+                      <div className="flex items-start gap-2">
+                        <span aria-hidden>🌱</span>
+                        <p className="text-xs text-foreground-muted">{currentColour.benefit}</p>
+                      </div>
+                    </>
+                  ) : (
                     <div className="flex items-start gap-2">
-                      <span aria-hidden>{focusReason.icon}</span>
-                      <p className="text-xs text-foreground-muted">{focusReason.text}</p>
+                      <span aria-hidden>🌱</span>
+                      <p className="text-xs text-foreground-muted">{currentColour.benefit}</p>
                     </div>
-                  ) : null}
-                  {archetype ? (
-                    <div className="flex items-start gap-2">
-                      <span aria-hidden>{personality?.icon}</span>
-                      <p className="text-xs text-foreground-muted">{archetype.colourReason}</p>
-                    </div>
-                  ) : null}
-                  <div className="flex items-start gap-2">
-                    <span aria-hidden>🌱</span>
-                    <p className="text-xs text-foreground-muted">{currentColour.benefit}</p>
-                  </div>
+                  )}
                   <Link
                     href={`/colour-psychology/${currentColour.key}`}
                     className="text-sm font-semibold text-primary"
@@ -156,7 +186,20 @@ export default function ColourPsychologyPage() {
               {productItems.length > 0 ? (
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                   {productItems.map((item) => (
-                    <ProductCard key={item.id} item={item} />
+                    <ProductCard
+                      key={`${item.type}-${item.rank}`}
+                      item={{
+                        id: String(item.rank),
+                        type: item.type as "COLOUR" | "ROUTINE" | "SCENT" | "WEARABLE" | "PRODUCT",
+                        referenceId: item.reference_id,
+                        title: item.title,
+                        reason: item.reason,
+                        rank: item.rank,
+                        imageUrl: item.image_url ?? undefined,
+                        price: item.price ?? undefined,
+                        destinationUrl: item.destination_url ?? undefined,
+                      }}
+                    />
                   ))}
                 </div>
               ) : (
@@ -181,35 +224,40 @@ export default function ColourPsychologyPage() {
               ))}
             </Card>
 
-            <Card className="flex flex-col gap-3">
-              <h2 className="font-display text-lg font-semibold text-foreground">Your colour history</h2>
-              {history.length > 0 ? (
-                <div className="flex flex-col divide-y divide-border">
-                  {history.map((h) => (
-                    <div key={h.id} className="flex items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className="h-2.5 w-2.5 flex-none rounded-full"
-                          style={{ background: COLOUR_LIBRARY[h.colourKey].swatch }}
-                          aria-hidden
-                        />
-                        <div>
-                          <p className="text-xs font-semibold text-foreground">{COLOUR_LIBRARY[h.colourKey].name}</p>
-                          <p className="text-[11px] text-foreground-muted">{h.focus}</p>
+            {premium ? (
+              <Card className="flex flex-col gap-3">
+                <h2 className="font-display text-lg font-semibold text-foreground">Your colour history</h2>
+                {patternHistory.length > 0 ? (
+                  <div className="flex flex-wrap gap-3">
+                    {patternHistory.map((entry) => {
+                      const colour = COLOUR_LIBRARY[entry.colour_key as keyof typeof COLOUR_LIBRARY];
+                      return (
+                        <div key={entry.id} className="flex flex-col items-center gap-1">
+                          <span
+                            className="h-9 w-9 rounded-full border border-border"
+                            style={{ background: entry.colour_swatch }}
+                            aria-hidden
+                          />
+                          <p className="text-[10px] text-foreground-muted">
+                            {new Date(entry.generated_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                          </p>
+                          <p className="text-[10px] text-foreground-muted">{colour?.name ?? entry.colour_name}</p>
                         </div>
-                      </div>
-                      <p className="text-[11px] text-foreground-muted">
-                        {h.date.toLocaleDateString(undefined, { month: "short", day: "numeric" })}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-foreground-muted">
-                  Your colour history builds up as you complete check-ins and readings.
-                </p>
-              )}
-            </Card>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-sm text-foreground-muted">
+                    Your colour pattern will build up here as you check in and reflect over time.
+                  </p>
+                )}
+              </Card>
+            ) : (
+              <EntitlementGate
+                title="See your colour pattern"
+                description="Premium reveals how your supportive colour has shifted over time, not just today's."
+              />
+            )}
           </div>
         </div>
       </AppShell>

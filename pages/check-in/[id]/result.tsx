@@ -5,27 +5,19 @@ import type { GetServerSideProps } from "next";
 import { motion } from "motion/react";
 import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useApiResource } from "@/lib/useApiResource";
-import { getInnerReading } from "@/lib/api/reflections";
+import { getCheckInResults } from "@/lib/api/reflections";
+import { localizedSnapshot } from "@/lib/snapshotDisplay";
 import { COLOUR_LIBRARY, DIMENSIONS } from "@/lib/blueprints";
-import { colourKeyForFocus } from "@/lib/recommendation";
-import { buildInnerState } from "@/lib/scoring";
 import { EASE_OUT, EASE_SOFT_BACK, GOLD_HEX } from "@/lib/sessionMotion";
+import type { ColourKey, Language } from "@/lib/types";
 import AppShell from "@/components/layout/AppShell";
 import Card from "@/components/ui/Card";
 import ColourOfTheDay from "@/components/ui/ColourOfTheDay";
 import ProgressBar from "@/components/ui/ProgressBar";
 import Button from "@/components/ui/Button";
 import Chip from "@/components/ui/Chip";
-import EntitlementGate from "@/components/ui/EntitlementGate";
 import AmbientField from "@/components/session/AmbientField";
 import DimensionGlyph from "@/components/session/DimensionGlyph";
-
-const LIFE_AREA_LABELS: Record<string, { label: string; icon: string }> = {
-  work: { label: "Work", icon: "💼" },
-  relationships: { label: "Relationships", icon: "🤝" },
-  personal_growth: { label: "Personal Growth", icon: "🌱" },
-  conflict_management: { label: "Conflict Management", icon: "🕊️" },
-};
 
 const DIM_COLOR: Record<string, string> = {
   emotional_energy: "bg-energy",
@@ -47,47 +39,60 @@ const glyphPop = {
   show: { scale: 1, opacity: 1, transition: { duration: 0.5, ease: EASE_SOFT_BACK } },
 };
 
-export default function InnerReadingResultPage() {
-  const { settled, token } = useAuthGuard();
+export default function CheckInResultPage() {
+  const { settled, token, user } = useAuthGuard();
   const router = useRouter();
   const id = typeof router.query.id === "string" ? router.query.id : null;
+  const language: Language = (user?.preferred_language as Language) ?? "en";
 
-  const { data: reading, loading, error } = useApiResource(
-    token && id ? () => getInnerReading(token, id) : null,
+  const { data: results, loading, error } = useApiResource(
+    token && id ? () => getCheckInResults(token, id) : null,
     [token, id]
   );
 
   if (!settled || !token || !id) return null;
   if (loading) {
     return (
-      <AppShell title="Your Inner Reading">
-        <p className="text-sm text-foreground-muted">Loading your reading…</p>
+      <AppShell title="Your Check-In">
+        <p className="text-sm text-foreground-muted">Loading your check-in…</p>
       </AppShell>
     );
   }
-  if (error || !reading || reading.emotional_energy === null) {
+  if (error || !results) {
     return (
-      <AppShell title="Reading not found">
-        <Link href="/inner-reading/history"><Button variant="outline-solid">Back to history</Button></Link>
+      <AppShell title="Check-in not found">
+        <Link href="/check-in/history"><Button variant="outline-solid">Back to history</Button></Link>
       </AppShell>
     );
   }
 
-  const dims = {
-    emotional_energy: reading.emotional_energy!,
-    mental_clarity: reading.mental_clarity!,
-    inner_pressure: reading.inner_pressure!,
-    grounding: reading.grounding!,
-  };
-  const derived = buildInnerState({ id: reading.id, userId: "", sourceType: "INNER_READING", sourceId: reading.id, dims });
-  const recommendedColour = COLOUR_LIBRARY[colourKeyForFocus(derived.currentFocus)];
+  const { session, snapshot } = results;
+  const dims = snapshot
+    ? {
+        emotional_energy: snapshot.emotional_energy,
+        mental_clarity: snapshot.mental_clarity,
+        inner_pressure: snapshot.inner_pressure,
+        grounding: snapshot.grounding,
+      }
+    : Object.fromEntries(
+        DIMENSIONS.map((dim) => [dim.key, session.answers.find((a) => a.dimension === dim.key)?.normalized_value ?? 50])
+      );
+
+  const colourKey = (snapshot?.colour_key as ColourKey | undefined) ?? "gold";
+  const recommendedColour = COLOUR_LIBRARY[colourKey];
   const ambientColor = recommendedColour?.swatch ?? GOLD_HEX;
-  const colourKey = recommendedColour?.key ?? "gold";
+
+  const insight = snapshot ? localizedSnapshot(snapshot, "insight", language) : null;
+  const reflectionQuestion = snapshot ? localizedSnapshot(snapshot, "reflection_question", language) : null;
+  const reminder = snapshot ? localizedSnapshot(snapshot, "reminder", language) : null;
+  const friendlyAdvice = snapshot ? localizedSnapshot(snapshot, "friendly_advice", language) : null;
+  const affirmation = snapshot ? localizedSnapshot(snapshot, "affirmation", language) : null;
+  const currentFocus = snapshot ? localizedSnapshot(snapshot, "current_focus", language) : null;
 
   return (
     <>
-      <Head><title>Your Reading — Gio</title></Head>
-      <AppShell title="Your Inner Reading">
+      <Head><title>Your Check-In — Gio</title></Head>
+      <AppShell title="Your Check-In">
         <div className="session-stage relative isolate">
           <AmbientField color={ambientColor} />
           <motion.div
@@ -98,10 +103,10 @@ export default function InnerReadingResultPage() {
           >
             <motion.div variants={cardRise}>
               <Card className="flex flex-col items-center gap-3 text-center">
-                <ColourOfTheDay colourKey={colourKey} swatch={ambientColor} size={128} />
-                <Chip tone="primary">{derived.currentFocus}</Chip>
+                <ColourOfTheDay colourKey={recommendedColour?.key ?? "gold"} swatch={ambientColor} size={128} />
+                <Chip tone="primary">{currentFocus ?? session.summary ?? "Check-in complete"}</Chip>
                 <p className="text-xs text-foreground-muted">
-                  {new Date(reading.completed_at ?? "").toLocaleString()}
+                  {new Date(session.completed_at ?? session.started_at).toLocaleString()}
                 </p>
               </Card>
             </motion.div>
@@ -111,7 +116,7 @@ export default function InnerReadingResultPage() {
                 <h2 className="font-display text-lg font-semibold text-foreground">Dimensions</h2>
                 <motion.div variants={pageStagger} className="flex flex-col gap-4">
                   {DIMENSIONS.map((dim) => {
-                    const value = dims[dim.key as keyof typeof dims];
+                    const value = dims[dim.key as keyof typeof dims] as number;
                     return (
                       <motion.div key={dim.key} variants={cardRise} className="flex items-center gap-3">
                         <motion.div variants={glyphPop} className="shrink-0">
@@ -131,55 +136,57 @@ export default function InnerReadingResultPage() {
               </Card>
             </motion.div>
 
-            <motion.div variants={cardRise}>
-              <Card>
-                <h2 className="mb-2 font-display text-lg font-semibold text-foreground">Your reading</h2>
-                <p className="text-sm leading-relaxed text-foreground-muted">{reading.narrative}</p>
-              </Card>
-            </motion.div>
-
-            {reading.insight ? (
+            {insight ? (
               <motion.div variants={cardRise}>
                 <Card className="flex flex-col gap-3">
                   <h2 className="font-display text-lg font-semibold text-foreground">Latest Insight</h2>
-                  <p className="text-sm font-medium text-foreground">{reading.insight}</p>
-                  {reading.reflection_question ? (
+                  <p className="text-2xl leading-none text-accent">&ldquo;</p>
+                  <p className="-mt-3 text-sm font-medium text-foreground">{insight}</p>
+                  {reflectionQuestion ? (
                     <div className="flex flex-col gap-1 border-t border-border pt-3">
                       <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
                         💡 Reflection Question
                       </p>
-                      <p className="text-sm text-foreground-muted">{reading.reflection_question}</p>
+                      <p className="text-sm text-foreground-muted">{reflectionQuestion}</p>
                     </div>
                   ) : null}
                 </Card>
               </motion.div>
             ) : null}
 
-            {reading.is_premium_content && reading.life_area_insights ? (
+            {reminder || friendlyAdvice || affirmation ? (
               <motion.div variants={cardRise}>
-                <Card className="flex flex-col gap-4">
-                  <h2 className="font-display text-lg font-semibold text-foreground">In-Depth Reading</h2>
-                  {(Object.keys(LIFE_AREA_LABELS) as (keyof typeof LIFE_AREA_LABELS)[]).map((key) => (
-                    <div key={key} className="flex items-start gap-3 border-t border-border pt-3 first:border-t-0 first:pt-0">
-                      <span className="text-lg" aria-hidden>{LIFE_AREA_LABELS[key].icon}</span>
-                      <div>
-                        <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
-                          {LIFE_AREA_LABELS[key].label}
-                        </p>
-                        <p className="mt-1 text-sm text-foreground-muted">{reading.life_area_insights![key as keyof typeof reading.life_area_insights]}</p>
-                      </div>
+                <Card className="flex flex-col gap-3">
+                  {reminder ? (
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">🌿 Reminder for you</p>
+                      <p className="mt-1 text-sm text-foreground">{reminder}</p>
                     </div>
-                  ))}
+                  ) : null}
+                  {friendlyAdvice ? (
+                    <div className="border-t border-border pt-3 first:border-t-0 first:pt-0">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">🤝 Friendly advice</p>
+                      <p className="mt-1 text-sm text-foreground">{friendlyAdvice}</p>
+                    </div>
+                  ) : null}
+                  {affirmation ? (
+                    <div className="border-t border-border pt-3 first:border-t-0 first:pt-0">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">✨ Affirmation</p>
+                      <p className="mt-1 text-sm italic text-foreground">{affirmation}</p>
+                    </div>
+                  ) : null}
                 </Card>
               </motion.div>
-            ) : (
+            ) : null}
+
+            {session.private_note ? (
               <motion.div variants={cardRise}>
-                <EntitlementGate
-                  title="Unlock your in-depth reading"
-                  description="Premium reveals a full breakdown across Work, Relationships, Personal Growth and Conflict Management."
-                />
+                <Card>
+                  <h2 className="mb-2 font-display text-lg font-semibold text-foreground">Your note</h2>
+                  <p className="text-sm leading-relaxed text-foreground-muted">{session.private_note}</p>
+                </Card>
               </motion.div>
-            )}
+            ) : null}
 
             <motion.div variants={cardRise} className="flex gap-3">
               <Link href="/colour-psychology" className="flex-1">

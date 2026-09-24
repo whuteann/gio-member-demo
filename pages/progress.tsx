@@ -1,9 +1,9 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useAppGuard } from "@/lib/useAppGuard";
-import { useAppState } from "@/context/AppStateContext";
-import { BADGE_DEFINITIONS } from "@/lib/blueprints";
-import { localDateString } from "@/lib/gamification";
+import { useAuthGuard } from "@/lib/useAuthGuard";
+import { useApiResource } from "@/lib/useApiResource";
+import { isPremiumActive } from "@/lib/api/entitlement";
+import { getProgress } from "@/lib/api/progress";
 import AppShell from "@/components/layout/AppShell";
 import Card from "@/components/ui/Card";
 import Chip from "@/components/ui/Chip";
@@ -23,15 +23,23 @@ const QUEST_LABELS: Record<string, { label: string; icon: string }> = {
 const MILESTONES = [7, 30, 100];
 
 export default function ProgressPage() {
-  const { settled, data } = useAppGuard();
-  const { isPremiumActive, xpTotal } = useAppState();
-  if (!settled || !data) return null;
+  const { settled, token, subscription } = useAuthGuard();
+  const premium = subscription ? isPremiumActive(subscription) : false;
 
-  const today = localDateString();
-  const questsToday = new Set(data.quests.filter((q) => q.date === today).map((q) => q.quest));
+  const { data: progress, loading } = useApiResource(token ? () => getProgress(token) : null, [token]);
+
+  if (!settled || !token) return null;
+  if (loading || !progress) {
+    return (
+      <AppShell title="Progress">
+        <p className="text-sm text-foreground-muted">Loading your progress…</p>
+      </AppShell>
+    );
+  }
+
+  const questsToday = new Set(progress.quests_today);
   const allThreeDone = (["LOGIN", "CHECK_IN", "INNER_READING"] as const).every((q) => questsToday.has(q));
-  const nextMilestone = MILESTONES.find((m) => m > data.streak.current) ?? null;
-  const earnedBadgeKeys = new Set(data.badges.map((b) => b.key));
+  const nextMilestone = MILESTONES.find((m) => m > progress.streak.current) ?? null;
 
   return (
     <>
@@ -41,13 +49,13 @@ export default function ProgressPage() {
           <Card className="flex items-center justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">Total XP</p>
-              <p className="font-display text-3xl font-semibold text-foreground">{xpTotal}</p>
+              <p className="font-display text-3xl font-semibold text-foreground">{progress.xp_total}</p>
             </div>
             <Chip tone="gold">Progression only · not spendable</Chip>
           </Card>
 
           <Card className="flex items-center justify-between">
-            <StreakFlame current={data.streak.current} />
+            <StreakFlame current={progress.streak.current} />
             {nextMilestone ? (
               <div className="text-right">
                 <p className="text-xs font-semibold text-foreground-muted">Next milestone</p>
@@ -73,11 +81,16 @@ export default function ProgressPage() {
               <span className="text-sm font-medium text-foreground">Complete all three (+10 XP)</span>
               {allThreeDone ? <Chip tone="gold">Earned today</Chip> : <Chip tone="neutral">In progress</Chip>}
             </div>
+            {!questsToday.has("LOGIN") ? (
+              <p className="text-[11px] text-foreground-muted">
+                The &quot;Log in&quot; quest isn&apos;t wired up yet on the backend — see docs/dev_log_0001.md.
+              </p>
+            ) : null}
           </Card>
 
           <Card className="flex flex-col items-center justify-center gap-3">
             <h2 className="self-start font-display text-lg font-semibold text-foreground">Growth Garden</h2>
-            <GardenIllustration stage={data.garden.stage} />
+            <GardenIllustration stage={progress.garden.stage} />
             <p className="text-xs text-foreground-muted">Visual only — resets weekly, never issues XP.</p>
           </Card>
 
@@ -86,17 +99,17 @@ export default function ProgressPage() {
               <h2 className="font-display text-lg font-semibold text-foreground">Badges</h2>
               <Link href="/rewards" className="text-sm font-semibold text-primary">Rewards →</Link>
             </div>
-            {isPremiumActive ? (
+            {premium ? (
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {BADGE_DEFINITIONS.map((badge) => (
-                  <BadgeIcon key={badge.key} badge={badge} earned={earnedBadgeKeys.has(badge.key)} />
+                {progress.badges.map((badge) => (
+                  <BadgeIcon key={badge.key} badge={badge} earned={badge.earned} />
                 ))}
               </div>
             ) : (
               <>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                  {BADGE_DEFINITIONS.slice(0, 3).map((badge) => (
-                    <BadgeIcon key={badge.key} badge={badge} earned={earnedBadgeKeys.has(badge.key)} />
+                  {progress.badges.slice(0, 3).map((badge) => (
+                    <BadgeIcon key={badge.key} badge={badge} earned={badge.earned} />
                   ))}
                 </div>
                 <EntitlementGate description="See your full private badge collection with Premium." />
@@ -104,13 +117,13 @@ export default function ProgressPage() {
             )}
           </Card>
 
-          {data.streak.milestonesAwarded.length > 0 ? (
+          {progress.streak.milestones_awarded.length > 0 ? (
             <Card className="lg:col-span-2">
               <div className="mb-2 flex justify-between text-xs font-semibold text-foreground-muted">
                 <span>Streak progress</span>
-                <span>{data.streak.current} / {nextMilestone ?? 100}</span>
+                <span>{progress.streak.current} / {nextMilestone ?? 100}</span>
               </div>
-              <ProgressBar value={data.streak.current} max={nextMilestone ?? 100} colorClassName="bg-accent" />
+              <ProgressBar value={progress.streak.current} max={nextMilestone ?? 100} colorClassName="bg-accent" />
             </Card>
           ) : null}
 

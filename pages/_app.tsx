@@ -2,6 +2,7 @@ import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 import { AppStateProvider } from "@/context/AppStateContext";
+import ReduxProvider from "@/store/ReduxProvider";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -19,9 +20,11 @@ const jakarta = Plus_Jakarta_Sans({
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <div className={`${fraunces.variable} ${jakarta.variable} font-sans`}>
-      <AppStateProvider>
-        <Component {...pageProps} />
-      </AppStateProvider>
+      <ReduxProvider>
+        <AppStateProvider>
+          <Component {...pageProps} />
+        </AppStateProvider>
+      </ReduxProvider>
     </div>
   );
 }

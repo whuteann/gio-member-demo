@@ -2,6 +2,9 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState, type ReactNode } from "react";
 import { useAppState } from "@/context/AppStateContext";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { clearCredentials } from "@/store/authSlice";
+import { isPremiumActive as isRealPremiumActive } from "@/lib/api/entitlement";
 import Sheet from "@/components/ui/Sheet";
 import Button from "@/components/ui/Button";
 import Chip from "@/components/ui/Chip";
@@ -32,8 +35,26 @@ function isActive(pathname: string, href: string) {
 
 export default function AppShell({ children, title }: { children: ReactNode; title?: string }) {
   const router = useRouter();
-  const { user, isPremiumActive, logout } = useAppState();
+  const mock = useAppState();
+  const dispatch = useAppDispatch();
+  const reduxToken = useAppSelector((s) => s.auth.token);
+  const reduxUser = useAppSelector((s) => s.auth.user);
+  const reduxSubscription = useAppSelector((s) => s.auth.subscription);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // A real backend session (Redux) always wins over the old localStorage
+  // mock — the two are independent logins (see docs/dev_log_0001.md), but
+  // only one shell renders at a time, so pick whichever is actually active.
+  const usingRealSession = !!reduxToken && !!reduxUser;
+  const displayName = usingRealSession ? reduxUser!.display_name : mock.user?.displayName;
+  const email = usingRealSession ? reduxUser!.email : mock.user?.email;
+  const isPremiumActive = usingRealSession ? (reduxSubscription ? isRealPremiumActive(reduxSubscription) : false) : mock.isPremiumActive;
+  const logout = usingRealSession
+    ? () => {
+        dispatch(clearCredentials());
+        router.push("/auth/login");
+      }
+    : mock.logout;
 
   return (
     <div className="min-h-screen bg-background lg:flex lg:h-screen lg:overflow-hidden">
@@ -78,8 +99,8 @@ export default function AppShell({ children, title }: { children: ReactNode; tit
         </nav>
         <div className="mt-4 flex items-center justify-between rounded-xl bg-surface-muted px-3 py-3">
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-foreground">{user?.displayName}</p>
-            <p className="truncate text-xs text-foreground-muted">{user?.email}</p>
+            <p className="truncate text-sm font-semibold text-foreground">{displayName}</p>
+            <p className="truncate text-xs text-foreground-muted">{email}</p>
           </div>
           <Chip tone={isPremiumActive ? "gold" : "neutral"}>{isPremiumActive ? "Premium" : "Free"}</Chip>
         </div>
@@ -105,7 +126,7 @@ export default function AppShell({ children, title }: { children: ReactNode; tit
               className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-muted text-sm font-semibold text-foreground"
               aria-label="Open menu"
             >
-              {user?.displayName?.[0]?.toUpperCase() ?? "G"}
+              {displayName?.[0]?.toUpperCase() ?? "G"}
             </button>
           </div>
         </header>
@@ -132,7 +153,7 @@ export default function AppShell({ children, title }: { children: ReactNode; tit
         </nav>
       </div>
 
-      <Sheet open={menuOpen} onClose={() => setMenuOpen(false)} title={user?.displayName}>
+      <Sheet open={menuOpen} onClose={() => setMenuOpen(false)} title={displayName}>
         <div className="flex flex-col gap-1">
           {MENU_LINKS.map((link) => (
             <Link
