@@ -146,7 +146,7 @@ export function createDemoAppData(): AppData {
     const dateStr = localDateString(day);
     const values: [DimensionKey, number][] = [
       ["emotional_energy", 3 + (i % 2)],
-      ["mental_clarity", 3 + ((i + 1) % 2)],
+      ["mental_clarity", 2 + ((i + 1) % 3)],
       ["inner_pressure", 2 + (i % 2)],
       ["grounding", 3 + ((i + 1) % 2)],
     ];

@@ -7,29 +7,39 @@ import TextField from "@/components/ui/TextField";
 import Button from "@/components/ui/Button";
 import LanguageSlider from "@/components/ui/LanguageSlider";
 import { useAppState } from "@/context/AppStateContext";
-import { DEMO_EMAIL, DEMO_PASSWORD } from "@/lib/seed";
+import { useAppDispatch } from "@/store/hooks";
+import { setCredentials } from "@/store/authSlice";
+import { getMe, login as apiLogin } from "@/lib/api/auth";
+import { ApiError } from "@/lib/api/client";
 import type { Language } from "@/lib/types";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, loginDemo } = useAppState();
+  const dispatch = useAppDispatch();
+  // Kept only for the mock-preview path below — pages not yet wired to
+  // gio-backend still read from this local, localStorage-only "account".
+  // See docs/dev_log_0001.md.
+  const { loginDemo } = useAppState();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [language, setLanguage] = useState<Language>("en");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  function onSubmit(e: FormEvent) {
+  async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
     setSubmitting(true);
-    const result = login({ email, password });
-    setSubmitting(false);
-    if (!result.ok) {
-      setError(result.error);
-      return;
+    try {
+      const { access_token, refresh_token } = await apiLogin({ email, password });
+      const me = await getMe(access_token);
+      dispatch(setCredentials({ token: access_token, refreshToken: refresh_token, user: me.user, subscription: me.subscription }));
+      router.push("/dashboard");
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
-    router.push("/dashboard");
   }
 
   return (
@@ -87,13 +97,14 @@ export default function LoginPage() {
           className="mt-5"
           onClick={() => {
             loginDemo();
-            router.push("/dashboard");
+            router.push("/progress");
           }}
         >
-          Continue as Demo Member
+          Preview Mock Demo Data
         </Button>
         <p className="mt-3 text-center text-xs text-foreground-muted">
-          Demo login: {DEMO_EMAIL} / {DEMO_PASSWORD}
+          Local, offline preview data — separate from a real account, for
+          pages not yet connected to the backend.
         </p>
       </AuthLayout>
     </>

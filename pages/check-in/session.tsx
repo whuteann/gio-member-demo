@@ -1,12 +1,13 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import Link from "next/link";
 import { AnimatePresence, motion, MotionConfig } from "motion/react";
-import { useAppGuard } from "@/lib/useAppGuard";
-import { useAppState } from "@/context/AppStateContext";
-import { buildQuestionOrder, CHECKIN_QUESTION_POOL, DIMENSIONS } from "@/lib/blueprints";
-import { newId } from "@/lib/id";
+import { useAuthGuard } from "@/lib/useAuthGuard";
+import { useApiResource } from "@/lib/useApiResource";
+import { getCheckInQuestions, submitCheckIn as apiSubmitCheckIn } from "@/lib/api/reflections";
+import type { CheckInSubmitResponse } from "@/lib/api/types";
+import { DIMENSIONS } from "@/lib/blueprints";
 import { DIMENSION_HEX, EASE_IN_OUT, EASE_OUT, EASE_SOFT_BACK, GOLD_HEX, SECONDARY_HEX } from "@/lib/sessionMotion";
 import AppShell from "@/components/layout/AppShell";
 import Button from "@/components/ui/Button";
@@ -18,8 +19,6 @@ import ScaleSelector from "@/components/session/ScaleSelector";
 import StepProgress from "@/components/session/StepProgress";
 import NoteComposer from "@/components/session/NoteComposer";
 import CompletionMandala from "@/components/session/CompletionMandala";
-
-const QUESTION_COUNT = 4;
 
 // Question-to-question transition. `custom` carries the direction of travel
 // (+1 forward, -1 back) so the slide always moves the way the user went.
@@ -68,22 +67,30 @@ const chipPop = {
 };
 
 export default function CheckInPage() {
-  const { settled } = useAppGuard();
-  const { submitCheckIn } = useAppState();
+  const { settled, token } = useAuthGuard();
   const router = useRouter();
 
-  const questions = useMemo(
-    () => buildQuestionOrder(CHECKIN_QUESTION_POOL, QUESTION_COUNT, newId("checkin-seed")),
-    []
+  const { data: questionSet, loading: questionsLoading } = useApiResource(
+    token ? () => getCheckInQuestions(token).then((r) => r.questions) : null,
+    [token]
   );
+  const questions = questionSet ?? [];
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
   const [values, setValues] = useState<Record<number, number>>({});
   const [note, setNote] = useState("");
   const [phase, setPhase] = useState<"questions" | "note" | "done">("questions");
-  const [outcome, setOutcome] = useState<ReturnType<typeof submitCheckIn> | null>(null);
+  const [outcome, setOutcome] = useState<CheckInSubmitResponse | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  if (!settled) return null;
+  if (!settled || !token) return null;
+  if (questionsLoading || questions.length === 0) {
+    return (
+      <AppShell>
+        <p className="text-sm text-foreground-muted">Loading today&apos;s questions…</p>
+      </AppShell>
+    );
+  }
 
   const current = questions[step];
   const dimensionMeta = DIMENSIONS.find((d) => d.key === current?.dimension)!;
@@ -97,16 +104,21 @@ export default function CheckInPage() {
     setStep(nextStep);
   }
 
-  function finish() {
+  async function finish() {
+    if (!token || submitting) return;
+    setSubmitting(true);
     const answers = questions.map((q, i) => ({
-      questionId: `q-${i}`,
       dimension: q.dimension,
-      questionText: q.text,
+      question_text: q.text,
       value: values[i],
     }));
-    const result = submitCheckIn(answers, note);
-    setOutcome(result);
-    setPhase("done");
+    try {
+      const result = await apiSubmitCheckIn(token, answers, note.trim() || null);
+      setOutcome(result);
+      setPhase("done");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -247,16 +259,16 @@ export default function CheckInPage() {
                         Check-in complete
                       </motion.h2>
                       <motion.div variants={doneStagger} className="flex flex-wrap justify-center gap-2">
-                        {outcome.outcome.xpAwarded > 0 ? (
-                          <motion.span variants={chipPop}><Chip tone="gold">+{outcome.outcome.xpAwarded} XP</Chip></motion.span>
+                        {outcome.outcome.xp_awarded > 0 ? (
+                          <motion.span variants={chipPop}><Chip tone="gold">+{outcome.outcome.xp_awarded} XP</Chip></motion.span>
                         ) : null}
-                        {outcome.outcome.bonusAwarded ? (
+                        {outcome.outcome.bonus_awarded ? (
                           <motion.span variants={chipPop}><Chip tone="gold">+10 XP quest bonus</Chip></motion.span>
                         ) : null}
                         {outcome.outcome.milestone ? (
                           <motion.span variants={chipPop}><Chip tone="accent">{outcome.outcome.milestone}-day streak!</Chip></motion.span>
                         ) : null}
-                        {outcome.outcome.newBadges.map((b) => (
+                        {outcome.outcome.new_badges.map((b) => (
                           <motion.span key={b} variants={chipPop}><Chip tone="primary">New badge earned</Chip></motion.span>
                         ))}
                       </motion.div>

@@ -1,18 +1,29 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useAppGuard } from "@/lib/useAppGuard";
+import { useAuthGuard } from "@/lib/useAuthGuard";
+import { useApiResource } from "@/lib/useApiResource";
+import { listCheckIns } from "@/lib/api/reflections";
 import { addDays, localDateString, weekStartString } from "@/lib/gamification";
 import AppShell from "@/components/layout/AppShell";
 
 export default function CheckInHubPage() {
-  const { settled, data } = useAppGuard();
-  if (!settled || !data) return null;
+  const { settled, token } = useAuthGuard();
+  const { data: sessions, loading } = useApiResource(token ? () => listCheckIns(token) : null, [token]);
 
-  const completed = data.checkIns
-    .filter((session) => session.status === "COMPLETED" && session.completedAt)
-    .sort((a, b) => b.completedAt!.localeCompare(a.completedAt!));
+  if (!settled || !token) return null;
+  if (loading || !sessions) {
+    return (
+      <AppShell>
+        <p className="text-sm text-foreground-muted">Loading your check-ins…</p>
+      </AppShell>
+    );
+  }
+
+  const completed = sessions
+    .filter((session) => session.status === "COMPLETED" && session.completed_at)
+    .sort((a, b) => b.completed_at!.localeCompare(a.completed_at!));
   const today = localDateString();
-  const completedDays = new Set(completed.map((session) => localDateString(new Date(session.completedAt!))));
+  const completedDays = new Set(completed.map((session) => localDateString(new Date(session.completed_at!))));
   const checkedInToday = completedDays.has(today);
   const weekStart = weekStartString(today);
   const days = Array.from({ length: 7 }, (_, index) => {
@@ -70,17 +81,25 @@ export default function CheckInHubPage() {
             {completed.length ? (
               <ul className="mt-3 divide-y divide-border">
                 {completed.slice(0, 3).map((session) => {
-                  const date = new Date(session.completedAt!);
+                  const date = new Date(session.completed_at!);
                   return (
-                    <li key={session.id} className="flex items-start justify-between gap-4 py-5">
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold text-foreground">{localDateString(date) === today ? "Today" : date.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}</p>
-                        <p className="mt-1 text-xs leading-relaxed text-foreground-muted">{session.questions.length} questions answered · {session.source === "WHATSAPP" ? "WhatsApp" : "Web"}</p>
-                      </div>
-                      <div className="flex-none text-right">
-                        <p className="text-xs text-foreground-muted">{date.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}</p>
-                        <p className="mt-1 text-xs font-medium text-primary">Completed</p>
-                      </div>
+                    <li key={session.id}>
+                      <Link
+                        href={`/check-in/${session.id}/result`}
+                        className="flex items-start justify-between gap-4 py-5 transition-opacity hover:opacity-80"
+                      >
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-foreground">{localDateString(date) === today ? "Today" : date.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}</p>
+                          <p className="mt-1 text-xs leading-relaxed text-foreground-muted">{session.summary ?? `${session.answers.length} questions answered`}</p>
+                        </div>
+                        <div className="flex flex-none items-center gap-2 text-right">
+                          <div>
+                            <p className="text-xs text-foreground-muted">{date.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}</p>
+                            <p className="mt-1 text-xs font-medium text-primary">Completed</p>
+                          </div>
+                          <span aria-hidden="true" className="text-foreground-muted">&rsaquo;</span>
+                        </div>
+                      </Link>
                     </li>
                   );
                 })}

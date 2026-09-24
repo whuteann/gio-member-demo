@@ -2,57 +2,38 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { AnimatePresence, motion } from "motion/react";
-import { useAppState } from "@/context/AppStateContext";
-import { ARCHETYPES, buildColourPersonalityInsight, colourKeyFromSeed, COLOUR_LIBRARY } from "@/lib/blueprints";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { setUser } from "@/store/authSlice";
+import { calculateCorePersonality } from "@/lib/api/corePersonality";
 import { EASE_OUT, EASE_IN_OUT, EASE_SOFT_BACK } from "@/lib/sessionMotion";
-import type { ColourKey, CorePersonality, Language } from "@/lib/types";
+import type { Language } from "@/lib/types";
 import Button from "@/components/ui/Button";
-import Card from "@/components/ui/Card";
-import ProgressBar from "@/components/ui/ProgressBar";
 import BalanceOrb from "@/components/ui/BalanceOrb";
-import ColourOfTheDay from "@/components/ui/ColourOfTheDay";
-import NumerologySection from "@/components/ui/NumerologySection";
-import ColourBreakdown from "@/components/ui/ColourBreakdown";
-import SectionRail from "@/components/ui/SectionRail";
 import AmbientField from "@/components/session/AmbientField";
 
-type Step = "language" | "birthdate" | "reading" | "reveal";
+type Step = "language" | "birthdate" | "reading";
 
-// How long the "reading" ceremony plays before the reveal — this is the
-// member's very first Core Personality moment, so it holds a beat longer
-// than the routine per-reading transition on the Inner Reading flow.
-const READING_TRANSITION_MS = 2600;
+// Minimum time the "reading" ceremony stays on screen, even if the real
+// generation call resolves faster — the actual advance is gated on
+// Promise.all([apiCall, this timer]), so a slow real response never gets
+// cut short either.
+const READING_MIN_DISPLAY_MS = 2600;
+
+// Results render on their own page (/onboarding/results), not here — this
+// page marks onboarding complete the instant generation succeeds (see
+// gio-backend's docs/behaviour_log_0004.md), and this page's own guard
+// below redirects away as soon as that happens. Rendering the reveal here
+// too raced that redirect and booted the user to /dashboard before they
+// ever saw it.
+const AMBIENT_FALLBACK = "#8a9b7c";
 
 const TODAY = new Date().toISOString().slice(0, 10);
-
-const PILLARS = [
-  { key: "thinking" as const, label: "Thinking" },
-  { key: "emotionalSensitivity" as const, label: "Emotional Sensitivity" },
-  { key: "adaptability" as const, label: "Adaptability" },
-  { key: "willpower" as const, label: "Willpower" },
-];
-
-const REVEAL_SECTIONS = [
-  { id: "reveal-overview", label: "Overview" },
-  { id: "reveal-colour", label: "Colour" },
-  { id: "reveal-pillars", label: "Pillars" },
-  { id: "numerology-birthday", label: "Birthday" },
-  { id: "numerology-lifepath", label: "Life Path" },
-  { id: "numerology-talent", label: "Talent" },
-  { id: "reveal-colourbreakdown", label: "Colours" },
-];
 
 const phaseVariants = {
   enter: { opacity: 0, y: 24, filter: "blur(6px)" },
   center: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.55, ease: EASE_OUT } },
   exit: { opacity: 0, y: -18, filter: "blur(6px)", transition: { duration: 0.26, ease: EASE_IN_OUT } },
 };
-const stagger = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
-};
-// Text on the "reading" ceremony waits for the orb's pop-in to settle before
-// starting, unlike the reveal's stagger which begins almost immediately.
 const readingStagger = {
   hidden: {},
   show: { transition: { staggerChildren: 0.12, delayChildren: 0.6 } },
@@ -64,52 +45,57 @@ const rise = {
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const { ready, user, completeOnboardingBirthdate, markOnboardingComplete, updateProfile } = useAppState();
+  const dispatch = useAppDispatch();
+  const token = useAppSelector((s) => s.auth.token);
+  const user = useAppSelector((s) => s.auth.user);
   const [step, setStep] = useState<Step>("language");
   const [language, setLanguage] = useState<Language>("en");
   const [consent, setConsent] = useState(false);
   const [birthdate, setBirthdate] = useState("");
-  const [personality, setPersonality] = useState<CorePersonality | null>(null);
-  const [colourKey, setColourKey] = useState<ColourKey | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const navigatingAwayRef = useRef(false);
 
   useEffect(() => {
-    if (ready && !user) router.replace("/auth/login");
-    if (ready && user?.onboardingCompletedAt && !navigatingAwayRef.current) {
+    if (!token) {
+      router.replace("/auth/login");
+      return;
+    }
+    if (user?.onboarding_completed_at && !navigatingAwayRef.current) {
       router.replace("/dashboard");
     }
-  }, [ready, user, router]);
+  }, [token, user, router]);
 
-  // Hold on the "reading" ceremony for a fixed beat, then reveal — mirrors
-  // the Inner Reading session's post-answer transition.
-  useEffect(() => {
-    if (step !== "reading") return;
-    const timer = setTimeout(() => setStep("reveal"), READING_TRANSITION_MS);
-    return () => clearTimeout(timer);
-  }, [step]);
+  if (!token || !user || user.onboarding_completed_at) return null;
 
-  if (!ready || !user || user.onboardingCompletedAt) return null;
-
-  function submitBirthdate() {
-    const created = completeOnboardingBirthdate(birthdate);
-    updateProfile({ preferredLanguage: language });
-    setPersonality(created);
-    // Onboarding's one-time "supportive colour" reveal — a birthdate-seeded
-    // pick from the same 5-colour library check-ins and readings recommend
-    // from later, standing in for the AI derivation the product describes.
-    setColourKey(colourKeyFromSeed(birthdate));
+  async function submitBirthdate() {
+    if (!token) return;
+    setError(null);
+    setSubmitting(true);
     setStep("reading");
+    try {
+      const minDisplay = new Promise((resolve) => setTimeout(resolve, READING_MIN_DISPLAY_MS));
+      await Promise.all([calculateCorePersonality(token, { date_of_birth: birthdate, language }), minDisplay]);
+      // Onboarding is complete the moment generation succeeds (the backend
+      // already marked it so). Suppress this page's own "already
+      // completed" redirect *before* dispatching, then navigate ourselves
+      // to the results page — otherwise the guard effect above races our
+      // own navigation and both try to redirect at once.
+      navigatingAwayRef.current = true;
+      dispatch(setUser({ ...user!, onboarding_completed_at: new Date().toISOString() }));
+      router.push("/onboarding/results");
+    } catch {
+      setError("Something went wrong reading your birthdate. Please try again.");
+      setStep("birthdate");
+      setSubmitting(false);
+    }
   }
-
-  const archetype = personality ? ARCHETYPES[personality.archetype] : null;
-  const colour = colourKey ? COLOUR_LIBRARY[colourKey] : null;
-  const ambientColor = colour?.swatch ?? "#8a9b7c";
 
   return (
     <>
       <Head><title>Welcome — Gio</title></Head>
       <div className="relative isolate min-h-screen overflow-hidden">
-        {step === "reading" || step === "reveal" ? <AmbientField color={ambientColor} /> : null}
+        {step === "reading" ? <AmbientField color={AMBIENT_FALLBACK} /> : null}
         <div className="mx-auto flex min-h-screen max-w-lg flex-col justify-center px-6 py-10">
           <AnimatePresence mode="wait">
             {step === "language" && (
@@ -163,7 +149,7 @@ export default function OnboardingPage() {
                   <span className="text-3xl" aria-hidden>🎂</span>
                   <h1 className="mt-3 font-display text-3xl font-semibold text-foreground">When were you born?</h1>
                   <p className="mt-2 text-sm text-foreground-muted">
-                    Gio reads your birthdate to derive your Core Personality archetype and a
+                    Gio reads your birthdate to derive your Core Personality and a
                     supportive colour matched to it — the same AI reading the rest of the app
                     builds on.
                   </p>
@@ -178,7 +164,8 @@ export default function OnboardingPage() {
                     className="rounded-xl border border-border bg-surface px-4 py-3 text-sm text-foreground outline-none transition-colors focus:border-primary"
                   />
                 </label>
-                <Button fullWidth disabled={!birthdate} onClick={submitBirthdate}>
+                {error ? <p className="text-sm font-medium text-danger">{error}</p> : null}
+                <Button fullWidth disabled={!birthdate || submitting} onClick={submitBirthdate}>
                   Reveal my Core Personality
                 </Button>
               </motion.div>
@@ -198,7 +185,7 @@ export default function OnboardingPage() {
                   animate={{ scale: [0.9, 1.06, 1], opacity: 1 }}
                   transition={{ duration: 1.4, ease: EASE_SOFT_BACK }}
                 >
-                  <BalanceOrb color={ambientColor} size={128}>
+                  <BalanceOrb color={AMBIENT_FALLBACK} size={128}>
                     <span className="text-3xl" aria-hidden>✨</span>
                   </BalanceOrb>
                 </motion.div>
@@ -207,108 +194,14 @@ export default function OnboardingPage() {
                     Reading your birth code
                   </motion.h2>
                   <motion.p variants={rise} className="max-w-xs text-sm text-foreground-muted">
-                    Deriving your Core Personality archetype and a colour to support it.
+                    Deriving your Core Personality and a colour to support it — this takes a
+                    little longer than usual, it&apos;s worth the wait.
                   </motion.p>
-                </motion.div>
-              </motion.div>
-            )}
-
-            {step === "reveal" && archetype && colour && personality && (
-              <motion.div key="reveal" variants={phaseVariants} initial="enter" animate="center" exit="exit" className="flex flex-col gap-5">
-                <motion.div variants={stagger} initial="hidden" animate="show" className="flex flex-col gap-5">
-                  <motion.div variants={rise}>
-                    <Card id="reveal-overview" className="flex flex-col items-center gap-2 text-center">
-                      <ColourOfTheDay colourKey={colour.key} swatch={colour.swatch} size={112} />
-                      <h2 className="font-display text-2xl font-semibold text-foreground">{archetype.name}</h2>
-                      <p className="text-sm text-foreground-muted">{archetype.tagline}</p>
-                    </Card>
-                  </motion.div>
-
-                  <motion.div variants={rise}>
-                    <Card id="reveal-colour" className="flex flex-col gap-3">
-                      <h3 className="font-display text-lg font-semibold text-foreground">Your supportive colour</h3>
-                      <div className="flex items-center gap-3">
-                        <span
-                          className="h-10 w-10 flex-none rounded-full border border-border"
-                          style={{ background: colour.swatch }}
-                          aria-hidden
-                        />
-                        <div>
-                          <p className="text-sm font-semibold text-foreground">{colour.name}</p>
-                          <p className="text-xs text-foreground-muted">{colour.traits.join(" • ")}</p>
-                        </div>
-                      </div>
-                      <p className="text-sm leading-relaxed text-foreground-muted">
-                        {buildColourPersonalityInsight(colour, archetype, `${personality.id}-onboarding`)}
-                      </p>
-                    </Card>
-                  </motion.div>
-
-                  <motion.div variants={rise}>
-                    <Card id="reveal-pillars" className="flex flex-col gap-4">
-                      <h3 className="font-display text-lg font-semibold text-foreground">The four pillars</h3>
-                      {PILLARS.map((pillar) => (
-                        <div key={pillar.key}>
-                          <div className="mb-1 flex justify-between text-xs font-semibold text-foreground-muted">
-                            <span>{pillar.label}</span>
-                            <span>{personality[pillar.key]}</span>
-                          </div>
-                          <ProgressBar value={personality[pillar.key]} />
-                          <p className="mt-1.5 text-xs text-foreground-muted">{personality.pillarExplanations[pillar.key]}</p>
-                        </div>
-                      ))}
-                    </Card>
-                  </motion.div>
-
-                  <motion.div variants={rise}>
-                    <Card className="flex items-start gap-3 bg-surface-muted">
-                      <span aria-hidden>{personality.icon}</span>
-                      <p className="text-sm text-foreground-muted">{archetype.reminder}</p>
-                    </Card>
-                  </motion.div>
-
-                  {/* Animates itself rather than inheriting the parent stagger's
-                      "rise" variant — with 6+ staggered siblings, the
-                      inherited variant intermittently never fired for this
-                      one (stuck at its hidden state indefinitely; verified
-                      via computed styles, not just a slow transition). An
-                      explicit initial/animate sidesteps that entirely. */}
-                  <motion.div
-                    initial={{ y: 18, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.55, ease: EASE_OUT, delay: 0.3 }}
-                    className="flex flex-col gap-5"
-                  >
-                    <NumerologySection birthdate={birthdate} />
-                  </motion.div>
-
-                  <motion.div
-                    id="reveal-colourbreakdown"
-                    initial={{ y: 18, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.55, ease: EASE_OUT, delay: 0.4 }}
-                  >
-                    <ColourBreakdown birthdate={birthdate} />
-                  </motion.div>
-
-                  <motion.div variants={rise}>
-                    <Button
-                      fullWidth
-                      onClick={() => {
-                        navigatingAwayRef.current = true;
-                        markOnboardingComplete();
-                        router.push("/inner-reading/session");
-                      }}
-                    >
-                      Start my first Inner Reading
-                    </Button>
-                  </motion.div>
                 </motion.div>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
-        {step === "reveal" ? <SectionRail sections={REVEAL_SECTIONS} /> : null}
       </div>
     </>
   );

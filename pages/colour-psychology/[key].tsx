@@ -2,7 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import type { GetServerSideProps } from "next";
-import { useAppGuard } from "@/lib/useAppGuard";
+import { useAuthGuard } from "@/lib/useAuthGuard";
 import { COLOUR_LIBRARY } from "@/lib/blueprints";
 import type { ColourKey } from "@/lib/types";
 import AppShell from "@/components/layout/AppShell";
@@ -14,7 +14,7 @@ function isColourKey(value: string | null): value is ColourKey {
 }
 
 export default function ColourMeaningPage() {
-  const { settled } = useAppGuard();
+  const { settled } = useAuthGuard();
   const router = useRouter();
   const key = typeof router.query.key === "string" ? router.query.key : null;
   const colour = isColourKey(key) ? COLOUR_LIBRARY[key] : null;

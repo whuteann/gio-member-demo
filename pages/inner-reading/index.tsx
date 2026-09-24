@@ -1,10 +1,15 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useAppGuard } from "@/lib/useAppGuard";
-import { innerReadingGate } from "@/lib/entitlement";
+import { useAuthGuard } from "@/lib/useAuthGuard";
+import { useApiResource } from "@/lib/useApiResource";
+import { isPremiumActive, INNER_READING_WEEKLY_FREE_LIMIT, readingsUsedThisWeek } from "@/lib/api/entitlement";
+import { getLatestSnapshot, listInnerReadings } from "@/lib/api/reflections";
+import { getProgress } from "@/lib/api/progress";
+import { localizedSnapshot } from "@/lib/snapshotDisplay";
+import { ApiError } from "@/lib/api/client";
 import { addDays, localDateString, weekStartString } from "@/lib/gamification";
-import { resolveFocusKey } from "@/lib/scoring";
-import type { DimensionKey, InnerReading } from "@/lib/types";
+import type { InnerReadingOut, InnerStateSnapshotOut, ProgressOut } from "@/lib/api/types";
+import type { Language } from "@/lib/types";
 import AppShell from "@/components/layout/AppShell";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
@@ -23,19 +28,6 @@ const BEFORE_TIPS = [
   { icon: "🌿", title: "Take your time", body: "There is no rush. Breathe and flow.", circleClassName: "bg-grounding/15" },
 ];
 
-const FOCUS_TAG: Record<string, { label: string; icon: string; circleClassName: string }> = {
-  emotional_energy: { label: "Personal", icon: "🌙", circleClassName: "bg-energy/15" },
-  mental_clarity: { label: "Decision Making", icon: "🌊", circleClassName: "bg-clarity/15" },
-  inner_pressure: { label: "Work", icon: "🌿", circleClassName: "bg-pressure/15" },
-  grounding: { label: "Recovery", icon: "🪨", circleClassName: "bg-grounding/15" },
-  balanced: { label: "Reflection", icon: "✨", circleClassName: "bg-secondary/15" },
-};
-
-function focusTagFor(reading: InnerReading) {
-  const key = reading.dimensionScores ? resolveFocusKey(reading.dimensionScores as Record<DimensionKey, number>) : "balanced";
-  return FOCUS_TAG[key] ?? FOCUS_TAG.balanced;
-}
-
 function formatReadingTimestamp(iso: string, today: string): string {
   const date = new Date(iso);
   const dateStr = localDateString(date);
@@ -50,27 +42,50 @@ function weekdayLabel(dateStr: string): string {
   return new Date(y, m - 1, d).toLocaleDateString(undefined, { weekday: "short" });
 }
 
+interface HubData {
+  readings: InnerReadingOut[];
+  progress: ProgressOut;
+  snapshot: InnerStateSnapshotOut | null;
+}
+
 export default function InnerReadingHubPage() {
-  const { settled, data } = useAppGuard();
-  if (!settled || !data) return null;
+  const { settled, token, user, subscription } = useAuthGuard();
 
-  const gate = innerReadingGate(data.subscription);
-  const locked = gate === "MEMBERSHIP_GATE";
+  const { data, loading } = useApiResource<HubData>(
+    token
+      ? async () => {
+          const [readings, progress, snapshot] = await Promise.all([
+            listInnerReadings(token),
+            getProgress(token),
+            getLatestSnapshot(token).catch((e) => (e instanceof ApiError && e.status === 404 ? null : Promise.reject(e))),
+          ]);
+          return { readings, progress, snapshot };
+        }
+      : null,
+    [token]
+  );
+
+  if (!settled || !token) return null;
+  if (loading || !data) {
+    return (
+      <AppShell>
+        <p className="text-sm text-foreground-muted">Loading your Inner Readings…</p>
+      </AppShell>
+    );
+  }
+
+  const { readings, progress, snapshot } = data;
+  const premium = subscription ? isPremiumActive(subscription) : false;
+  const locked = !premium && readingsUsedThisWeek(readings) >= INNER_READING_WEEKLY_FREE_LIMIT;
+  const language: Language = (user?.preferred_language as Language) ?? "en";
   const today = localDateString();
-  const latestState = data.stateSnapshots[data.stateSnapshots.length - 1] ?? null;
-  const recentReadings = [...data.innerReadings]
-    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-    .slice(0, 3);
+  const recentReadings = readings.slice(0, 3);
 
+  const completedDays = new Set(readings.map((r) => localDateString(new Date(r.created_at))));
   const weekStart = weekStartString(today);
   const weekDays = Array.from({ length: 7 }, (_, i) => {
     const dateStr = addDays(weekStart, i);
-    return {
-      dateStr,
-      label: weekdayLabel(dateStr),
-      done: data.quests.some((q) => q.quest === "INNER_READING" && q.date === dateStr),
-      isToday: dateStr === today,
-    };
+    return { dateStr, label: weekdayLabel(dateStr), done: completedDays.has(dateStr), isToday: dateStr === today };
   });
 
   return (
@@ -170,31 +185,29 @@ export default function InnerReadingHubPage() {
               </div>
               {recentReadings.length > 0 ? (
                 <div className="flex flex-col divide-y divide-border">
-                  {recentReadings.map((reading) => {
-                    const tag = focusTagFor(reading);
-                    return (
-                      <Link key={reading.id} href={`/inner-reading/${reading.id}/result`}>
-                        <div className="flex items-center gap-3 py-4">
-                          <div
-                            className={`flex h-11 w-11 flex-none items-center justify-center rounded-full text-lg ${tag.circleClassName}`}
-                          >
-                            <span aria-hidden>{tag.icon}</span>
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <p className="truncate text-sm font-semibold text-foreground">{reading.title}</p>
-                              <Chip tone="neutral">{tag.label}</Chip>
-                            </div>
-                            <p className="line-clamp-2 text-xs text-foreground-muted">{reading.subtitle}</p>
-                          </div>
-                          <div className="flex flex-none flex-col items-end gap-1 text-foreground-muted">
-                            <span className="text-xs">{formatReadingTimestamp(reading.createdAt, today)}</span>
-                            <span aria-hidden>›</span>
-                          </div>
+                  {recentReadings.map((reading) => (
+                    <Link key={reading.id} href={`/inner-reading/${reading.id}/result`}>
+                      <div className="flex items-center gap-3 py-4">
+                        <div
+                          className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-surface-muted text-lg"
+                          aria-hidden
+                        >
+                          {reading.emoji}
                         </div>
-                      </Link>
-                    );
-                  })}
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p className="truncate text-sm font-semibold text-foreground">{reading.title}</p>
+                            <Chip tone="neutral">{reading.category}</Chip>
+                          </div>
+                          <p className="line-clamp-2 text-xs text-foreground-muted">{reading.subtitle}</p>
+                        </div>
+                        <div className="flex flex-none flex-col items-end gap-1 text-foreground-muted">
+                          <span className="text-xs">{formatReadingTimestamp(reading.created_at, today)}</span>
+                          <span aria-hidden>›</span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
               ) : (
                 <p className="text-sm text-foreground-muted">
@@ -252,12 +265,12 @@ export default function InnerReadingHubPage() {
               <div className="flex items-center gap-4">
                 <div>
                   <p className="font-display text-3xl font-bold leading-none text-foreground">
-                    {data.streak.current}
+                    {progress.streak.current}
                   </p>
                   <p className="text-xs text-foreground-muted">days</p>
                 </div>
                 <p className="text-xs text-foreground-muted">
-                  {data.streak.current > 0
+                  {progress.streak.current > 0
                     ? "Keep going! Consistency builds deeper awareness."
                     : "Start today to begin your streak."}
                 </p>
@@ -282,13 +295,17 @@ export default function InnerReadingHubPage() {
               </div>
             </Card>
 
-            {latestState ? (
+            {snapshot ? (
               <Card className="flex flex-col gap-2">
                 <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-foreground">
                   <span aria-hidden>🌿</span> Suggested Reading Focus
                 </h2>
-                <p className="font-display text-base font-semibold text-foreground">{latestState.currentFocus}</p>
-                <p className="text-sm text-foreground-muted">{latestState.summary}</p>
+                <p className="font-display text-base font-semibold text-foreground">
+                  {localizedSnapshot(snapshot, "current_focus", language)}
+                </p>
+                <p className="text-sm text-foreground-muted">
+                  {localizedSnapshot(snapshot, "insight", language)}
+                </p>
                 <Link href="/progress" className="text-sm font-semibold text-primary">
                   Learn more about this focus →
                 </Link>

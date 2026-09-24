@@ -1,12 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { AnimatePresence, motion, MotionConfig } from "motion/react";
-import { useAppGuard } from "@/lib/useAppGuard";
-import { useAppState } from "@/context/AppStateContext";
-import { buildQuestionOrder, READING_QUESTION_POOL, DIMENSIONS } from "@/lib/blueprints";
-import { innerReadingGate } from "@/lib/entitlement";
-import { newId } from "@/lib/id";
+import { useAuthGuard } from "@/lib/useAuthGuard";
+import { useApiResource } from "@/lib/useApiResource";
+import { getReadingQuestions, listInnerReadings, submitInnerReading as apiSubmitInnerReading } from "@/lib/api/reflections";
+import { ApiError } from "@/lib/api/client";
+import { DIMENSIONS } from "@/lib/blueprints";
+import { INNER_READING_WEEKLY_FREE_LIMIT, isPremiumActive, readingsUsedThisWeek } from "@/lib/api/entitlement";
 import { DIMENSION_HEX, EASE_IN_OUT, EASE_OUT, EASE_SOFT_BACK, GOLD_HEX } from "@/lib/sessionMotion";
 import AppShell from "@/components/layout/AppShell";
 import Button from "@/components/ui/Button";
@@ -18,7 +19,6 @@ import MotionSlider from "@/components/session/MotionSlider";
 import StepProgress from "@/components/session/StepProgress";
 import CompletionMandala from "@/components/session/CompletionMandala";
 
-const QUESTION_COUNT = 8;
 // How long the "reading" transition plays before navigating to the result.
 // Long enough for the 8-glyph mandala below to fully assemble (its last piece
 // lands around ~1.8s) plus the heading fade, short enough not to feel stalled.
@@ -66,14 +66,16 @@ const readingRise = {
 };
 
 export default function InnerReadingSessionPage() {
-  const { settled, data } = useAppGuard();
-  const { submitInnerReading } = useAppState();
+  const { settled, token, subscription } = useAuthGuard();
   const router = useRouter();
 
-  const questions = useMemo(
-    () => buildQuestionOrder(READING_QUESTION_POOL, QUESTION_COUNT, newId("reading-seed")),
-    []
+  const { data: questionSet, loading: questionsLoading } = useApiResource(
+    token ? () => getReadingQuestions(token).then((r) => r.questions) : null,
+    [token]
   );
+  const questions = questionSet ?? [];
+
+  const { data: recentReadings } = useApiResource(token ? () => listInnerReadings(token) : null, [token]);
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
   const [values, setValues] = useState<Record<number, number>>({});
@@ -83,20 +85,23 @@ export default function InnerReadingSessionPage() {
   // a beat before handing off to the result page — it gives the "reading"
   // some ceremony instead of an instant jump-cut.
   useEffect(() => {
-    if (phase !== "reading") return;
-    const timer = setTimeout(() => {
+    if (phase !== "reading" || !token) return;
+    const timer = setTimeout(async () => {
       const answers = questions.map((q, i) => ({
-        questionId: `q-${i}`,
         dimension: q.dimension,
-        questionText: q.text,
+        question_text: q.text,
         value: values[i],
       }));
-      const result = submitInnerReading(answers);
-      if ("error" in result) {
-        router.push("/membership");
-        return;
+      try {
+        const result = await apiSubmitInnerReading(token, answers);
+        router.push(`/inner-reading/${result.reading_id}/result`);
+      } catch (err) {
+        if (err instanceof ApiError && err.status === 403) {
+          router.push("/membership");
+          return;
+        }
+        throw err;
       }
-      router.push(`/inner-reading/${result.readingId}/result`);
     }, READING_TRANSITION_MS);
     return () => clearTimeout(timer);
     // Deliberately only re-runs when `phase` flips to "reading" — `values`
@@ -105,19 +110,28 @@ export default function InnerReadingSessionPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);
 
-  if (!settled || !data) return null;
+  if (!settled || !token) return null;
+  if (questionsLoading || questions.length === 0) {
+    return (
+      <AppShell title="Inner Reading">
+        <p className="text-sm text-foreground-muted">Loading your reading…</p>
+      </AppShell>
+    );
+  }
 
-  const gate = innerReadingGate(data.subscription);
+  const premium = subscription ? isPremiumActive(subscription) : false;
+  const usedThisWeek = recentReadings ? readingsUsedThisWeek(recentReadings) : 0;
+  const atWeeklyLimit = !premium && usedThisWeek >= INNER_READING_WEEKLY_FREE_LIMIT;
 
-  if (gate === "MEMBERSHIP_GATE") {
+  if (atWeeklyLimit) {
     return (
       <>
         <Head><title>Inner Reading — Gio</title></Head>
         <AppShell title="Inner Reading">
           <div className="mx-auto max-w-lg">
             <EntitlementGate
-              title="You've used your free Inner Reading"
-              description="Your first Inner Reading is included free. Repeat readings are available with Premium, along with full history and full recommendations."
+              title="You've used your free Inner Readings this week"
+              description="Free plan includes 3 Inner Readings per 7 days. Upgrade to Premium for unlimited readings, along with full history and full recommendations."
               ctaLabel="View Premium plans"
             />
           </div>
@@ -165,10 +179,10 @@ export default function InnerReadingSessionPage() {
                           label="Inner Reading"
                         />
                       </div>
-                      {gate === "ALLOW_FIRST_FREE" ? (
-                        <Chip tone="accent">First reading — free</Chip>
+                      {premium ? (
+                        <Chip tone="gold">Premium — unlimited</Chip>
                       ) : (
-                        <Chip tone="gold">Premium</Chip>
+                        <Chip tone="accent">{usedThisWeek + 1} of {INNER_READING_WEEKLY_FREE_LIMIT} this week</Chip>
                       )}
                     </div>
 

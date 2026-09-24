@@ -1,8 +1,8 @@
 import Head from "next/head";
 import { useState } from "react";
-import { useAppState } from "@/context/AppStateContext";
-import { useAppGuard } from "@/lib/useAppGuard";
-import { buildJournalInsights } from "@/lib/journal";
+import { useAuthGuard } from "@/lib/useAuthGuard";
+import { useApiResource } from "@/lib/useApiResource";
+import { createJournalEntry, getJournalInsights, listJournalEntries } from "@/lib/api/journal";
 import AppShell from "@/components/layout/AppShell";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
@@ -10,19 +10,35 @@ import Chip from "@/components/ui/Chip";
 import StatTile from "@/components/ui/StatTile";
 
 export default function JournalPage() {
-  const { settled, data } = useAppGuard();
-  const { addJournalEntry } = useAppState();
+  const { settled, token } = useAuthGuard();
   const [draft, setDraft] = useState("");
 
-  if (!settled || !data) return null;
+  const { data, loading, refetch } = useApiResource(
+    token
+      ? async () => {
+          const [entries, insights] = await Promise.all([listJournalEntries(token), getJournalInsights(token)]);
+          return { entries, insights };
+        }
+      : null,
+    [token]
+  );
 
-  const insights = buildJournalInsights(data.journalEntries);
-  const entries = [...data.journalEntries].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  if (!settled || !token) return null;
+  if (loading || !data) {
+    return (
+      <AppShell title="Journal">
+        <p className="text-sm text-foreground-muted">Loading your journal…</p>
+      </AppShell>
+    );
+  }
 
-  function save() {
-    if (!draft.trim()) return;
-    addJournalEntry(draft.trim());
+  const { entries, insights } = data;
+
+  async function save() {
+    if (!token || !draft.trim()) return;
+    await createJournalEntry(token, draft.trim());
     setDraft("");
+    refetch();
   }
 
   return (
@@ -48,13 +64,13 @@ export default function JournalPage() {
           </Card>
 
           <div className="grid grid-cols-3 gap-3 lg:col-span-1 lg:grid-cols-1">
-            <StatTile icon={<span aria-hidden>📝</span>} label="Entries" value={insights.entriesThisWeek} hint={
-              insights.entriesDelta === 0
+            <StatTile icon={<span aria-hidden>📝</span>} label="Entries" value={insights.entries_this_week} hint={
+              insights.entries_delta === 0
                 ? "Same as last week"
-                : `${insights.entriesDelta > 0 ? "↑" : "↓"} ${Math.abs(insights.entriesDelta)} from last week`
+                : `${insights.entries_delta > 0 ? "↑" : "↓"} ${Math.abs(insights.entries_delta)} from last week`
             } />
-            <StatTile icon={<span aria-hidden>🙂</span>} label="Most Common Mood" value={insights.topMood ?? "—"} />
-            <StatTile icon={<span aria-hidden>🌱</span>} label="Top Theme" value={insights.topTheme ?? "—"} />
+            <StatTile icon={<span aria-hidden>🙂</span>} label="Most Common Mood" value={insights.top_mood ?? "—"} />
+            <StatTile icon={<span aria-hidden>🌱</span>} label="Top Theme" value={insights.top_theme ?? "—"} />
           </div>
 
           <Card className="flex flex-col gap-3 lg:col-span-3">
@@ -71,7 +87,7 @@ export default function JournalPage() {
                         <Chip tone="neutral">{entry.theme}</Chip>
                       </div>
                       <p className="text-xs text-foreground-muted">
-                        {new Date(entry.createdAt).toLocaleString(undefined, {
+                        {new Date(entry.created_at).toLocaleString(undefined, {
                           month: "short",
                           day: "numeric",
                           year: "numeric",
