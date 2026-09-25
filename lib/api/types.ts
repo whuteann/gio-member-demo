@@ -33,6 +33,26 @@ export interface MeResponse {
   subscription: ApiSubscription;
 }
 
+export interface CheckoutResponse {
+  payment_id: string;
+  invoice_url: string;
+  amount: number;
+  currency: string;
+  billing_cycle: string;
+  status: string;
+}
+
+export interface SubscriptionPaymentOut {
+  id: string;
+  billing_cycle: string;
+  amount: number;
+  currency: string;
+  status: string;
+  invoice_url: string | null;
+  created_at: string;
+  paid_at: string | null;
+}
+
 export interface TokenResponse {
   access_token: string;
   refresh_token: string;
