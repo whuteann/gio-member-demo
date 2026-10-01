@@ -3,8 +3,10 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import type { GetServerSideProps } from "next";
 import { motion } from "motion/react";
+import { useTranslation } from "react-i18next";
 import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useApiResource } from "@/lib/useApiResource";
+import { useLanguage } from "@/lib/useLanguage";
 import { getInnerReading } from "@/lib/api/reflections";
 import { COLOUR_LIBRARY, DIMENSIONS } from "@/lib/blueprints";
 import { colourKeyForFocus } from "@/lib/recommendation";
@@ -20,11 +22,12 @@ import EntitlementGate from "@/components/ui/EntitlementGate";
 import AmbientField from "@/components/session/AmbientField";
 import DimensionGlyph from "@/components/session/DimensionGlyph";
 
-const LIFE_AREA_LABELS: Record<string, { label: string; icon: string }> = {
-  work: { label: "Work", icon: "💼" },
-  relationships: { label: "Relationships", icon: "🤝" },
-  personal_growth: { label: "Personal Growth", icon: "🌱" },
-  conflict_management: { label: "Conflict Management", icon: "🕊️" },
+const LIFE_AREA_KEYS = ["work", "relationships", "personal_growth", "conflict_management"] as const;
+const LIFE_AREA_ICONS: Record<string, string> = {
+  work: "💼",
+  relationships: "🤝",
+  personal_growth: "🌱",
+  conflict_management: "🕊️",
 };
 
 const DIM_COLOR: Record<string, string> = {
@@ -50,6 +53,9 @@ const glyphPop = {
 export default function InnerReadingResultPage() {
   const { settled, token } = useAuthGuard();
   const router = useRouter();
+  const { t } = useTranslation("innerReading");
+  const { language } = useLanguage();
+  const dateLocale = language === "zh" ? "zh-CN" : "en-US";
   const id = typeof router.query.id === "string" ? router.query.id : null;
 
   const { data: reading, loading, error } = useApiResource(
@@ -60,15 +66,15 @@ export default function InnerReadingResultPage() {
   if (!settled || !token || !id) return null;
   if (loading) {
     return (
-      <AppShell title="Your Inner Reading">
-        <p className="text-sm text-foreground-muted">Loading your reading…</p>
+      <AppShell title={t("result.pageTitle")}>
+        <p className="text-sm text-foreground-muted">{t("result.loading")}</p>
       </AppShell>
     );
   }
   if (error || !reading || reading.emotional_energy === null) {
     return (
-      <AppShell title="Reading not found">
-        <Link href="/inner-reading/history"><Button variant="outline-solid">Back to history</Button></Link>
+      <AppShell title={t("result.notFoundTitle")}>
+        <Link href="/inner-reading/history"><Button variant="outline-solid">{t("result.backToHistory")}</Button></Link>
       </AppShell>
     );
   }
@@ -86,8 +92,8 @@ export default function InnerReadingResultPage() {
 
   return (
     <>
-      <Head><title>Your Reading — Gio</title></Head>
-      <AppShell title="Your Inner Reading">
+      <Head><title>{t("result.pageTitle")} — Gio</title></Head>
+      <AppShell title={t("result.pageTitle")}>
         <div className="session-stage relative isolate">
           <AmbientField color={ambientColor} />
           <motion.div
@@ -101,14 +107,14 @@ export default function InnerReadingResultPage() {
                 <ColourOfTheDay colourKey={colourKey} swatch={ambientColor} size={128} />
                 <Chip tone="primary">{derived.currentFocus}</Chip>
                 <p className="text-xs text-foreground-muted">
-                  {new Date(reading.completed_at ?? "").toLocaleString()}
+                  {new Date(reading.completed_at ?? "").toLocaleString(dateLocale)}
                 </p>
               </Card>
             </motion.div>
 
             <motion.div variants={cardRise}>
               <Card className="flex flex-col gap-4">
-                <h2 className="font-display text-lg font-semibold text-foreground">Dimensions</h2>
+                <h2 className="font-display text-lg font-semibold text-foreground">{t("result.dimensions")}</h2>
                 <motion.div variants={pageStagger} className="flex flex-col gap-4">
                   {DIMENSIONS.map((dim) => {
                     const value = dims[dim.key as keyof typeof dims];
@@ -119,7 +125,7 @@ export default function InnerReadingResultPage() {
                         </motion.div>
                         <div className="min-w-0 flex-1">
                           <div className="mb-1 flex justify-between text-xs font-semibold text-foreground-muted">
-                            <span>{dim.label}</span>
+                            <span>{t(`common:dimensions.${dim.key}.label`)}</span>
                             <span>{value}</span>
                           </div>
                           <ProgressBar value={value} colorClassName={DIM_COLOR[dim.key]} />
@@ -133,7 +139,7 @@ export default function InnerReadingResultPage() {
 
             <motion.div variants={cardRise}>
               <Card>
-                <h2 className="mb-2 font-display text-lg font-semibold text-foreground">Your reading</h2>
+                <h2 className="mb-2 font-display text-lg font-semibold text-foreground">{t("result.yourReading")}</h2>
                 <p className="text-sm leading-relaxed text-foreground-muted">{reading.narrative}</p>
               </Card>
             </motion.div>
@@ -141,12 +147,12 @@ export default function InnerReadingResultPage() {
             {reading.insight ? (
               <motion.div variants={cardRise}>
                 <Card className="flex flex-col gap-3">
-                  <h2 className="font-display text-lg font-semibold text-foreground">Latest Insight</h2>
+                  <h2 className="font-display text-lg font-semibold text-foreground">{t("result.latestInsight")}</h2>
                   <p className="text-sm font-medium text-foreground">{reading.insight}</p>
                   {reading.reflection_question ? (
                     <div className="flex flex-col gap-1 border-t border-border pt-3">
                       <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
-                        💡 Reflection Question
+                        {t("result.reflectionQuestion")}
                       </p>
                       <p className="text-sm text-foreground-muted">{reading.reflection_question}</p>
                     </div>
@@ -158,13 +164,13 @@ export default function InnerReadingResultPage() {
             {reading.is_premium_content && reading.life_area_insights ? (
               <motion.div variants={cardRise}>
                 <Card className="flex flex-col gap-4">
-                  <h2 className="font-display text-lg font-semibold text-foreground">In-Depth Reading</h2>
-                  {(Object.keys(LIFE_AREA_LABELS) as (keyof typeof LIFE_AREA_LABELS)[]).map((key) => (
+                  <h2 className="font-display text-lg font-semibold text-foreground">{t("result.inDepthTitle")}</h2>
+                  {LIFE_AREA_KEYS.map((key) => (
                     <div key={key} className="flex items-start gap-3 border-t border-border pt-3 first:border-t-0 first:pt-0">
-                      <span className="text-lg" aria-hidden>{LIFE_AREA_LABELS[key].icon}</span>
+                      <span className="text-lg" aria-hidden>{LIFE_AREA_ICONS[key]}</span>
                       <div>
                         <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
-                          {LIFE_AREA_LABELS[key].label}
+                          {t(`result.lifeAreas.${key}`)}
                         </p>
                         <p className="mt-1 text-sm text-foreground-muted">{reading.life_area_insights![key as keyof typeof reading.life_area_insights]}</p>
                       </div>
@@ -175,18 +181,18 @@ export default function InnerReadingResultPage() {
             ) : (
               <motion.div variants={cardRise}>
                 <EntitlementGate
-                  title="Unlock your in-depth reading"
-                  description="Premium reveals a full breakdown across Work, Relationships, Personal Growth and Conflict Management."
+                  title={t("result.unlockTitle")}
+                  description={t("result.unlockBody")}
                 />
               </motion.div>
             )}
 
             <motion.div variants={cardRise} className="flex gap-3">
               <Link href="/colour-psychology" className="flex-1">
-                <Button fullWidth>See recommendations</Button>
+                <Button fullWidth>{t("result.seeRecommendations")}</Button>
               </Link>
               <Link href="/dashboard" className="flex-1">
-                <Button fullWidth variant="outline-solid">Dashboard</Button>
+                <Button fullWidth variant="outline-solid">{t("result.dashboard")}</Button>
               </Link>
             </motion.div>
           </motion.div>

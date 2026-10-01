@@ -155,11 +155,15 @@ export interface RecommendationItem {
   type: RecommendationItemType;
   referenceId: string | null;
   title: string;
+  titleZh?: string | null;
   reason: string;
+  reasonZh?: string | null;
   rank: number;
   imageUrl?: string;
   price?: number;
+  currency?: string;
   destinationUrl?: string;
+  materialTag?: string | null;
 }
 
 export type ColourKey = "scarlet" | "russet" | "gold" | "forest" | "ocean";
@@ -169,15 +173,23 @@ export type FiveTraits = [string, string, string, string, string];
 export interface ColourMeaning {
   key: ColourKey;
   name: string;
+  nameZh: string;
   swatch: string;
   traits: [string, string, string];
+  traitsZh: [string, string, string];
   description: string;
+  descriptionZh: string;
   article: string;
+  articleZh: string;
   benefit: string;
+  benefitZh: string;
   affirmations: [string, string];
+  affirmationsZh: [string, string];
   // Colour Breakdown detail panel (see components/ui/ColourBreakdown).
   positiveTraits: FiveTraits;
+  positiveTraitsZh: FiveTraits;
   negativeTraits: FiveTraits;
+  negativeTraitsZh: FiveTraits;
 }
 
 export type RecommendationTrigger = "CHECK_IN" | "INNER_READING";

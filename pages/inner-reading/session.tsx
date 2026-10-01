@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { AnimatePresence, motion, MotionConfig } from "motion/react";
+import { useTranslation } from "react-i18next";
 import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useApiResource } from "@/lib/useApiResource";
+import { useLanguage } from "@/lib/useLanguage";
 import { getReadingQuestions, listInnerReadings, submitInnerReading as apiSubmitInnerReading } from "@/lib/api/reflections";
 import { ApiError } from "@/lib/api/client";
 import { DIMENSIONS } from "@/lib/blueprints";
@@ -18,6 +20,7 @@ import DimensionGlyph from "@/components/session/DimensionGlyph";
 import MotionSlider from "@/components/session/MotionSlider";
 import StepProgress from "@/components/session/StepProgress";
 import CompletionMandala from "@/components/session/CompletionMandala";
+import PreparingSession from "@/components/session/PreparingSession";
 
 // How long the "reading" transition plays before navigating to the result.
 // Long enough for the 8-glyph mandala below to fully assemble (its last piece
@@ -68,6 +71,8 @@ const readingRise = {
 export default function InnerReadingSessionPage() {
   const { settled, token, subscription } = useAuthGuard();
   const router = useRouter();
+  const { t } = useTranslation("innerReading");
+  const { language } = useLanguage();
 
   const { data: questionSet, loading: questionsLoading } = useApiResource(
     token ? () => getReadingQuestions(token).then((r) => r.questions) : null,
@@ -89,7 +94,7 @@ export default function InnerReadingSessionPage() {
     const timer = setTimeout(async () => {
       const answers = questions.map((q, i) => ({
         dimension: q.dimension,
-        question_text: q.text,
+        question_text: (language === "zh" ? q.text_zh : q.text) ?? q.text,
         value: values[i],
       }));
       try {
@@ -113,8 +118,8 @@ export default function InnerReadingSessionPage() {
   if (!settled || !token) return null;
   if (questionsLoading || questions.length === 0) {
     return (
-      <AppShell title="Inner Reading">
-        <p className="text-sm text-foreground-muted">Loading your reading…</p>
+      <AppShell title={t("header.title")}>
+        <PreparingSession label={t("session.loading")} />
       </AppShell>
     );
   }
@@ -126,13 +131,13 @@ export default function InnerReadingSessionPage() {
   if (atWeeklyLimit) {
     return (
       <>
-        <Head><title>Inner Reading — Gio</title></Head>
-        <AppShell title="Inner Reading">
+        <Head><title>{t("meta.title")}</title></Head>
+        <AppShell title={t("header.title")}>
           <div className="mx-auto max-w-lg">
             <EntitlementGate
-              title="You've used your free Inner Readings this week"
-              description="Free plan includes 3 Inner Readings per 7 days. Upgrade to Premium for unlimited readings, along with full history and full recommendations."
-              ctaLabel="View Premium plans"
+              title={t("session.weeklyLimitTitle")}
+              description={t("session.weeklyLimitBody")}
+              ctaLabel={t("session.weeklyLimitCta")}
             />
           </div>
         </AppShell>
@@ -141,6 +146,7 @@ export default function InnerReadingSessionPage() {
   }
 
   const current = questions[step];
+  const questionText = (language === "zh" ? current.text_zh : current.text) ?? current.text;
   const dimensionMeta = DIMENSIONS.find((d) => d.key === current?.dimension)!;
   const currentColor = DIMENSION_HEX[current.dimension];
   const ambientColor = phase === "questions" ? currentColor : GOLD_HEX;
@@ -154,7 +160,7 @@ export default function InnerReadingSessionPage() {
 
   return (
     <>
-      <Head><title>Inner Reading — Gio</title></Head>
+      <Head><title>{t("meta.title")}</title></Head>
       <MotionConfig reducedMotion="user">
         <AppShell>
           <div className="session-stage relative isolate">
@@ -176,13 +182,13 @@ export default function InnerReadingSessionPage() {
                           step={step}
                           colors={questions.map((q) => DIMENSION_HEX[q.dimension])}
                           answered={answered}
-                          label="Inner Reading"
+                          label={t("session.progressLabel")}
                         />
                       </div>
                       {premium ? (
-                        <Chip tone="gold">Premium — unlimited</Chip>
+                        <Chip tone="gold">{t("session.premiumUnlimited")}</Chip>
                       ) : (
-                        <Chip tone="accent">{usedThisWeek + 1} of {INNER_READING_WEEKLY_FREE_LIMIT} this week</Chip>
+                        <Chip tone="accent">{t("session.weeklyCount", { used: usedThisWeek + 1, limit: INNER_READING_WEEKLY_FREE_LIMIT })}</Chip>
                       )}
                     </div>
 
@@ -209,21 +215,21 @@ export default function InnerReadingSessionPage() {
                             className="text-xs font-semibold uppercase tracking-wide"
                             style={{ color: currentColor }}
                           >
-                            {dimensionMeta.label}
+                            {t(`common:dimensions.${dimensionMeta.key}.label`)}
                           </motion.p>
                           <motion.h2
                             variants={lineVariants}
                             className="font-display text-2xl font-medium leading-snug text-foreground sm:text-3xl"
                           >
-                            {current.text}
+                            {questionText}
                           </motion.h2>
                           <motion.div variants={lineVariants}>
                             <MotionSlider
                               value={values[step] ?? null}
                               onChange={(v) => setValues((prev) => ({ ...prev, [step]: v }))}
                               color={currentColor}
-                              lowLabel={dimensionMeta.lowLabel}
-                              highLabel={dimensionMeta.highLabel}
+                              lowLabel={t(`common:dimensions.${dimensionMeta.key}.lowLabel`)}
+                              highLabel={t(`common:dimensions.${dimensionMeta.key}.highLabel`)}
                             />
                           </motion.div>
                         </motion.div>
@@ -242,7 +248,7 @@ export default function InnerReadingSessionPage() {
                             className="overflow-hidden"
                           >
                             <Button variant="outline-solid" onClick={() => goTo(step - 1)}>
-                              Back
+                              {t("session.back")}
                             </Button>
                           </motion.div>
                         ) : null}
@@ -262,7 +268,7 @@ export default function InnerReadingSessionPage() {
                             else setPhase("reading");
                           }}
                         >
-                          {step + 1 < questions.length ? "Next" : "Complete Reading"}
+                          {step + 1 < questions.length ? t("session.next") : t("session.completeCta")}
                         </Button>
                       </motion.div>
                     </div>
@@ -281,10 +287,10 @@ export default function InnerReadingSessionPage() {
                     <CompletionMandala answers={answerSummary} />
                     <motion.div variants={readingStagger} initial="hidden" animate="show" className="flex flex-col items-center gap-2">
                       <motion.h2 variants={readingRise} className="font-display text-2xl font-semibold text-foreground">
-                        Reading your inner state
+                        {t("session.readingTitle")}
                       </motion.h2>
                       <motion.p variants={readingRise} className="max-w-xs text-sm text-foreground-muted">
-                        Weighing what you shared against your recent patterns.
+                        {t("session.readingBody")}
                       </motion.p>
                     </motion.div>
                   </motion.div>

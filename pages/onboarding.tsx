@@ -2,9 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { AnimatePresence, motion } from "motion/react";
+import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setUser } from "@/store/authSlice";
 import { calculateCorePersonality } from "@/lib/api/corePersonality";
+import { useLanguage } from "@/lib/useLanguage";
 import { EASE_OUT, EASE_IN_OUT, EASE_SOFT_BACK } from "@/lib/sessionMotion";
 import type { Language } from "@/lib/types";
 import Button from "@/components/ui/Button";
@@ -46,10 +48,11 @@ const rise = {
 export default function OnboardingPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const { t } = useTranslation("onboarding");
   const token = useAppSelector((s) => s.auth.token);
   const user = useAppSelector((s) => s.auth.user);
+  const { language, setLanguage } = useLanguage();
   const [step, setStep] = useState<Step>("language");
-  const [language, setLanguage] = useState<Language>("en");
   const [consent, setConsent] = useState(false);
   const [birthdate, setBirthdate] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -85,7 +88,7 @@ export default function OnboardingPage() {
       dispatch(setUser({ ...user!, onboarding_completed_at: new Date().toISOString() }));
       router.push("/onboarding/results");
     } catch {
-      setError("Something went wrong reading your birthdate. Please try again.");
+      setError(t("birthdate.error"));
       setStep("birthdate");
       setSubmitting(false);
     }
@@ -102,15 +105,12 @@ export default function OnboardingPage() {
               <motion.div key="language" variants={phaseVariants} initial="enter" animate="center" exit="exit" className="flex flex-col gap-6">
                 <div>
                   <span className="text-3xl" aria-hidden>🌿</span>
-                  <h1 className="mt-3 font-display text-3xl font-semibold text-foreground">Welcome to Gio</h1>
-                  <p className="mt-2 text-sm text-foreground-muted">
-                    Let&apos;s set up your space. Next, we&apos;ll use your birthdate to reveal your
-                    Core Personality and your supportive colour.
-                  </p>
+                  <h1 className="mt-3 font-display text-3xl font-semibold text-foreground">{t("language.welcome")}</h1>
+                  <p className="mt-2 text-sm text-foreground-muted">{t("language.intro")}</p>
                 </div>
 
                 <div>
-                  <p className="mb-2 text-sm font-semibold text-foreground">Preferred language</p>
+                  <p className="mb-2 text-sm font-semibold text-foreground">{t("language.preferredLanguage")}</p>
                   <div className="grid grid-cols-2 gap-3">
                     {(["en", "zh"] as Language[]).map((lang) => (
                       <button
@@ -120,7 +120,7 @@ export default function OnboardingPage() {
                           language === lang ? "border-primary bg-primary text-primary-foreground" : "border-border bg-surface text-foreground"
                         }`}
                       >
-                        {lang === "en" ? "English" : "中文 (Mandarin)"}
+                        {lang === "en" ? t("language.english") : t("language.chinese")}
                       </button>
                     ))}
                   </div>
@@ -133,12 +133,11 @@ export default function OnboardingPage() {
                     onChange={(e) => setConsent(e.target.checked)}
                     className="mt-0.5 h-4 w-4"
                   />
-                  I consent to Gio storing my check-in and reading history to personalise my
-                  experience. Private notes are never used for AI context or recommendations.
+                  {t("language.consent")}
                 </label>
 
                 <Button fullWidth disabled={!consent} onClick={() => setStep("birthdate")}>
-                  Continue
+                  {t("language.continue")}
                 </Button>
               </motion.div>
             )}
@@ -147,15 +146,11 @@ export default function OnboardingPage() {
               <motion.div key="birthdate" variants={phaseVariants} initial="enter" animate="center" exit="exit" className="flex flex-col gap-6">
                 <div>
                   <span className="text-3xl" aria-hidden>🎂</span>
-                  <h1 className="mt-3 font-display text-3xl font-semibold text-foreground">When were you born?</h1>
-                  <p className="mt-2 text-sm text-foreground-muted">
-                    Gio reads your birthdate to derive your Core Personality and a
-                    supportive colour matched to it — the same AI reading the rest of the app
-                    builds on.
-                  </p>
+                  <h1 className="mt-3 font-display text-3xl font-semibold text-foreground">{t("birthdate.title")}</h1>
+                  <p className="mt-2 text-sm text-foreground-muted">{t("birthdate.intro")}</p>
                 </div>
                 <label className="flex flex-col gap-1.5">
-                  <span className="text-sm font-semibold text-foreground">Birthdate</span>
+                  <span className="text-sm font-semibold text-foreground">{t("birthdate.label")}</span>
                   <input
                     type="date"
                     value={birthdate}
@@ -166,7 +161,7 @@ export default function OnboardingPage() {
                 </label>
                 {error ? <p className="text-sm font-medium text-danger">{error}</p> : null}
                 <Button fullWidth disabled={!birthdate || submitting} onClick={submitBirthdate}>
-                  Reveal my Core Personality
+                  {t("birthdate.reveal")}
                 </Button>
               </motion.div>
             )}
@@ -191,11 +186,10 @@ export default function OnboardingPage() {
                 </motion.div>
                 <motion.div variants={readingStagger} initial="hidden" animate="show" className="flex flex-col items-center gap-2">
                   <motion.h2 variants={rise} className="font-display text-2xl font-semibold text-foreground">
-                    Reading your birth code
+                    {t("reading.title")}
                   </motion.h2>
                   <motion.p variants={rise} className="max-w-xs text-sm text-foreground-muted">
-                    Deriving your Core Personality and a colour to support it — this takes a
-                    little longer than usual, it&apos;s worth the wait.
+                    {t("reading.body")}
                   </motion.p>
                 </motion.div>
               </motion.div>

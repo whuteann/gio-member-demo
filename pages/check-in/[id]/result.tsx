@@ -3,13 +3,15 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import type { GetServerSideProps } from "next";
 import { motion } from "motion/react";
+import { useTranslation } from "react-i18next";
 import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useApiResource } from "@/lib/useApiResource";
+import { useLanguage } from "@/lib/useLanguage";
 import { getCheckInResults } from "@/lib/api/reflections";
 import { localizedSnapshot } from "@/lib/snapshotDisplay";
 import { COLOUR_LIBRARY, DIMENSIONS } from "@/lib/blueprints";
 import { EASE_OUT, EASE_SOFT_BACK, GOLD_HEX } from "@/lib/sessionMotion";
-import type { ColourKey, Language } from "@/lib/types";
+import type { ColourKey } from "@/lib/types";
 import AppShell from "@/components/layout/AppShell";
 import Card from "@/components/ui/Card";
 import ColourOfTheDay from "@/components/ui/ColourOfTheDay";
@@ -40,10 +42,12 @@ const glyphPop = {
 };
 
 export default function CheckInResultPage() {
-  const { settled, token, user } = useAuthGuard();
+  const { settled, token } = useAuthGuard();
   const router = useRouter();
+  const { t } = useTranslation("checkIn");
+  const { language } = useLanguage();
+  const dateLocale = language === "zh" ? "zh-CN" : "en-US";
   const id = typeof router.query.id === "string" ? router.query.id : null;
-  const language: Language = (user?.preferred_language as Language) ?? "en";
 
   const { data: results, loading, error } = useApiResource(
     token && id ? () => getCheckInResults(token, id) : null,
@@ -53,15 +57,15 @@ export default function CheckInResultPage() {
   if (!settled || !token || !id) return null;
   if (loading) {
     return (
-      <AppShell title="Your Check-In">
-        <p className="text-sm text-foreground-muted">Loading your check-in…</p>
+      <AppShell title={t("result.pageTitle")}>
+        <p className="text-sm text-foreground-muted">{t("result.loading")}</p>
       </AppShell>
     );
   }
   if (error || !results) {
     return (
-      <AppShell title="Check-in not found">
-        <Link href="/check-in/history"><Button variant="outline-solid">Back to history</Button></Link>
+      <AppShell title={t("result.notFoundTitle")}>
+        <Link href="/check-in/history"><Button variant="outline-solid">{t("result.backToHistory")}</Button></Link>
       </AppShell>
     );
   }
@@ -91,8 +95,8 @@ export default function CheckInResultPage() {
 
   return (
     <>
-      <Head><title>Your Check-In — Gio</title></Head>
-      <AppShell title="Your Check-In">
+      <Head><title>{t("result.pageTitle")} — Gio</title></Head>
+      <AppShell title={t("result.pageTitle")}>
         <div className="session-stage relative isolate">
           <AmbientField color={ambientColor} />
           <motion.div
@@ -104,16 +108,16 @@ export default function CheckInResultPage() {
             <motion.div variants={cardRise}>
               <Card className="flex flex-col items-center gap-3 text-center">
                 <ColourOfTheDay colourKey={recommendedColour?.key ?? "gold"} swatch={ambientColor} size={128} />
-                <Chip tone="primary">{currentFocus ?? session.summary ?? "Check-in complete"}</Chip>
+                <Chip tone="primary">{currentFocus ?? session.summary ?? t("result.fallbackComplete")}</Chip>
                 <p className="text-xs text-foreground-muted">
-                  {new Date(session.completed_at ?? session.started_at).toLocaleString()}
+                  {new Date(session.completed_at ?? session.started_at).toLocaleString(dateLocale)}
                 </p>
               </Card>
             </motion.div>
 
             <motion.div variants={cardRise}>
               <Card className="flex flex-col gap-4">
-                <h2 className="font-display text-lg font-semibold text-foreground">Dimensions</h2>
+                <h2 className="font-display text-lg font-semibold text-foreground">{t("result.dimensions")}</h2>
                 <motion.div variants={pageStagger} className="flex flex-col gap-4">
                   {DIMENSIONS.map((dim) => {
                     const value = dims[dim.key as keyof typeof dims] as number;
@@ -124,7 +128,7 @@ export default function CheckInResultPage() {
                         </motion.div>
                         <div className="min-w-0 flex-1">
                           <div className="mb-1 flex justify-between text-xs font-semibold text-foreground-muted">
-                            <span>{dim.label}</span>
+                            <span>{t(`common:dimensions.${dim.key}.label`)}</span>
                             <span>{value}</span>
                           </div>
                           <ProgressBar value={value} colorClassName={DIM_COLOR[dim.key]} />
@@ -139,13 +143,13 @@ export default function CheckInResultPage() {
             {insight ? (
               <motion.div variants={cardRise}>
                 <Card className="flex flex-col gap-3">
-                  <h2 className="font-display text-lg font-semibold text-foreground">Latest Insight</h2>
+                  <h2 className="font-display text-lg font-semibold text-foreground">{t("result.latestInsight")}</h2>
                   <p className="text-2xl leading-none text-accent">&ldquo;</p>
                   <p className="-mt-3 text-sm font-medium text-foreground">{insight}</p>
                   {reflectionQuestion ? (
                     <div className="flex flex-col gap-1 border-t border-border pt-3">
                       <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
-                        💡 Reflection Question
+                        {t("result.reflectionQuestion")}
                       </p>
                       <p className="text-sm text-foreground-muted">{reflectionQuestion}</p>
                     </div>
@@ -159,19 +163,19 @@ export default function CheckInResultPage() {
                 <Card className="flex flex-col gap-3">
                   {reminder ? (
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">🌿 Reminder for you</p>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">{t("result.reminder")}</p>
                       <p className="mt-1 text-sm text-foreground">{reminder}</p>
                     </div>
                   ) : null}
                   {friendlyAdvice ? (
                     <div className="border-t border-border pt-3 first:border-t-0 first:pt-0">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">🤝 Friendly advice</p>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">{t("result.friendlyAdvice")}</p>
                       <p className="mt-1 text-sm text-foreground">{friendlyAdvice}</p>
                     </div>
                   ) : null}
                   {affirmation ? (
                     <div className="border-t border-border pt-3 first:border-t-0 first:pt-0">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">✨ Affirmation</p>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">{t("result.affirmation")}</p>
                       <p className="mt-1 text-sm italic text-foreground">{affirmation}</p>
                     </div>
                   ) : null}
@@ -182,7 +186,7 @@ export default function CheckInResultPage() {
             {session.private_note ? (
               <motion.div variants={cardRise}>
                 <Card>
-                  <h2 className="mb-2 font-display text-lg font-semibold text-foreground">Your note</h2>
+                  <h2 className="mb-2 font-display text-lg font-semibold text-foreground">{t("result.yourNote")}</h2>
                   <p className="text-sm leading-relaxed text-foreground-muted">{session.private_note}</p>
                 </Card>
               </motion.div>
@@ -190,10 +194,10 @@ export default function CheckInResultPage() {
 
             <motion.div variants={cardRise} className="flex gap-3">
               <Link href="/colour-psychology" className="flex-1">
-                <Button fullWidth>See recommendations</Button>
+                <Button fullWidth>{t("result.seeRecommendations")}</Button>
               </Link>
               <Link href="/dashboard" className="flex-1">
-                <Button fullWidth variant="outline-solid">Dashboard</Button>
+                <Button fullWidth variant="outline-solid">{t("result.dashboard")}</Button>
               </Link>
             </motion.div>
           </motion.div>

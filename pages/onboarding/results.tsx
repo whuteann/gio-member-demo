@@ -1,28 +1,30 @@
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { motion } from "motion/react";
+import { useTranslation } from "react-i18next";
 import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useApiResource } from "@/lib/useApiResource";
 import { getCurrentCorePersonality } from "@/lib/api/corePersonality";
 import { ApiError } from "@/lib/api/client";
 import { COLOUR_LIBRARY } from "@/lib/blueprints";
-import { colourScores, localized, topColourKey } from "@/lib/corePersonalityDisplay";
+import { colourScores, localized, localizedPoints, topColourKey } from "@/lib/corePersonalityDisplay";
 import { EASE_OUT } from "@/lib/sessionMotion";
 import type { Language } from "@/lib/types";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import ColourOfTheDay from "@/components/ui/ColourOfTheDay";
 import ColourBreakdown from "@/components/ui/ColourBreakdown";
+import NumeralBadge from "@/components/ui/NumeralBadge";
 import SectionRail from "@/components/ui/SectionRail";
 import AmbientField from "@/components/session/AmbientField";
 
 const REVEAL_SECTIONS = [
-  { id: "reveal-overview", label: "Overview" },
-  { id: "reveal-colour", label: "Colour" },
-  { id: "reveal-birthday", label: "Birthday" },
-  { id: "reveal-lifepath", label: "Life Path" },
-  { id: "reveal-talent", label: "Talent" },
-  { id: "reveal-colourbreakdown", label: "Colours" },
+  { id: "reveal-overview", labelKey: "results.sections.overview" },
+  { id: "reveal-colour", labelKey: "results.sections.colour" },
+  { id: "reveal-birthday", labelKey: "results.sections.birthday" },
+  { id: "reveal-lifepath", labelKey: "results.sections.lifePath" },
+  { id: "reveal-talent", labelKey: "results.sections.talent" },
+  { id: "reveal-colourbreakdown", labelKey: "results.sections.colours" },
 ];
 
 const stagger = {
@@ -45,6 +47,7 @@ const rise = {
  */
 export default function OnboardingResultsPage() {
   const router = useRouter();
+  const { t } = useTranslation("onboarding");
   const { settled, token, user } = useAuthGuard();
 
   const { data: personality, loading } = useApiResource(
@@ -58,7 +61,7 @@ export default function OnboardingResultsPage() {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center px-6">
-        <p className="text-sm text-foreground-muted">Loading your Core Personality…</p>
+        <p className="text-sm text-foreground-muted">{t("results.loading")}</p>
       </div>
     );
   }
@@ -101,7 +104,7 @@ export default function OnboardingResultsPage() {
 
             <motion.div variants={rise}>
               <Card id="reveal-colour" className="flex flex-col gap-3">
-                <h3 className="font-display text-lg font-semibold text-foreground">Your supportive colour</h3>
+                <h3 className="font-display text-lg font-semibold text-foreground">{t("results.supportiveColour")}</h3>
                 <div className="flex items-center gap-3">
                   <span
                     className="h-10 w-10 flex-none rounded-full border border-border"
@@ -118,38 +121,53 @@ export default function OnboardingResultsPage() {
             </motion.div>
 
             <motion.div variants={rise}>
-              <Card id="reveal-birthday" className="flex flex-col gap-2">
-                <div className="flex items-baseline justify-between">
-                  <h3 className="font-display text-lg font-semibold text-foreground">Birthday Number</h3>
-                  <span className="font-display text-2xl font-semibold text-primary">{personality.birthday_number}</span>
+              <Card id="reveal-birthday" className="flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-display text-lg font-semibold text-foreground">{t("results.birthdayNumber")}</h3>
+                  <NumeralBadge value={personality.birthday_number ?? "—"} accent="var(--gold)" />
                 </div>
-                <p className="text-sm leading-relaxed text-foreground-muted">
-                  {localized(personality, "birthday_number_content", language)}
-                </p>
+                <ul className="flex flex-col gap-2">
+                  {localizedPoints(personality, "birthday_number_points", language).map((point, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm leading-relaxed text-foreground-muted">
+                      <span aria-hidden>{point.emoji}</span>
+                      <span>{point.text}</span>
+                    </li>
+                  ))}
+                </ul>
               </Card>
             </motion.div>
 
             <motion.div variants={rise}>
-              <Card id="reveal-lifepath" className="flex flex-col gap-2">
-                <div className="flex items-baseline justify-between">
-                  <h3 className="font-display text-lg font-semibold text-foreground">Life Path Number</h3>
-                  <span className="font-display text-2xl font-semibold text-primary">{personality.life_path_number}</span>
+              <Card id="reveal-lifepath" className="flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-display text-lg font-semibold text-foreground">{t("results.lifePathNumber")}</h3>
+                  <NumeralBadge value={personality.life_path_number ?? "—"} accent="var(--accent)" />
                 </div>
-                <p className="text-sm leading-relaxed text-foreground-muted">
-                  {localized(personality, "life_path_number_content", language)}
-                </p>
+                <ul className="flex flex-col gap-2">
+                  {localizedPoints(personality, "life_path_number_points", language).map((point, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm leading-relaxed text-foreground-muted">
+                      <span aria-hidden>{point.emoji}</span>
+                      <span>{point.text}</span>
+                    </li>
+                  ))}
+                </ul>
               </Card>
             </motion.div>
 
             <motion.div variants={rise}>
-              <Card id="reveal-talent" className="flex flex-col gap-2">
-                <div className="flex items-baseline justify-between">
-                  <h3 className="font-display text-lg font-semibold text-foreground">Talent Number</h3>
-                  <span className="font-display text-2xl font-semibold text-primary">{personality.talent_number}</span>
+              <Card id="reveal-talent" className="flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-display text-lg font-semibold text-foreground">{t("results.talentNumber")}</h3>
+                  <NumeralBadge value={personality.talent_number ?? "—"} accent="var(--primary)" />
                 </div>
-                <p className="text-sm leading-relaxed text-foreground-muted">
-                  {localized(personality, "talent_number_content", language)}
-                </p>
+                <ul className="flex flex-col gap-2">
+                  {localizedPoints(personality, "talent_number_points", language).map((point, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm leading-relaxed text-foreground-muted">
+                      <span aria-hidden>{point.emoji}</span>
+                      <span>{point.text}</span>
+                    </li>
+                  ))}
+                </ul>
               </Card>
             </motion.div>
 
@@ -159,15 +177,15 @@ export default function OnboardingResultsPage() {
 
             <motion.div variants={rise} className="flex flex-col gap-3">
               <Button fullWidth onClick={() => router.push("/inner-reading/session")}>
-                Start my first Inner Reading
+                {t("results.startFirstReading")}
               </Button>
               <Button fullWidth variant="outline" onClick={() => router.push("/dashboard")}>
-                Go to Dashboard
+                {t("results.goToDashboard")}
               </Button>
             </motion.div>
           </motion.div>
         </div>
-        <SectionRail sections={REVEAL_SECTIONS} />
+        <SectionRail sections={REVEAL_SECTIONS.map((s) => ({ id: s.id, label: t(s.labelKey) }))} />
       </div>
     </>
   );

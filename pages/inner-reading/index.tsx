@@ -1,7 +1,9 @@
 import Head from "next/head";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useApiResource } from "@/lib/useApiResource";
+import { useLanguage } from "@/lib/useLanguage";
 import { isPremiumActive, INNER_READING_WEEKLY_FREE_LIMIT, readingsUsedThisWeek } from "@/lib/api/entitlement";
 import { getLatestSnapshot, listInnerReadings } from "@/lib/api/reflections";
 import { getProgress } from "@/lib/api/progress";
@@ -9,38 +11,10 @@ import { localizedSnapshot } from "@/lib/snapshotDisplay";
 import { ApiError } from "@/lib/api/client";
 import { addDays, localDateString, weekStartString } from "@/lib/gamification";
 import type { InnerReadingOut, InnerStateSnapshotOut, ProgressOut } from "@/lib/api/types";
-import type { Language } from "@/lib/types";
 import AppShell from "@/components/layout/AppShell";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Chip from "@/components/ui/Chip";
-
-const FEATURES = [
-  { icon: "🔒", label: "Private & Secure", body: "Your answers are encrypted and private." },
-  { icon: "🧑", label: "Personalised Insight", body: "Receive insights tailored to you." },
-  { icon: "💡", label: "Better Clarity", body: "Understand your thoughts, emotions and needs." },
-];
-
-const BEFORE_TIPS = [
-  { icon: "🔇", title: "Find a quiet space", body: "Give yourself undisturbed time.", circleClassName: "bg-clarity/15" },
-  { icon: "❤️", title: "Be honest with yourself", body: "There are no right or wrong answers.", circleClassName: "bg-danger/10" },
-  { icon: "🎯", title: "Focus on the present", body: "Answer based on how you feel now.", circleClassName: "bg-surface-muted" },
-  { icon: "🌿", title: "Take your time", body: "There is no rush. Breathe and flow.", circleClassName: "bg-grounding/15" },
-];
-
-function formatReadingTimestamp(iso: string, today: string): string {
-  const date = new Date(iso);
-  const dateStr = localDateString(date);
-  const time = date.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
-  if (dateStr === today) return `Today, ${time}`;
-  if (dateStr === addDays(today, -1)) return `Yesterday, ${time}`;
-  return `${date.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}, ${time}`;
-}
-
-function weekdayLabel(dateStr: string): string {
-  const [y, m, d] = dateStr.split("-").map(Number);
-  return new Date(y, m - 1, d).toLocaleDateString(undefined, { weekday: "short" });
-}
 
 interface HubData {
   readings: InnerReadingOut[];
@@ -49,7 +23,30 @@ interface HubData {
 }
 
 export default function InnerReadingHubPage() {
-  const { settled, token, user, subscription } = useAuthGuard();
+  const { settled, token, subscription } = useAuthGuard();
+  const { t } = useTranslation("innerReading");
+  const { language } = useLanguage();
+  const dateLocale = language === "zh" ? "zh-CN" : "en-US";
+
+  const features = t("begin.features", { returnObjects: true }) as { label: string; body: string }[];
+  const beforeTips = t("beforeYouBegin.tips", { returnObjects: true }) as { title: string; body: string }[];
+  const BEFORE_ICONS = ["🔇", "❤️", "🎯", "🌿"];
+  const BEFORE_CIRCLE_CLASSES = ["bg-clarity/15", "bg-danger/10", "bg-surface-muted", "bg-grounding/15"];
+  const FEATURE_ICONS = ["🔒", "🧑", "💡"];
+
+  function formatReadingTimestamp(iso: string, today: string): string {
+    const date = new Date(iso);
+    const dateStr = localDateString(date);
+    const time = date.toLocaleTimeString(dateLocale, { hour: "numeric", minute: "2-digit" });
+    if (dateStr === today) return `${t("recent.today")}, ${time}`;
+    if (dateStr === addDays(today, -1)) return `${t("recent.yesterday")}, ${time}`;
+    return `${date.toLocaleDateString(dateLocale, { day: "numeric", month: "short", year: "numeric" })}, ${time}`;
+  }
+
+  function weekdayLabel(dateStr: string): string {
+    const [y, m, d] = dateStr.split("-").map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString(dateLocale, { weekday: "short" });
+  }
 
   const { data, loading } = useApiResource<HubData>(
     token
@@ -69,7 +66,7 @@ export default function InnerReadingHubPage() {
   if (loading || !data) {
     return (
       <AppShell>
-        <p className="text-sm text-foreground-muted">Loading your Inner Readings…</p>
+        <p className="text-sm text-foreground-muted">{t("loading")}</p>
       </AppShell>
     );
   }
@@ -77,7 +74,6 @@ export default function InnerReadingHubPage() {
   const { readings, progress, snapshot } = data;
   const premium = subscription ? isPremiumActive(subscription) : false;
   const locked = !premium && readingsUsedThisWeek(readings) >= INNER_READING_WEEKLY_FREE_LIMIT;
-  const language: Language = (user?.preferred_language as Language) ?? "en";
   const today = localDateString();
   const recentReadings = readings.slice(0, 3);
 
@@ -90,15 +86,15 @@ export default function InnerReadingHubPage() {
 
   return (
     <>
-      <Head><title>Inner Reading — Gio</title></Head>
+      <Head><title>{t("meta.title")}</title></Head>
       <AppShell>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h1 className="flex items-center gap-2 font-display text-2xl font-semibold text-foreground lg:text-3xl">
-              Inner Reading <span aria-hidden>🌿</span>
+              {t("header.title")} <span aria-hidden>🌿</span>
             </h1>
             <p className="mt-1 text-sm text-foreground-muted">
-              Take a few minutes to understand your current inner state.
+              {t("header.subtitle")}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -106,16 +102,16 @@ export default function InnerReadingHubPage() {
               <span aria-hidden>⏱️</span>
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-wide text-foreground-muted">
-                  Estimated time
+                  {t("estimatedTime.label")}
                 </p>
-                <p className="text-sm font-semibold text-foreground">3–5 minutes</p>
+                <p className="text-sm font-semibold text-foreground">{t("estimatedTime.value")}</p>
               </div>
             </div>
             {locked ? (
-              <Chip tone="gold">🔒 Premium</Chip>
+              <Chip tone="gold">{t("premiumChip")}</Chip>
             ) : (
               <Link href="/inner-reading/session">
-                <Button icon={<span aria-hidden>+</span>}>Start New Reading</Button>
+                <Button icon={<span aria-hidden>+</span>}>{t("startNewReading")}</Button>
               </Link>
             )}
           </div>
@@ -133,14 +129,13 @@ export default function InnerReadingHubPage() {
                 </div>
                 <div className="flex flex-col gap-3">
                   <h2 className="font-display text-xl font-semibold text-foreground">
-                    Unlock More Inner Readings
+                    {t("locked.title")}
                   </h2>
                   <p className="text-sm text-foreground-muted">
-                    You&apos;ve used your free Inner Reading. Upgrade to Premium for unlimited
-                    readings, full history and full recommendations.
+                    {t("locked.body")}
                   </p>
                   <Link href="/membership" className="w-full sm:w-auto">
-                    <Button variant="accent">Upgrade to Premium</Button>
+                    <Button variant="accent">{t("locked.cta")}</Button>
                   </Link>
                 </div>
               </Card>
@@ -153,15 +148,14 @@ export default function InnerReadingHubPage() {
                   🧘
                 </div>
                 <div className="flex flex-1 flex-col gap-3">
-                  <h2 className="font-display text-xl font-semibold text-foreground">Begin Your Inner Reading</h2>
+                  <h2 className="font-display text-xl font-semibold text-foreground">{t("begin.title")}</h2>
                   <p className="text-sm text-foreground-muted">
-                    Answer a few simple questions honestly. Gio will help you understand
-                    what&apos;s happening within you and what you may need most today.
+                    {t("begin.body")}
                   </p>
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                    {FEATURES.map((f) => (
+                    {features.map((f, i) => (
                       <div key={f.label} className="flex items-start gap-2">
-                        <span aria-hidden>{f.icon}</span>
+                        <span aria-hidden>{FEATURE_ICONS[i]}</span>
                         <div>
                           <p className="text-xs font-semibold text-foreground">{f.label}</p>
                           <p className="text-[11px] leading-snug text-foreground-muted">{f.body}</p>
@@ -170,7 +164,7 @@ export default function InnerReadingHubPage() {
                     ))}
                   </div>
                   <Link href="/inner-reading/session">
-                    <Button fullWidth>Begin Inner Reading</Button>
+                    <Button fullWidth>{t("begin.cta")}</Button>
                   </Link>
                 </div>
               </Card>
@@ -178,9 +172,9 @@ export default function InnerReadingHubPage() {
 
             <Card className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
-                <h2 className="font-display text-lg font-semibold text-foreground">Recent Readings</h2>
+                <h2 className="font-display text-lg font-semibold text-foreground">{t("recent.title")}</h2>
                 <Link href="/inner-reading/history" className="text-sm font-semibold text-primary">
-                  View all
+                  {t("recent.viewAll")}
                 </Link>
               </div>
               {recentReadings.length > 0 ? (
@@ -211,11 +205,11 @@ export default function InnerReadingHubPage() {
                 </div>
               ) : (
                 <p className="text-sm text-foreground-muted">
-                  Your completed Inner Readings will show up here.
+                  {t("recent.empty")}
                 </p>
               )}
               <Link href="/inner-reading/history" className="text-sm font-semibold text-primary">
-                Explore all your readings →
+                {t("recent.exploreAll")}
               </Link>
             </Card>
 
@@ -227,11 +221,9 @@ export default function InnerReadingHubPage() {
                 🌸
               </div>
               <div>
-                <h3 className="font-display text-base font-semibold text-foreground">What is Inner Reading?</h3>
+                <h3 className="font-display text-base font-semibold text-foreground">{t("whatIs.title")}</h3>
                 <p className="mt-1 text-sm text-foreground-muted">
-                  Inner Reading is a reflection practice designed to help you understand your
-                  current thoughts, emotions and needs. The more you reflect, the more accurate
-                  and meaningful your insights will become.
+                  {t("whatIs.body")}
                 </p>
               </div>
             </Card>
@@ -240,15 +232,15 @@ export default function InnerReadingHubPage() {
           <div className="flex flex-col gap-5">
             <Card className="flex flex-col gap-4">
               <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-foreground">
-                <span aria-hidden>🌿</span> Before you begin
+                <span aria-hidden>🌿</span> {t("beforeYouBegin.title")}
               </h2>
-              {BEFORE_TIPS.map((tip) => (
+              {beforeTips.map((tip, i) => (
                 <div key={tip.title} className="flex items-start gap-3">
                   <div
-                    className={`flex h-9 w-9 flex-none items-center justify-center rounded-full ${tip.circleClassName}`}
+                    className={`flex h-9 w-9 flex-none items-center justify-center rounded-full ${BEFORE_CIRCLE_CLASSES[i]}`}
                     aria-hidden
                   >
-                    {tip.icon}
+                    {BEFORE_ICONS[i]}
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-foreground">{tip.title}</p>
@@ -260,19 +252,17 @@ export default function InnerReadingHubPage() {
 
             <Card className="flex flex-col gap-4">
               <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-foreground">
-                <span aria-hidden>🔥</span> Your Reading Streak
+                <span aria-hidden>🔥</span> {t("streak.title")}
               </h2>
               <div className="flex items-center gap-4">
                 <div>
                   <p className="font-display text-3xl font-bold leading-none text-foreground">
                     {progress.streak.current}
                   </p>
-                  <p className="text-xs text-foreground-muted">days</p>
+                  <p className="text-xs text-foreground-muted">{t("streak.days")}</p>
                 </div>
                 <p className="text-xs text-foreground-muted">
-                  {progress.streak.current > 0
-                    ? "Keep going! Consistency builds deeper awareness."
-                    : "Start today to begin your streak."}
+                  {progress.streak.current > 0 ? t("streak.activeMessage") : t("streak.emptyMessage")}
                 </p>
               </div>
               <div className="flex justify-between">
@@ -298,7 +288,7 @@ export default function InnerReadingHubPage() {
             {snapshot ? (
               <Card className="flex flex-col gap-2">
                 <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-foreground">
-                  <span aria-hidden>🌿</span> Suggested Reading Focus
+                  <span aria-hidden>🌿</span> {t("suggestedFocus.title")}
                 </h2>
                 <p className="font-display text-base font-semibold text-foreground">
                   {localizedSnapshot(snapshot, "current_focus", language)}
@@ -307,7 +297,7 @@ export default function InnerReadingHubPage() {
                   {localizedSnapshot(snapshot, "insight", language)}
                 </p>
                 <Link href="/progress" className="text-sm font-semibold text-primary">
-                  Learn more about this focus →
+                  {t("suggestedFocus.learnMore")}
                 </Link>
               </Card>
             ) : null}

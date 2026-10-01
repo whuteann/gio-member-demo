@@ -1,0 +1,37 @@
+{
+  "loading": "Loading…",
+  "error": "Something went wrong. Please try again.",
+  "save": "Save",
+  "cancel": "Cancel",
+  "back": "Back",
+  "continue": "Continue",
+  "next": "Next",
+  "close": "Close",
+  "language": "Language",
+  "english": "English",
+  "chinese": "中文",
+  "nav": {
+    "home": "Home",
+    "checkIn": "Check-In",
+    "reading": "Reading",
+    "forYou": "For You",
+    "progress": "Progress",
+    "profile": "Profile",
+    "membership": "Membership",
+    "corePersonality": "Core Personality",
+    "journal": "Journal",
+    "colourPsychology": "Colour Psychology",
+    "checkInHistory": "Check-In History",
+    "readingHistory": "Reading History",
+    "premium": "Premium",
+    "free": "Free",
+    "logout": "Log out",
+    "openMenu": "Open menu"
+  },
+  "dimensions": {
+    "emotional_energy": { "label": "Emotional Energy", "lowLabel": "Drained", "highLabel": "Energised" },
+    "mental_clarity": { "label": "Mental Clarity", "lowLabel": "Foggy", "highLabel": "Clear" },
+    "inner_pressure": { "label": "Inner Pressure", "lowLabel": "Light", "highLabel": "Heavy" },
+    "grounding": { "label": "Grounding", "lowLabel": "Unsteady", "highLabel": "Rooted" }
+  }
+}

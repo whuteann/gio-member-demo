@@ -1,0 +1,50 @@
+{
+  "title": "日记",
+  "loading": "正在加载你的日记…",
+  "today": {
+    "title": "今日反思",
+    "subtitle": "自由书写——你的想法、感受，或任何萦绕心头的事。支持简单的 markdown 格式。",
+    "placeholder": "写下你此刻的想法…",
+    "save": "保存记录",
+    "saving": "保存中…"
+  },
+  "stats": {
+    "entries": "记录数",
+    "sameAsLastWeek": "与上周持平",
+    "deltaFromLastWeek": "较上周 {{sign}} {{count}}",
+    "topMood": "最常见的情绪",
+    "topTheme": "主要主题"
+  },
+  "entries": {
+    "title": "你的记录",
+    "empty": "还没有日记记录——在上方写下你的第一篇反思吧。"
+  },
+  "moods": {
+    "Calm": "平静",
+    "Hopeful": "充满希望",
+    "Tired": "疲惫",
+    "Anxious": "焦虑",
+    "Grateful": "感恩",
+    "Content": "满足",
+    "Overwhelmed": "不堪重负",
+    "Energised": "充满活力",
+    "Frustrated": "沮丧",
+    "Sad": "难过",
+    "Peaceful": "安宁",
+    "Excited": "兴奋"
+  },
+  "themes": {
+    "Growth": "成长",
+    "Responsibility": "责任",
+    "Relationships": "人际关系",
+    "Self-Care": "自我关怀",
+    "Work": "工作",
+    "Clarity": "清晰",
+    "Rest": "休息",
+    "Gratitude": "感恩",
+    "Health": "健康",
+    "Creativity": "创造力",
+    "Family": "家庭",
+    "Identity": "自我认同"
+  }
+}

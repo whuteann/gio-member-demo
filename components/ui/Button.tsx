@@ -1,4 +1,5 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
 type Variant = "primary" | "secondary" | "accent" | "outline" | "outline-solid" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg";
@@ -8,6 +9,11 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: Size;
   fullWidth?: boolean;
   icon?: ReactNode;
+  /** Shows a spinner in place of `icon` and disables the button — for an
+   * in-flight save/submit, so the button itself signals progress instead
+   * of just going inert. Swap `children` too (e.g. "Saving…") if you want
+   * the label to change as well. */
+  loading?: boolean;
 }
 
 const VARIANT_CLASSES: Record<Variant, string> = {
@@ -31,19 +37,42 @@ export default function Button({
   size = "md",
   fullWidth,
   icon,
+  loading = false,
   className = "",
   children,
   disabled,
   ...rest
 }: ButtonProps) {
+  const reduce = useReducedMotion();
+
   return (
     <button
       className={`inline-flex items-center justify-center rounded-full font-semibold transition-colors disabled:pointer-events-none disabled:border-disabled disabled:bg-disabled disabled:text-disabled-foreground ${VARIANT_CLASSES[variant]} ${SIZE_CLASSES[size]} ${fullWidth ? "w-full" : ""} ${className}`}
-      disabled={disabled}
+      disabled={disabled || loading}
       {...rest}
     >
-      {icon}
-      {children}
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.span
+          key={loading ? "loading" : "idle"}
+          initial={reduce ? undefined : { opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={reduce ? undefined : { opacity: 0, y: -4 }}
+          transition={{ duration: 0.18 }}
+          className="inline-flex items-center justify-center gap-2"
+        >
+          {loading ? (
+            <motion.span
+              className="h-3.5 w-3.5 flex-none rounded-full border-2 border-current border-t-transparent opacity-80"
+              animate={reduce ? undefined : { rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 0.7, ease: "linear" }}
+              aria-hidden
+            />
+          ) : (
+            icon
+          )}
+          {children}
+        </motion.span>
+      </AnimatePresence>
     </button>
   );
 }

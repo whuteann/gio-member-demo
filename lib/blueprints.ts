@@ -160,15 +160,25 @@ export const COLOUR_LIBRARY: Record<ColourKey, ColourMeaning> = {
   scarlet: {
     key: "scarlet",
     name: "Scarlet",
+    nameZh: "赤红",
     swatch: "#c0392b",
     traits: ["Vitality", "Passion", "Courage"],
+    traitsZh: ["活力", "热情", "勇气"],
     description: "A bold, energising red that awakens motivation and physical vitality.",
+    descriptionZh: "一种大胆、充满能量的红色，能唤醒动力与身体活力。",
     article:
       "Scarlet is the colour of movement — it's what the body reaches for when energy is running low and momentum needs a spark. Where cooler colours ask you to slow down, scarlet asks you to begin: to take the first step before you feel fully ready. It's associated with vitality, passion and courage — not recklessness, but the willingness to act on what matters. When your reserves feel drained, small doses of scarlet (a walk outdoors, a piece of clothing, a warm meal) can help rekindle the energy you need to re-engage with your day.",
+    articleZh:
+      "赤红是行动的颜色——当能量走低、需要一点火花来重新启动时，身体本能地会寻求它。较冷的色调让你放慢脚步，而赤红则邀请你开始行动：在感觉完全准备好之前，先迈出第一步。它象征着活力、热情与勇气——不是鲁莽，而是愿意为真正重要的事情采取行动。当你感到储备耗尽时，少量的赤红元素（一次户外散步、一件衣物、一顿温暖的饭）都能帮助重新点燃你重新投入生活所需的能量。",
     benefit: "You may benefit from more energy, motivation and a spark of courage.",
+    benefitZh: "你可能会从更多的能量、动力与一点勇气中受益。",
     affirmations: [
       "I welcome energy and momentum back into my day.",
       "I act with courage, even in small steps.",
+    ],
+    affirmationsZh: [
+      "我欢迎能量与动力重新回到我的一天。",
+      "即使只是小小的一步，我也带着勇气去行动。",
     ],
     positiveTraits: [
       "🔥 Your energy motivates the people working alongside you.",
@@ -177,6 +187,13 @@ export const COLOUR_LIBRARY: Record<ColourKey, ColourMeaning> = {
       "🎯 Passion gives your work a genuine sense of urgency.",
       "🦁 Courage lets you speak up when it actually matters.",
     ],
+    positiveTraitsZh: [
+      "🔥 你的能量能激励身边一起工作的人。",
+      "🚀 当别人还在犹豫时，你已经开始行动。",
+      "💪 你能凭真正的身体韧性从挫折中恢复。",
+      "🎯 热情让你的工作带有真实的紧迫感。",
+      "🦁 勇气让你在真正重要的时刻敢于发声。",
+    ],
     negativeTraits: [
       "🔥 Impatience can flare up before you've heard the full story.",
       "⚡ Impulsive decisions can outrun careful thought.",
@@ -184,19 +201,36 @@ export const COLOUR_LIBRARY: Record<ColourKey, ColourMeaning> = {
       "🏃 Restlessness can make it hard to sit with stillness.",
       "🎭 A drive to act can override a need to just feel first.",
     ],
+    negativeTraitsZh: [
+      "🔥 还没听完整件事，不耐烦可能就已经浮现。",
+      "⚡ 冲动的决定有时会跑在深思熟虑之前。",
+      "🌋 挫败感可能比你希望的更快浮现。",
+      "🏃 不安分让你很难真正静下来。",
+      "🎭 行动的冲动有时会盖过先去感受的需要。",
+    ],
   },
   russet: {
     key: "russet",
     name: "Russet",
+    nameZh: "赭红",
     swatch: "#8b4a2b",
     traits: ["Stability", "Warmth", "Resilience"],
+    traitsZh: ["稳定", "温暖", "韧性"],
     description: "A warm, earthy brown-red that steadies you and restores a sense of resilience.",
+    descriptionZh: "一种温暖、质朴的棕红色，能让你稳定下来，重拾韧性。",
     article:
       "Russet is the colour of solid ground — the warm brown-red of autumn leaves, worn leather and turned soil. It carries none of scarlet's urgency; instead it offers stability, the kind that comes from being rooted rather than rushing. Russet is linked to resilience and warmth, a reminder that steadiness is built slowly, through repetition, not through a single grand gesture. When you feel scattered or unmoored, russet points back toward routine, toward the small and familiar things that hold you together.",
+    articleZh:
+      "赭红是坚实土地的颜色——秋叶、磨旧皮革与翻耕泥土般温暖的棕红色。它没有赤红那样的紧迫感，而是提供一种稳定——来自扎根，而非急于求成。赭红与韧性、温暖相关联，提醒你稳定是通过日复一日的重复慢慢建立起来的，而不是靠一次宏大的举动。当你感到散乱或漂浮不定时，赭红会把你带回日常习惯，带回那些让你保持完整的、熟悉的小事。",
     benefit: "You may benefit from more stability, warmth and steady resilience.",
+    benefitZh: "你可能会从更多的稳定、温暖与持续的韧性中受益。",
     affirmations: [
       "I am steady, even when the ground feels uncertain.",
       "I build resilience one grounded step at a time.",
+    ],
+    affirmationsZh: [
+      "即使脚下的土地感觉不稳，我依然保持稳定。",
+      "我一步一个脚印地建立韧性。",
     ],
     positiveTraits: [
       "🌳 You bring steadiness to situations that feel unstable.",
@@ -205,6 +239,13 @@ export const COLOUR_LIBRARY: Record<ColourKey, ColourMeaning> = {
       "🤎 Warmth makes people feel comfortable being honest with you.",
       "🪵 Your consistency is something others quietly rely on.",
     ],
+    positiveTraitsZh: [
+      "🌳 你能为不稳定的处境带来稳定感。",
+      "🍂 你的韧性让你能耐心地从挫折中恢复。",
+      "🏡 无论落脚何处，你都能营造真正的归属感。",
+      "🤎 你的温暖让人愿意对你坦诚相待。",
+      "🪵 你的持续稳定是别人默默依赖的东西。",
+    ],
     negativeTraits: [
       "🪨 A love of routine can turn into resistance toward change.",
       "🧱 Caution can slow you down when speed is actually needed.",
@@ -212,19 +253,36 @@ export const COLOUR_LIBRARY: Record<ColourKey, ColourMeaning> = {
       "🌫️ Reluctance to disrupt things can mean tolerating too much.",
       "🐌 Momentum can be harder for you to build than to sustain.",
     ],
+    negativeTraitsZh: [
+      "🪨 对日常习惯的偏好，有时会变成对改变的抗拒。",
+      "🧱 谨慎有时会在真正需要速度时拖慢你。",
+      "🕰️ 你可能会在熟悉的处境中停留过久。",
+      "🌫️ 不愿打破现状，有时意味着容忍了太多。",
+      "🐌 对你来说，建立势头比维持势头更难。",
+    ],
   },
   gold: {
     key: "gold",
     name: "Gold",
+    nameZh: "金黄",
     swatch: "var(--color-gold)",
     traits: ["Confidence", "Abundance", "Radiance"],
+    traitsZh: ["自信", "丰盛", "光彩"],
     description: "A warm, radiant gold that reflects confidence and sustained, balanced progress.",
+    descriptionZh: "一种温暖、闪耀的金色，映照出自信与持续、平衡的进步。",
     article:
       "Gold is the colour of quiet achievement — not the loud win, but the steady accumulation of effort that's finally visible. It's associated with confidence, abundance and radiance, the sense that what you've built is real and worth recognising. Gold doesn't ask you to strive further; it asks you to notice what's already working. When your readings show a steady, balanced pattern, gold is a signal to consolidate rather than chase — to let the progress you've made shine before adding anything new.",
+    articleZh:
+      "金黄是静静成就的颜色——不是张扬的胜利，而是终于显现出来的、日积月累的努力。它与自信、丰盛与光彩相关，是一种“我所建立的一切都是真实的、值得被看见”的感觉。金黄并不要求你更加拼命，而是请你留意那些已经奏效的事。当你的记录显示出稳定、平衡的模式时，金黄提醒你：是时候巩固，而不是追逐——先让已有的进步闪耀，再考虑添加新的东西。",
     benefit: "You may benefit from recognising your own progress and letting it build quiet confidence.",
+    benefitZh: "你可能会从看见自己的进步、并让它慢慢积累成从容自信中受益。",
     affirmations: [
       "I trust the progress I've already made.",
       "I let my steady effort shine.",
+    ],
+    affirmationsZh: [
+      "我信任自己已经取得的进步。",
+      "我让自己持续的努力闪耀发光。",
     ],
     positiveTraits: [
       "✨ Confidence lets you take up space you've genuinely earned.",
@@ -233,6 +291,13 @@ export const COLOUR_LIBRARY: Record<ColourKey, ColourMeaning> = {
       "💰 You have a healthy relationship with abundance and worth.",
       "🎖️ Steady effort, for you, actually compounds into results.",
     ],
+    positiveTraitsZh: [
+      "✨ 自信让你坦然占据自己真正赢得的位置。",
+      "🏆 你会认可自己的进步，而不是轻易否定它。",
+      "🌟 你的光彩吸引人们靠近你正在建立的事物。",
+      "💰 你与丰盛、自我价值保持着健康的关系。",
+      "🎖️ 持续的努力对你来说，真的会积累成实实在在的成果。",
+    ],
     negativeTraits: [
       "👑 Confidence can tip into overestimating your own certainty.",
       "💸 A focus on results can crowd out enjoying the process.",
@@ -240,19 +305,36 @@ export const COLOUR_LIBRARY: Record<ColourKey, ColourMeaning> = {
       "🏔️ Comparing your progress to others can quietly undercut it.",
       "🎗️ Pride can make it harder to hear useful criticism.",
     ],
+    negativeTraitsZh: [
+      "👑 自信有时会变成对自己判断的过度确信。",
+      "💸 过于关注结果，可能会挤走享受过程的空间。",
+      "🪞 被认可有时会变得比工作本身更重要。",
+      "🏔️ 与他人比较进步，可能会悄悄削弱它的价值。",
+      "🎗️ 自尊心有时会让你更难听进有用的批评。",
+    ],
   },
   forest: {
     key: "forest",
     name: "Forest",
+    nameZh: "森绿",
     swatch: "var(--color-grounding)",
     traits: ["Grounding", "Growth", "Renewal"],
+    traitsZh: ["扎根", "成长", "更新"],
     description: "A deep, grounding green that supports steadiness, emotional recovery and sustainable growth.",
+    descriptionZh: "一种深沉、扎根的绿色，支持稳定、情绪恢复与可持续的成长。",
     article:
       "Forest is the colour of steady, unhurried growth — the deep green of old trees rather than the bright green of a new sprout. It's tied to grounding, growth and renewal, the sense that recovery doesn't have to be dramatic to be real. Forest is especially supportive when pressure has been building: it doesn't ask you to push harder, but to root down, slow your pace and let recovery happen at its own speed. Time spent around real greenery, or simply making space to breathe, echoes what this colour represents.",
+    articleZh:
+      "森绿是稳步、不急躁的成长的颜色——是老树深沉的绿，而非新芽鲜亮的绿。它与扎根、成长与更新相连，提醒你恢复不必轰轰烈烈才算真实。当压力一直在累积时，森绿尤其能给予支持：它不要求你更用力，而是请你向下扎根、放慢脚步，让恢复按自己的节奏发生。花时间待在真正的绿意之中，或只是留出空间好好呼吸，都呼应着这种颜色所代表的意义。",
     benefit: "You may benefit from more grounding, balance and emotional recovery.",
+    benefitZh: "你可能会从更多的扎根感、平衡与情绪恢复中受益。",
     affirmations: [
       "I choose steady progress over unnecessary rush.",
       "I create space to grow with clarity and calm.",
+    ],
+    affirmationsZh: [
+      "比起不必要的匆忙，我选择稳步前进。",
+      "我为自己创造空间，带着清晰与平静去成长。",
     ],
     positiveTraits: [
       "🌲 You recover from hard periods without needing drama to do it.",
@@ -261,6 +343,13 @@ export const COLOUR_LIBRARY: Record<ColourKey, ColourMeaning> = {
       "🌱 You give yourself permission to grow at your own pace.",
       "🪴 Your groundedness helps other people feel steadier too.",
     ],
+    positiveTraitsZh: [
+      "🌲 你能从艰难的阶段中恢复，无需戏剧化的过程。",
+      "🌿 对你来说，成长是稳步的，而不是突然或被迫的。",
+      "🍃 安静或自然的时光真正能让你恢复元气。",
+      "🌱 你允许自己按照自己的节奏成长。",
+      "🪴 你的扎根感也能让身边的人感到更稳定。",
+    ],
     negativeTraits: [
       "🌫️ Slow recovery can be mistaken by others for disengagement.",
       "🍂 You may avoid necessary change to protect your stability.",
@@ -268,19 +357,36 @@ export const COLOUR_LIBRARY: Record<ColourKey, ColourMeaning> = {
       "🪨 Staying grounded can sometimes mean staying too long.",
       "🌙 Quiet processing can look like withdrawal from the outside.",
     ],
+    negativeTraitsZh: [
+      "🌫️ 缓慢的恢复，有时会被他人误认为是抽离。",
+      "🍂 为了保护稳定，你可能会回避必要的改变。",
+      "🌾 对自己的耐心，有时会变成对真正紧迫感的回避。",
+      "🪨 保持扎根，有时也意味着停留得太久。",
+      "🌙 安静的自我消化，在外人看来可能像是退缩。",
+    ],
   },
   ocean: {
     key: "ocean",
     name: "Ocean",
+    nameZh: "海蓝",
     swatch: "var(--color-clarity)",
     traits: ["Calm", "Clarity", "Communication"],
+    traitsZh: ["平静", "清晰", "沟通"],
     description: "A cool, clear blue-teal that supports calm thinking and honest communication.",
+    descriptionZh: "一种清凉、清澈的蓝绿色，支持冷静的思考与坦诚的沟通。",
     article:
       "Ocean is the colour of a clear mind — cool, spacious and unclouded. It's linked to calm, clarity and communication, the ability to think a thought all the way through and say what you actually mean. When your mind feels foggy or decisions feel tangled, ocean points toward stillness rather than more input: fewer tabs open, one conversation instead of many. It's a colour that rewards quiet — a few minutes of unhurried thought tend to do more for clarity than any amount of pushing through.",
+    articleZh:
+      "海蓝是清明心境的颜色——清凉、开阔、不被遮蔽。它与平静、清晰与沟通相连，代表着把一个念头彻底想透、并说出你真正想表达的意思的能力。当你感到思绪模糊、决定纠结时，海蓝指向的是静下来，而不是获取更多信息：少开几个页面，一次只进行一场对话，而不是很多场。这是一种奖励安静的颜色——几分钟从容的思考，往往比拼命硬撑更能带来清晰。",
     benefit: "You may benefit from a calmer mind and clearer, more honest communication.",
+    benefitZh: "你可能会从更平静的心境与更清晰、坦诚的沟通中受益。",
     affirmations: [
       "I think clearly and speak with calm honesty.",
       "I create quiet space for my mind to settle.",
+    ],
+    affirmationsZh: [
+      "我思路清晰，并以平静而坦诚的方式表达。",
+      "我为自己的心创造安静的空间，让它得以安定。",
     ],
     positiveTraits: [
       "🌊 Intuition guides you to make insightful decisions.",
@@ -289,12 +395,26 @@ export const COLOUR_LIBRARY: Record<ColourKey, ColourMeaning> = {
       "🌌 Imagination fuels your creativity and vision.",
       "🧘 Calmness allows you to navigate stress with ease.",
     ],
+    positiveTraitsZh: [
+      "🌊 直觉引导你做出富有洞察力的决定。",
+      "💧 适应力让你从容应对生活的变化。",
+      "🦋 情感深度丰富了你与他人的连结。",
+      "🌌 想象力为你的创造力与愿景注入能量。",
+      "🧘 平静让你能从容地应对压力。",
+    ],
     negativeTraits: [
       "🌫️ Emotional fluctuation can cloud your judgment at times.",
       "🕳️ Tendency to withdraw may limit your engagement with others.",
       "🌧️ Sensitivity can make you vulnerable to external negativity.",
       "🌊 Over-absorption of others' emotions may drain your energy.",
       "🦑 Ambiguity in direction can lead to feeling lost or unfocused.",
+    ],
+    negativeTraitsZh: [
+      "🌫️ 情绪的起伏有时会影响你的判断。",
+      "🕳️ 退缩的倾向可能会限制你与他人的互动。",
+      "🌧️ 敏感让你容易受到外界负面情绪的影响。",
+      "🌊 过度吸收他人的情绪可能会消耗你的能量。",
+      "🦑 方向的模糊可能会让你感到迷失或难以聚焦。",
     ],
   },
 };
@@ -304,12 +424,12 @@ export const COLOUR_ORDER: ColourKey[] = ["scarlet", "russet", "gold", "forest",
 // First reasoning bullet on the Colour Psychology page — keyed by the same
 // currentFocus label produced by lib/scoring.ts#buildInnerState, describing
 // the specific pattern in recent readings that drove this recommendation.
-export const FOCUS_COLOUR_REASON: Record<string, { icon: string; text: string }> = {
-  "Rebuilding energy": { icon: "⚡", text: "Your emotional energy has been running low in recent readings." },
-  "Finding clarity": { icon: "🌫️", text: "Your mental clarity has felt foggy in recent readings." },
-  "Releasing pressure": { icon: "🔥", text: "Your inner pressure has been elevated in recent readings." },
-  "Regaining grounding": { icon: "🌪️", text: "You've felt a little less grounded in recent readings." },
-  "Sustaining balance": { icon: "✨", text: "Your recent readings show a steady, balanced pattern." },
+export const FOCUS_COLOUR_REASON: Record<string, { icon: string; text: string; textZh: string }> = {
+  "Rebuilding energy": { icon: "⚡", text: "Your emotional energy has been running low in recent readings.", textZh: "你近期的记录显示情绪能量偏低。" },
+  "Finding clarity": { icon: "🌫️", text: "Your mental clarity has felt foggy in recent readings.", textZh: "你近期的记录显示思维有些模糊。" },
+  "Releasing pressure": { icon: "🔥", text: "Your inner pressure has been elevated in recent readings.", textZh: "你近期的记录显示内在压力偏高。" },
+  "Regaining grounding": { icon: "🌪️", text: "You've felt a little less grounded in recent readings.", textZh: "你近期的记录显示扎根感有些不足。" },
+  "Sustaining balance": { icon: "✨", text: "Your recent readings show a steady, balanced pattern.", textZh: "你近期的记录呈现出稳定、平衡的状态。" },
 };
 
 export interface PillarPrompt {

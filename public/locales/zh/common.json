@@ -1,0 +1,37 @@
+{
+  "loading": "加载中…",
+  "error": "出错了，请再试一次。",
+  "save": "保存",
+  "cancel": "取消",
+  "back": "返回",
+  "continue": "继续",
+  "next": "下一步",
+  "close": "关闭",
+  "language": "语言",
+  "english": "English",
+  "chinese": "中文",
+  "nav": {
+    "home": "首页",
+    "checkIn": "情绪打卡",
+    "reading": "深度解读",
+    "forYou": "为您推荐",
+    "progress": "进度",
+    "profile": "个人资料",
+    "membership": "会员",
+    "corePersonality": "核心人格",
+    "journal": "日记",
+    "colourPsychology": "色彩心理学",
+    "checkInHistory": "打卡历史",
+    "readingHistory": "解读历史",
+    "premium": "Premium",
+    "free": "免费版",
+    "logout": "退出登录",
+    "openMenu": "打开菜单"
+  },
+  "dimensions": {
+    "emotional_energy": { "label": "情绪能量", "lowLabel": "疲惫", "highLabel": "充沛" },
+    "mental_clarity": { "label": "思维清晰度", "lowLabel": "模糊", "highLabel": "清晰" },
+    "inner_pressure": { "label": "内在压力", "lowLabel": "轻松", "highLabel": "沉重" },
+    "grounding": { "label": "扎根感", "lowLabel": "不稳", "highLabel": "踏实" }
+  }
+}

@@ -7,7 +7,7 @@ import { store, type RootState } from "@/store/store";
 import { clearCredentials, setTokens } from "@/store/authSlice";
 import type { TokenResponse } from "./types";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8010/api/v1";
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8010/api/v1";
 
 export class ApiError extends Error {
   status: number;

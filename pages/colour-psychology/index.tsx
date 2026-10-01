@@ -1,12 +1,15 @@
 import Head from "next/head";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useApiResource } from "@/lib/useApiResource";
+import { useLanguage } from "@/lib/useLanguage";
 import { getLatestRecommendation, listRecommendations } from "@/lib/api/recommendations";
-import { getCurrentPersonality } from "@/lib/api/personality";
+import { getCurrentCorePersonality } from "@/lib/api/corePersonality";
 import { isPremiumActive } from "@/lib/api/entitlement";
 import { ApiError } from "@/lib/api/client";
-import { ARCHETYPES, COLOUR_LIBRARY, COLOUR_ORDER, FOCUS_COLOUR_REASON } from "@/lib/blueprints";
+import { COLOUR_LIBRARY, COLOUR_ORDER, FOCUS_COLOUR_REASON } from "@/lib/blueprints";
+import { localized } from "@/lib/corePersonalityDisplay";
 import { colourKeyForFocus } from "@/lib/recommendation";
 import AppShell from "@/components/layout/AppShell";
 import Card from "@/components/ui/Card";
@@ -15,23 +18,22 @@ import ProductCard from "@/components/ui/ProductCard";
 import ColourOfTheDay from "@/components/ui/ColourOfTheDay";
 import EntitlementGate from "@/components/ui/EntitlementGate";
 
-const HOW_TO_USE = [
-  { icon: "👕", title: "Wear it", body: "Use it in your clothing or everyday accessories." },
-  { icon: "🌿", title: "See it", body: "Spend time in natural greenery or matching surroundings." },
-  { icon: "🪴", title: "Bring it near you", body: "Add it to your workspace or daily essentials." },
-  { icon: "🔔", title: "Be reminded", body: "Use it as a gentle visual cue throughout your day." },
-];
-
 export default function ColourPsychologyPage() {
   const { settled, token, subscription } = useAuthGuard();
+  const { t } = useTranslation("colourPsychology");
+  const { language } = useLanguage();
+  const isZh = language === "zh";
+  const dateLocale = isZh ? "zh-CN" : "en-US";
   const premium = subscription ? isPremiumActive(subscription) : false;
+  const howToTips = t("howTo.tips", { returnObjects: true }) as { title: string; body: string }[];
+  const HOW_TO_ICONS = ["👕", "🌿", "🪴", "🔔"];
 
-  const { data, loading } = useApiResource(
+  const { data, loading, error } = useApiResource(
     token
       ? async () => {
           const [recommendation, personality, history] = await Promise.all([
             getLatestRecommendation(token).catch((e) => (e instanceof ApiError && e.status === 404 ? null : Promise.reject(e))),
-            getCurrentPersonality(token).catch((e) => (e instanceof ApiError && e.status === 404 ? null : Promise.reject(e))),
+            getCurrentCorePersonality(token).catch((e) => (e instanceof ApiError && e.status === 404 ? null : Promise.reject(e))),
             listRecommendations(token).catch((e) => (e instanceof ApiError && e.status === 404 ? [] : Promise.reject(e))),
           ]);
           return { recommendation, personality, history };
@@ -41,10 +43,17 @@ export default function ColourPsychologyPage() {
   );
 
   if (!settled || !token) return null;
+  if (error) {
+    return (
+      <AppShell>
+        <p className="text-sm text-danger">{error}</p>
+      </AppShell>
+    );
+  }
   if (loading || !data) {
     return (
       <AppShell>
-        <p className="text-sm text-foreground-muted">Loading your colour profile…</p>
+        <p className="text-sm text-foreground-muted">{t("loading")}</p>
       </AppShell>
     );
   }
@@ -53,7 +62,7 @@ export default function ColourPsychologyPage() {
   const currentColourKey = recommendation ? colourKeyForFocus(recommendation.current_focus) : null;
   const currentColour = currentColourKey ? COLOUR_LIBRARY[currentColourKey] : null;
   const focusReason = recommendation ? FOCUS_COLOUR_REASON[recommendation.current_focus] : null;
-  const archetype = personality ? ARCHETYPES[personality.archetype as keyof typeof ARCHETYPES] : null;
+  const personalitySubtitle = personality ? localized(personality, "subtitle", language) : null;
   const productItems = recommendation?.items.filter((i) => i.type === "PRODUCT") ?? [];
   // "Your colour history" is premium-only — history from the API is already
   // limited to 1 (today's) for free users server-side, so the earlier
@@ -62,15 +71,14 @@ export default function ColourPsychologyPage() {
 
   return (
     <>
-      <Head><title>Colour Psychology — Gio</title></Head>
+      <Head><title>{t("meta.title")}</title></Head>
       <AppShell>
         <div>
           <h1 className="flex items-center gap-2 font-display text-2xl font-semibold text-foreground lg:text-3xl">
-            Colour Psychology <span aria-hidden>🌿</span>
+            {t("header.title")} <span aria-hidden>🌿</span>
           </h1>
           <p className="mt-1 text-sm text-foreground-muted">
-            Colours influence how we think, feel and respond. Discover the colours that support
-            your current state and growth.
+            {t("header.subtitle")}
           </p>
         </div>
 
@@ -83,56 +91,56 @@ export default function ColourPsychologyPage() {
                 </div>
                 <div className="flex flex-1 flex-col gap-3">
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-foreground-muted">
-                    Your current supportive colour
+                    {t("current.label")}
                   </p>
-                  <h2 className="font-display text-2xl font-semibold text-foreground">{currentColour.name}</h2>
+                  <h2 className="font-display text-2xl font-semibold text-foreground">{isZh ? currentColour.nameZh : currentColour.name}</h2>
                   <div className="flex flex-wrap gap-1.5">
-                    {currentColour.traits.map((t) => (
-                      <Chip key={t} tone="neutral">{t}</Chip>
+                    {(isZh ? currentColour.traitsZh : currentColour.traits).map((tr) => (
+                      <Chip key={tr} tone="neutral">{tr}</Chip>
                     ))}
                   </div>
-                  <p className="text-sm text-foreground-muted">{currentColour.description}</p>
+                  <p className="text-sm text-foreground-muted">{isZh ? currentColour.descriptionZh : currentColour.description}</p>
                   <div className="rounded-xl bg-surface-muted p-3">
                     <p className="text-[10px] font-semibold uppercase tracking-wide text-foreground-muted">
-                      Affirmation for you
+                      {t("current.affirmationLabel")}
                     </p>
                     <p className="mt-1 text-sm font-medium text-foreground">
-                      {currentColour.affirmations[0]} {currentColour.affirmations[1]}
+                      {(isZh ? currentColour.affirmationsZh : currentColour.affirmations).join(" ")}
                     </p>
                   </div>
                 </div>
                 <div className="flex w-full flex-none flex-col gap-3 sm:w-56">
-                  <p className="text-sm font-semibold text-foreground">Why this colour for you?</p>
+                  <p className="text-sm font-semibold text-foreground">{t("current.whyTitle")}</p>
                   {premium ? (
                     <>
                       {focusReason ? (
                         <div className="flex items-start gap-2">
                           <span aria-hidden>{focusReason.icon}</span>
-                          <p className="text-xs text-foreground-muted">{focusReason.text}</p>
+                          <p className="text-xs text-foreground-muted">{isZh ? focusReason.textZh : focusReason.text}</p>
                         </div>
                       ) : null}
-                      {archetype ? (
+                      {personalitySubtitle ? (
                         <div className="flex items-start gap-2">
-                          <span aria-hidden>{personality?.icon}</span>
-                          <p className="text-xs text-foreground-muted">{archetype.colourReason}</p>
+                          <span aria-hidden>🧭</span>
+                          <p className="text-xs text-foreground-muted">{personalitySubtitle}</p>
                         </div>
                       ) : null}
                       <div className="flex items-start gap-2">
                         <span aria-hidden>🌱</span>
-                        <p className="text-xs text-foreground-muted">{currentColour.benefit}</p>
+                        <p className="text-xs text-foreground-muted">{isZh ? currentColour.benefitZh : currentColour.benefit}</p>
                       </div>
                     </>
                   ) : (
                     <div className="flex items-start gap-2">
                       <span aria-hidden>🌱</span>
-                      <p className="text-xs text-foreground-muted">{currentColour.benefit}</p>
+                      <p className="text-xs text-foreground-muted">{isZh ? currentColour.benefitZh : currentColour.benefit}</p>
                     </div>
                   )}
                   <Link
                     href={`/colour-psychology/${currentColour.key}`}
                     className="text-sm font-semibold text-primary"
                   >
-                    Learn more about {currentColour.name.toLowerCase()} →
+                    {t("current.learnMore", { name: (isZh ? currentColour.nameZh : currentColour.name).toLowerCase() })}
                   </Link>
                 </div>
               </Card>
@@ -140,14 +148,14 @@ export default function ColourPsychologyPage() {
               <Card className="flex flex-col items-center gap-3 py-10 text-center">
                 <span className="text-3xl" aria-hidden>🎨</span>
                 <p className="text-sm text-foreground-muted">
-                  Complete a check-in or Inner Reading to get your first supportive colour.
+                  {t("current.empty")}
                 </p>
               </Card>
             )}
 
             <Card className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
-                <h2 className="font-display text-lg font-semibold text-foreground">Explore Colour Meanings</h2>
+                <h2 className="font-display text-lg font-semibold text-foreground">{t("explore.title")}</h2>
               </div>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
                 {COLOUR_ORDER.map((key) => {
@@ -167,9 +175,9 @@ export default function ColourPsychologyPage() {
                         ) : null}
                       </div>
                       <div className="flex flex-1 flex-col gap-1 p-3">
-                        <p className="text-sm font-semibold text-foreground">{colour.name}</p>
+                        <p className="text-sm font-semibold text-foreground">{isZh ? colour.nameZh : colour.name}</p>
                         <p className="line-clamp-2 text-[11px] leading-snug text-foreground-muted">
-                          {colour.traits.join(" • ")}
+                          {(isZh ? colour.traitsZh : colour.traits).join(" • ")}
                         </p>
                       </div>
                     </Link>
@@ -180,41 +188,48 @@ export default function ColourPsychologyPage() {
 
             <Card className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
-                <h2 className="font-display text-lg font-semibold text-foreground">Recommended for You</h2>
+                <h2 className="font-display text-lg font-semibold text-foreground">{t("recommended.title")}</h2>
               </div>
-              <p className="text-xs text-foreground-muted">Handpicked selections that align with your current energy.</p>
+              <p className="text-xs text-foreground-muted">{t("recommended.subtitle")}</p>
               {productItems.length > 0 ? (
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                <div className="flex flex-col gap-3">
                   {productItems.map((item) => (
                     <ProductCard
                       key={`${item.type}-${item.rank}`}
+                      language={language}
+                      colourName={isZh ? recommendation?.colour_name_zh : recommendation?.colour_name}
+                      colourSwatch={recommendation?.colour_swatch}
                       item={{
                         id: String(item.rank),
                         type: item.type as "COLOUR" | "ROUTINE" | "SCENT" | "WEARABLE" | "PRODUCT",
                         referenceId: item.reference_id,
                         title: item.title,
+                        titleZh: item.title_zh,
                         reason: item.reason,
+                        reasonZh: item.reason_zh,
                         rank: item.rank,
                         imageUrl: item.image_url ?? undefined,
                         price: item.price ?? undefined,
+                        currency: item.currency,
                         destinationUrl: item.destination_url ?? undefined,
+                        materialTag: item.material_tag,
                       }}
                     />
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-foreground-muted">No product matches available right now.</p>
+                <p className="text-sm text-foreground-muted">{t("recommended.empty")}</p>
               )}
             </Card>
           </div>
 
           <div className="flex flex-col gap-5">
             <Card className="flex flex-col gap-4">
-              <h2 className="font-display text-lg font-semibold text-foreground">How to use colour intentionally</h2>
-              {HOW_TO_USE.map((tip) => (
+              <h2 className="font-display text-lg font-semibold text-foreground">{t("howTo.title")}</h2>
+              {howToTips.map((tip, i) => (
                 <div key={tip.title} className="flex items-start gap-3">
                   <div className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-surface-muted" aria-hidden>
-                    {tip.icon}
+                    {HOW_TO_ICONS[i]}
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-foreground">{tip.title}</p>
@@ -226,7 +241,7 @@ export default function ColourPsychologyPage() {
 
             {premium ? (
               <Card className="flex flex-col gap-3">
-                <h2 className="font-display text-lg font-semibold text-foreground">Your colour history</h2>
+                <h2 className="font-display text-lg font-semibold text-foreground">{t("history.title")}</h2>
                 {patternHistory.length > 0 ? (
                   <div className="flex flex-wrap gap-3">
                     {patternHistory.map((entry) => {
@@ -239,23 +254,23 @@ export default function ColourPsychologyPage() {
                             aria-hidden
                           />
                           <p className="text-[10px] text-foreground-muted">
-                            {new Date(entry.generated_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                            {new Date(entry.generated_at).toLocaleDateString(dateLocale, { month: "short", day: "numeric" })}
                           </p>
-                          <p className="text-[10px] text-foreground-muted">{colour?.name ?? entry.colour_name}</p>
+                          <p className="text-[10px] text-foreground-muted">{(isZh ? colour?.nameZh : colour?.name) ?? entry.colour_name}</p>
                         </div>
                       );
                     })}
                   </div>
                 ) : (
                   <p className="text-sm text-foreground-muted">
-                    Your colour pattern will build up here as you check in and reflect over time.
+                    {t("history.empty")}
                   </p>
                 )}
               </Card>
             ) : (
               <EntitlementGate
-                title="See your colour pattern"
-                description="Premium reveals how your supportive colour has shifted over time, not just today's."
+                title={t("history.gateTitle")}
+                description={t("history.gateBody")}
               />
             )}
           </div>

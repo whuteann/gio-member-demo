@@ -1,0 +1,45 @@
+{
+  "meta": { "title": "色彩心理学 — Gio" },
+  "loading": "正在加载你的色彩档案…",
+  "header": {
+    "title": "色彩心理学",
+    "subtitle": "色彩会影响我们的思考、感受与反应方式。发现能支持你当下状态与成长的色彩。"
+  },
+  "current": {
+    "label": "你当前的支持色",
+    "affirmationLabel": "给你的肯定语",
+    "whyTitle": "为什么是这个颜色？",
+    "learnMore": "了解更多关于{{name}}的内容 →",
+    "empty": "完成一次打卡或深度解读，获取你的第一个支持色。"
+  },
+  "explore": {
+    "title": "探索色彩含义"
+  },
+  "recommended": {
+    "title": "为你推荐",
+    "subtitle": "根据你当前的能量精心挑选的推荐。",
+    "empty": "暂时没有可用的产品推荐。"
+  },
+  "howTo": {
+    "title": "如何有意识地运用色彩",
+    "tips": [
+      { "title": "穿戴它", "body": "运用在你的衣物或日常配饰中。" },
+      { "title": "看见它", "body": "多接触自然绿意或相配的环境。" },
+      { "title": "放在身边", "body": "加入你的工作空间或日常用品中。" },
+      { "title": "提醒自己", "body": "把它当作一天中温和的视觉提示。" }
+    ]
+  },
+  "history": {
+    "title": "你的色彩历史",
+    "empty": "随着你持续打卡与反思，你的色彩模式会逐渐在这里累积。",
+    "gateTitle": "查看你的色彩模式",
+    "gateBody": "Premium 揭示你的支持色如何随时间变化，而不只是今天的结果。"
+  },
+  "detail": {
+    "back": "← 返回色彩心理学",
+    "notFound": "未找到该颜色。",
+    "aboutTitle": "关于{{name}}",
+    "whenTitle": "适合推荐的情境",
+    "affirmationsTitle": "肯定语"
+  }
+}

@@ -1,7 +1,9 @@
 import Head from "next/head";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useApiResource } from "@/lib/useApiResource";
+import { useLanguage } from "@/lib/useLanguage";
 import { isPremiumActive } from "@/lib/api/entitlement";
 import { listCheckIns } from "@/lib/api/reflections";
 import AppShell from "@/components/layout/AppShell";
@@ -13,6 +15,9 @@ const DIMS = ["emotional_energy", "mental_clarity", "inner_pressure", "grounding
 
 export default function CheckInHistoryPage() {
   const { settled, token, subscription } = useAuthGuard();
+  const { t } = useTranslation("checkIn");
+  const { language } = useLanguage();
+  const dateLocale = language === "zh" ? "zh-CN" : "en-US";
   const premium = subscription ? isPremiumActive(subscription) : false;
 
   const { data: sessions, loading } = useApiResource(token ? () => listCheckIns(token) : null, [token]);
@@ -20,34 +25,40 @@ export default function CheckInHistoryPage() {
   if (!settled || !token) return null;
   if (loading || !sessions) {
     return (
-      <AppShell title="Check-In History">
-        <p className="text-sm text-foreground-muted">Loading your check-in history…</p>
+      <AppShell title={t("history.title")}>
+        <p className="text-sm text-foreground-muted">{t("history.loading")}</p>
       </AppShell>
     );
   }
 
   return (
     <>
-      <Head><title>Check-In History — Gio</title></Head>
-      <AppShell title="Check-In History">
+      <Head><title>{t("history.title")} — Gio</title></Head>
+      <AppShell title={t("history.title")}>
         <div className="flex flex-col gap-3">
           <Link href="/check-in/session" className="self-start">
-            <Chip tone="primary">+ New Check-In</Chip>
+            <Chip tone="primary">{t("history.newCheckIn")}</Chip>
           </Link>
           {sessions.length === 0 ? (
-            <Card><p className="text-sm text-foreground-muted">No check-ins yet.</p></Card>
+            <Card><p className="text-sm text-foreground-muted">{t("history.empty")}</p></Card>
           ) : (
             sessions.map((session) => (
               <Link key={session.id} href={`/check-in/${session.id}/result`}>
-                <Card className="flex items-center justify-between gap-4 transition-opacity hover:opacity-80">
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-foreground">
-                      {session.completed_at ? new Date(session.completed_at).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }) : "—"}
-                    </p>
-                    <p className="truncate text-xs text-foreground-muted">{session.summary ?? `${session.answers.length} questions`}</p>
+                <Card className="flex items-center gap-3 transition-opacity hover:opacity-80">
+                  <div className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-surface-muted text-lg" aria-hidden>
+                    {session.emoji}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="truncate text-sm font-semibold text-foreground">
+                        {(language === "zh" ? session.title_zh : session.title) ?? session.title ?? (session.completed_at ? new Date(session.completed_at).toLocaleDateString(dateLocale, { weekday: "short", month: "short", day: "numeric" }) : "—")}
+                      </p>
+                      {session.category ? <Chip tone="neutral">{session.category}</Chip> : null}
+                    </div>
+                    <p className="truncate text-xs text-foreground-muted">{(language === "zh" ? session.subtitle_zh : session.subtitle) ?? session.subtitle ?? session.summary ?? t("history.questions", { count: session.answers.length })}</p>
                   </div>
                   <div className="flex flex-none items-center gap-2">
-                    <div className="flex gap-1">
+                    <div className="hidden gap-1 sm:flex">
                       {DIMS.map((d) => {
                         const q = session.answers.find((x) => x.dimension === d);
                         return q ? (
@@ -65,8 +76,8 @@ export default function CheckInHistoryPage() {
           )}
           {!premium ? (
             <EntitlementGate
-              title="More history with Premium"
-              description="Free shows check-ins from the last 7 days — Premium unlocks your full history."
+              title={t("history.premiumTitle")}
+              description={t("history.premiumBody")}
             />
           ) : null}
         </div>

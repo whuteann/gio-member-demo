@@ -1,0 +1,75 @@
+{
+  "title": "会员",
+  "currentPlan": "当前方案",
+  "plan": {
+    "premium": "Premium",
+    "trial": "免费试用",
+    "free": "免费版"
+  },
+  "cancelsOn": "将于 {{date}} 取消",
+  "expires": "将于 {{date}} 到期",
+  "trialEnds_one": "试用还剩 {{count}} 天",
+  "trialEnds_other": "试用还剩 {{count}} 天",
+  "status": {
+    "TRIAL": "试用中",
+    "ACTIVE": "生效中",
+    "CANCELLED": "已取消",
+    "PENDING": "处理中",
+    "COMPLETED": "已完成",
+    "FAILED": "失败",
+    "EXPIRED": "已过期"
+  },
+  "freeNotice": "免费版每 7 天可进行 3 次深度解读，并保留 7 天的打卡历史。",
+  "manage": {
+    "title": "管理订阅",
+    "reactivate": "重新激活 Premium",
+    "cancel": "取消订阅"
+  },
+  "pricing": {
+    "premiumLabel": "Premium",
+    "monthly": "月付",
+    "yearly": "年付",
+    "monthlyNote": "按月计费。",
+    "yearlyNote": "按年计费一次。",
+    "yearlyDiscount": "-20%"
+  },
+  "includes": {
+    "title": "Premium 包含",
+    "items": [
+      "无限次深度解读",
+      "完整的打卡与解读历史",
+      "深度色彩分析 + 你的色彩历史",
+      "深度解读——工作、人际关系、个人成长、冲突管理",
+      "每月进度趋势"
+    ]
+  },
+  "trial": {
+    "starting": "正在开始…",
+    "start": "开始 7 天免费试用"
+  },
+  "subscribe": {
+    "redirecting": "正在跳转至支付页面…",
+    "cta": "订阅 · {{price}}",
+    "note": "你将被重定向至 Xendit 以安全完成支付。"
+  },
+  "billing": {
+    "title": "账单历史",
+    "print": "打印",
+    "invoice": "发票"
+  },
+  "paymentTitle": "支付",
+  "success": {
+    "confirming": "正在确认你的付款…",
+    "confirmedTitle": "你已升级为 Premium",
+    "confirmedBody": "你的付款已确认，Premium 现已生效。",
+    "viewMembership": "查看会员详情",
+    "pendingTitle": "仍在确认中",
+    "pendingBody": "付款确认可能需要一点时间。请稍后回到会员页面查看。",
+    "backToMembership": "返回会员页面"
+  },
+  "failed": {
+    "title": "支付未成功",
+    "body": "未产生任何扣款。你可以回到会员页面重新尝试。",
+    "backToMembership": "返回会员页面"
+  }
+}

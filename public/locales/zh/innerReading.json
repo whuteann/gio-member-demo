@@ -1,0 +1,105 @@
+{
+  "meta": { "title": "深度解读 — Gio" },
+  "loading": "正在加载你的深度解读…",
+  "header": {
+    "title": "深度解读",
+    "subtitle": "花几分钟时间，了解你当下的内在状态。"
+  },
+  "estimatedTime": {
+    "label": "预计时长",
+    "value": "3–5 分钟"
+  },
+  "premiumChip": "🔒 Premium",
+  "startNewReading": "开始新的解读",
+  "locked": {
+    "title": "解锁更多深度解读",
+    "body": "你已用完本周的免费深度解读。升级 Premium 即可无限次解读，并解锁完整历史记录与完整推荐。",
+    "cta": "升级 Premium"
+  },
+  "begin": {
+    "title": "开始你的深度解读",
+    "body": "诚实地回答几个简单的问题，Gio 会帮助你理解内心正在发生什么，以及你今天最需要什么。",
+    "cta": "开始深度解读",
+    "features": [
+      { "label": "私密与安全", "body": "你的答案经过加密，完全私密。" },
+      { "label": "个性化洞察", "body": "获得为你量身定制的洞察。" },
+      { "label": "更清晰的认知", "body": "理解你的想法、情绪与需求。" }
+    ]
+  },
+  "recent": {
+    "title": "最近的解读",
+    "viewAll": "查看全部",
+    "empty": "完成的深度解读会显示在这里。",
+    "exploreAll": "探索你所有的解读 →",
+    "today": "今天",
+    "yesterday": "昨天"
+  },
+  "whatIs": {
+    "title": "什么是深度解读？",
+    "body": "深度解读是一种反思练习，旨在帮助你理解当下的想法、情绪与需求。反思得越多，你的洞察会越准确、越有意义。"
+  },
+  "beforeYouBegin": {
+    "title": "开始之前",
+    "tips": [
+      { "title": "找一个安静的空间", "body": "给自己一段不受打扰的时间。" },
+      { "title": "对自己诚实", "body": "答案没有对错之分。" },
+      { "title": "专注于当下", "body": "根据此刻的感受作答。" },
+      { "title": "慢慢来", "body": "不必着急，顺其自然地呼吸和感受。" }
+    ]
+  },
+  "streak": {
+    "title": "你的解读连续天数",
+    "days": "天",
+    "activeMessage": "继续保持！坚持能带来更深的觉察。",
+    "emptyMessage": "今天开始，开启你的连续记录。"
+  },
+  "suggestedFocus": {
+    "title": "建议的解读重点",
+    "learnMore": "了解更多关于这个重点 →"
+  },
+  "history": {
+    "title": "深度解读历史",
+    "loading": "正在加载你的解读历史…",
+    "newReading": "+ 新的深度解读",
+    "newReadingLocked": "🔒 新解读（Premium）",
+    "empty": "还没有解读记录。",
+    "today": "今天"
+  },
+  "session": {
+    "loading": "正在为你准备解读…",
+    "notFoundTitle": "未找到该解读",
+    "backToHistory": "返回历史记录",
+    "progressLabel": "深度解读",
+    "premiumUnlimited": "Premium — 无限次",
+    "weeklyCount": "本周第 {{used}} / {{limit}} 次",
+    "weeklyLimitTitle": "你已用完本周的免费深度解读",
+    "weeklyLimitBody": "免费版每 7 天可进行 3 次深度解读。升级 Premium 即可无限次解读，并解锁完整历史记录与完整推荐。",
+    "weeklyLimitCta": "查看 Premium 方案",
+    "back": "返回",
+    "next": "下一步",
+    "completeCta": "完成解读",
+    "readingTitle": "正在解读你的内在状态",
+    "readingBody": "正在权衡你分享的内容与近期的模式。"
+  },
+  "result": {
+    "pageTitle": "你的深度解读",
+    "loading": "正在加载你的解读…",
+    "notFoundTitle": "未找到该解读",
+    "backToHistory": "返回历史记录",
+    "dimensions": "维度",
+    "yourReading": "你的解读",
+    "latestInsight": "最新洞察",
+    "reflectionQuestion": "💡 反思问题",
+    "inDepthTitle": "深度解读详情",
+    "lifeAreas": {
+      "work": "工作",
+      "relationships": "人际关系",
+      "personal_growth": "个人成长",
+      "conflict_management": "冲突管理"
+    },
+    "unlockTitle": "解锁你的深度解读详情",
+    "unlockBody": "Premium 解锁工作、人际关系、个人成长与冲突管理的完整分析。",
+    "seeRecommendations": "查看推荐",
+    "dashboard": "首页"
+  }
+}

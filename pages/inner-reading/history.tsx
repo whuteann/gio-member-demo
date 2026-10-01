@@ -1,7 +1,9 @@
 import Head from "next/head";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useApiResource } from "@/lib/useApiResource";
+import { useLanguage } from "@/lib/useLanguage";
 import { INNER_READING_WEEKLY_FREE_LIMIT, isPremiumActive, readingsUsedThisWeek } from "@/lib/api/entitlement";
 import { listInnerReadings } from "@/lib/api/reflections";
 import { localDateString } from "@/lib/gamification";
@@ -11,6 +13,9 @@ import Chip from "@/components/ui/Chip";
 
 export default function InnerReadingHistoryPage() {
   const { settled, token, subscription } = useAuthGuard();
+  const { t } = useTranslation("innerReading");
+  const { language } = useLanguage();
+  const dateLocale = language === "zh" ? "zh-CN" : "en-US";
   const premium = subscription ? isPremiumActive(subscription) : false;
 
   const { data: readings, loading } = useApiResource(token ? () => listInnerReadings(token) : null, [token]);
@@ -19,24 +24,24 @@ export default function InnerReadingHistoryPage() {
   if (!settled || !token) return null;
   if (loading || !readings) {
     return (
-      <AppShell title="Inner Reading History">
-        <p className="text-sm text-foreground-muted">Loading your reading history…</p>
+      <AppShell title={t("history.title")}>
+        <p className="text-sm text-foreground-muted">{t("history.loading")}</p>
       </AppShell>
     );
   }
 
   return (
     <>
-      <Head><title>Inner Reading History — Gio</title></Head>
-      <AppShell title="Inner Reading History">
+      <Head><title>{t("history.title")} — Gio</title></Head>
+      <AppShell title={t("history.title")}>
         <div className="flex flex-col gap-3">
           <Link href="/inner-reading/session" className="self-start">
             <Chip tone={atWeeklyLimit ? "gold" : "primary"}>
-              {atWeeklyLimit ? "🔒 New reading (Premium)" : "+ New Inner Reading"}
+              {atWeeklyLimit ? t("history.newReadingLocked") : t("history.newReading")}
             </Chip>
           </Link>
           {readings.length === 0 ? (
-            <Card><p className="text-sm text-foreground-muted">No readings yet.</p></Card>
+            <Card><p className="text-sm text-foreground-muted">{t("history.empty")}</p></Card>
           ) : (
             readings.map((reading) => {
               const today = localDateString();
@@ -56,7 +61,7 @@ export default function InnerReadingHistoryPage() {
                     </div>
                     <div className="flex flex-none flex-col items-end gap-1 text-foreground-muted">
                       <span className="text-xs">
-                        {date ? (localDateString(date) === today ? "Today" : date.toLocaleDateString(undefined, { month: "short", day: "numeric" })) : "—"}
+                        {date ? (localDateString(date) === today ? t("history.today") : date.toLocaleDateString(dateLocale, { month: "short", day: "numeric" })) : "—"}
                       </span>
                       <span aria-hidden>›</span>
                     </div>

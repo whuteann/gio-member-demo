@@ -33,6 +33,26 @@ export interface MeResponse {
   subscription: ApiSubscription;
 }
 
+export interface CheckoutResponse {
+  payment_id: string;
+  invoice_url: string;
+  amount: number;
+  currency: string;
+  billing_cycle: string;
+  status: string;
+}
+
+export interface SubscriptionPaymentOut {
+  id: string;
+  billing_cycle: string;
+  amount: number;
+  currency: string;
+  status: string;
+  invoice_url: string | null;
+  created_at: string;
+  paid_at: string | null;
+}
+
 export interface TokenResponse {
   access_token: string;
   refresh_token: string;
@@ -88,22 +108,27 @@ export interface ColourBreakdownOut {
 // type from CorePersonalityOut above, which still matches the old
 // archetype-quiz shape /personality/current etc. return (those endpoints
 // are broken post-rebuild, but that's not this type's concern).
+export interface NumberPoint {
+  emoji: string;
+  text: string;
+}
+
 export interface CorePersonalityResultOut {
   id: string;
   primary_language: string | null;
   generation_status: "PARTIAL" | "READY";
 
   birthday_number: number | null;
-  birthday_number_content_en: string | null;
-  birthday_number_content_zh: string | null;
+  birthday_number_points_en: NumberPoint[] | null;
+  birthday_number_points_zh: NumberPoint[] | null;
 
   life_path_number: number | null;
-  life_path_number_content_en: string | null;
-  life_path_number_content_zh: string | null;
+  life_path_number_points_en: NumberPoint[] | null;
+  life_path_number_points_zh: NumberPoint[] | null;
 
   talent_number: string | null;
-  talent_number_content_en: string | null;
-  talent_number_content_zh: string | null;
+  talent_number_points_en: NumberPoint[] | null;
+  talent_number_points_zh: NumberPoint[] | null;
 
   title_en: string | null;
   title_zh: string | null;
@@ -130,6 +155,7 @@ export type DimensionKey = "emotional_energy" | "mental_clarity" | "inner_pressu
 export interface QuestionOut {
   dimension: DimensionKey;
   text: string;
+  text_zh: string | null;
 }
 
 export interface QuestionSetOut {
@@ -174,6 +200,12 @@ export interface CheckInSessionOut {
   blueprint_version: string;
   private_note: string | null;
   summary: string | null;
+  title: string | null;
+  title_zh: string | null;
+  subtitle: string | null;
+  subtitle_zh: string | null;
+  category: string;
+  emoji: string;
   started_at: string;
   completed_at: string | null;
   answers: CheckInAnswerOut[];
@@ -212,6 +244,10 @@ export interface InnerStateSnapshotOut {
   mental_clarity: number;
   inner_pressure: number;
   grounding: number;
+  emotional_energy_delta: number;
+  mental_clarity_delta: number;
+  inner_pressure_delta: number;
+  grounding_delta: number;
   colour_key: string | null;
   insight_en: string | null;
   insight_zh: string | null;
@@ -253,19 +289,26 @@ export interface RecommendationItemOut {
   type: string;
   reference_id: string | null;
   title: string;
+  title_zh: string | null;
   reason: string;
+  reason_zh: string | null;
   rank: number;
   image_url: string | null;
   price: number | null;
+  currency: string;
   destination_url: string | null;
+  material_tag: string | null;
 }
 
 export interface RecommendationOut {
   id: string;
   current_focus: string;
+  current_focus_zh: string | null;
   summary: string;
+  summary_zh: string | null;
   colour_key: string;
   colour_name: string;
+  colour_name_zh: string;
   colour_swatch: string;
   status: string;
   generated_at: string;
@@ -316,6 +359,20 @@ export interface ProgressOut {
   garden: GardenOut;
   quests_today: string[];
   badges: BadgeOut[];
+}
+
+export interface UnlockedItemOut {
+  item_id: string;
+  unlocked: boolean;
+  text_en: string | null;
+  text_zh: string | null;
+  unlocked_at: string | null;
+}
+
+export interface UnlockedContentOut {
+  affirmations: UnlockedItemOut[];
+  insights: UnlockedItemOut[];
+  reflection_questions: UnlockedItemOut[];
 }
 
 export interface RewardOut {

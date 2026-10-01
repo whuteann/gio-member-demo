@@ -1,0 +1,105 @@
+{
+  "meta": { "title": "Inner Reading — Gio" },
+  "loading": "Loading your Inner Readings…",
+  "header": {
+    "title": "Inner Reading",
+    "subtitle": "Take a few minutes to understand your current inner state."
+  },
+  "estimatedTime": {
+    "label": "Estimated time",
+    "value": "3–5 minutes"
+  },
+  "premiumChip": "🔒 Premium",
+  "startNewReading": "Start New Reading",
+  "locked": {
+    "title": "Unlock More Inner Readings",
+    "body": "You've used your free Inner Reading. Upgrade to Premium for unlimited readings, full history and full recommendations.",
+    "cta": "Upgrade to Premium"
+  },
+  "begin": {
+    "title": "Begin Your Inner Reading",
+    "body": "Answer a few simple questions honestly. Gio will help you understand what's happening within you and what you may need most today.",
+    "cta": "Begin Inner Reading",
+    "features": [
+      { "label": "Private & Secure", "body": "Your answers are encrypted and private." },
+      { "label": "Personalised Insight", "body": "Receive insights tailored to you." },
+      { "label": "Better Clarity", "body": "Understand your thoughts, emotions and needs." }
+    ]
+  },
+  "recent": {
+    "title": "Recent Readings",
+    "viewAll": "View all",
+    "empty": "Your completed Inner Readings will show up here.",
+    "exploreAll": "Explore all your readings →",
+    "today": "Today",
+    "yesterday": "Yesterday"
+  },
+  "whatIs": {
+    "title": "What is Inner Reading?",
+    "body": "Inner Reading is a reflection practice designed to help you understand your current thoughts, emotions and needs. The more you reflect, the more accurate and meaningful your insights will become."
+  },
+  "beforeYouBegin": {
+    "title": "Before you begin",
+    "tips": [
+      { "title": "Find a quiet space", "body": "Give yourself undisturbed time." },
+      { "title": "Be honest with yourself", "body": "There are no right or wrong answers." },
+      { "title": "Focus on the present", "body": "Answer based on how you feel now." },
+      { "title": "Take your time", "body": "There is no rush. Breathe and flow." }
+    ]
+  },
+  "streak": {
+    "title": "Your Reading Streak",
+    "days": "days",
+    "activeMessage": "Keep going! Consistency builds deeper awareness.",
+    "emptyMessage": "Start today to begin your streak."
+  },
+  "suggestedFocus": {
+    "title": "Suggested Reading Focus",
+    "learnMore": "Learn more about this focus →"
+  },
+  "history": {
+    "title": "Inner Reading History",
+    "loading": "Loading your reading history…",
+    "newReading": "+ New Inner Reading",
+    "newReadingLocked": "🔒 New reading (Premium)",
+    "empty": "No readings yet.",
+    "today": "Today"
+  },
+  "session": {
+    "loading": "Preparing your reading for you…",
+    "notFoundTitle": "Reading not found",
+    "backToHistory": "Back to history",
+    "progressLabel": "Inner Reading",
+    "premiumUnlimited": "Premium — unlimited",
+    "weeklyCount": "{{used}} of {{limit}} this week",
+    "weeklyLimitTitle": "You've used your free Inner Readings this week",
+    "weeklyLimitBody": "Free plan includes 3 Inner Readings per 7 days. Upgrade to Premium for unlimited readings, along with full history and full recommendations.",
+    "weeklyLimitCta": "View Premium plans",
+    "back": "Back",
+    "next": "Next",
+    "completeCta": "Complete Reading",
+    "readingTitle": "Reading your inner state",
+    "readingBody": "Weighing what you shared against your recent patterns."
+  },
+  "result": {
+    "pageTitle": "Your Inner Reading",
+    "loading": "Loading your reading…",
+    "notFoundTitle": "Reading not found",
+    "backToHistory": "Back to history",
+    "dimensions": "Dimensions",
+    "yourReading": "Your reading",
+    "latestInsight": "Latest Insight",
+    "reflectionQuestion": "💡 Reflection Question",
+    "inDepthTitle": "In-Depth Reading",
+    "lifeAreas": {
+      "work": "Work",
+      "relationships": "Relationships",
+      "personal_growth": "Personal Growth",
+      "conflict_management": "Conflict Management"
+    },
+    "unlockTitle": "Unlock your in-depth reading",
+    "unlockBody": "Premium reveals a full breakdown across Work, Relationships, Personal Growth and Conflict Management.",
+    "seeRecommendations": "See recommendations",
+    "dashboard": "Dashboard"
+  }
+}

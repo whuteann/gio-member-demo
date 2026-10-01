@@ -1,31 +1,49 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { useAppState } from "@/context/AppStateContext";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { clearCredentials } from "@/store/authSlice";
+import { useLanguage } from "@/lib/useLanguage";
 import { isPremiumActive as isRealPremiumActive } from "@/lib/api/entitlement";
 import Sheet from "@/components/ui/Sheet";
 import Button from "@/components/ui/Button";
 import Chip from "@/components/ui/Chip";
 
+// A subtle text-only toggle — moved here from a dedicated dashboard card
+// per product feedback ("more subtle design in the header"). Visible on
+// every page via AppShell instead of just /dashboard.
+function LanguageToggle({ className = "" }: { className?: string }) {
+  const { language, setLanguage } = useLanguage();
+  return (
+    <button
+      type="button"
+      onClick={() => setLanguage(language === "en" ? "zh" : "en")}
+      className={`rounded-full px-2.5 py-1 text-xs font-semibold text-foreground-muted transition-colors hover:bg-surface-muted hover:text-foreground ${className}`}
+    >
+      {language === "en" ? "EN" : "中文"}
+    </button>
+  );
+}
+
 const TABS = [
-  { href: "/dashboard", label: "Home", icon: "🏠" },
-  { href: "/check-in", label: "Check-In", icon: "💬" },
-  { href: "/inner-reading", label: "Reading", icon: "🔮" },
-  { href: "/colour-psychology", label: "For You", icon: "✨" },
-  { href: "/progress", label: "Progress", icon: "🌿" },
+  { href: "/dashboard", labelKey: "nav.home", icon: "🏠" },
+  { href: "/check-in", labelKey: "nav.checkIn", icon: "💬" },
+  { href: "/inner-reading", labelKey: "nav.reading", icon: "🔮" },
+  { href: "/colour-psychology", labelKey: "nav.forYou", icon: "✨" },
+  { href: "/progress", labelKey: "nav.progress", icon: "🌿" },
 ];
 
 const MENU_LINKS = [
-  { href: "/profile", label: "Profile", icon: "🧑" },
-  { href: "/membership", label: "Membership", icon: "💳" },
-  { href: "/core-personality", label: "Core Personality", icon: "🧭" },
-  { href: "/journal", label: "Journal", icon: "📓" },
-  { href: "/colour-psychology", label: "Colour Psychology", icon: "💧" },
-  // { href: "/rewards", label: "Rewards", icon: "🎁" },
-  { href: "/check-in/history", label: "Check-In History", icon: "📜" },
-  { href: "/inner-reading/history", label: "Reading History", icon: "📖" },
+  { href: "/profile", labelKey: "nav.profile", icon: "🧑" },
+  { href: "/membership", labelKey: "nav.membership", icon: "💳" },
+  { href: "/core-personality", labelKey: "nav.corePersonality", icon: "🧭" },
+  { href: "/journal", labelKey: "nav.journal", icon: "📓" },
+  { href: "/colour-psychology", labelKey: "nav.colourPsychology", icon: "💧" },
+  // { href: "/rewards", labelKey: "nav.rewards", icon: "🎁" },
+  { href: "/check-in/history", labelKey: "nav.checkInHistory", icon: "📜" },
+  { href: "/inner-reading/history", labelKey: "nav.readingHistory", icon: "📖" },
 ];
 
 function isActive(pathname: string, href: string) {
@@ -35,6 +53,7 @@ function isActive(pathname: string, href: string) {
 
 export default function AppShell({ children, title }: { children: ReactNode; title?: string }) {
   const router = useRouter();
+  const { t } = useTranslation("common");
   const mock = useAppState();
   const dispatch = useAppDispatch();
   const reduxToken = useAppSelector((s) => s.auth.token);
@@ -62,10 +81,13 @@ export default function AppShell({ children, title }: { children: ReactNode; tit
           independently below; its own content is short enough it never
           needs a scrollbar of its own. */}
       <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-surface px-5 py-6 lg:flex lg:h-screen lg:overflow-y-auto">
-        <Link href="/dashboard" className="mb-8 flex items-center gap-2 px-1">
-          <span className="text-2xl" aria-hidden>🌿</span>
-          <span className="font-display text-xl font-semibold text-primary">Gio</span>
-        </Link>
+        <div className="mb-8 flex items-center justify-between px-1">
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <span className="text-2xl" aria-hidden>🌿</span>
+            <span className="font-display text-xl font-semibold text-primary">Gio</span>
+          </Link>
+          <LanguageToggle />
+        </div>
         <nav className="flex flex-1 flex-col gap-1">
           {TABS.map((tab) => (
             <Link
@@ -78,7 +100,7 @@ export default function AppShell({ children, title }: { children: ReactNode; tit
               }`}
             >
               <span aria-hidden>{tab.icon}</span>
-              {tab.label}
+              {t(tab.labelKey)}
             </Link>
           ))}
           <div className="my-3 h-px bg-border" />
@@ -93,7 +115,7 @@ export default function AppShell({ children, title }: { children: ReactNode; tit
               }`}
             >
               <span aria-hidden>{link.icon}</span>
-              {link.label}
+              {t(link.labelKey)}
             </Link>
           ))}
         </nav>
@@ -102,13 +124,13 @@ export default function AppShell({ children, title }: { children: ReactNode; tit
             <p className="truncate text-sm font-semibold text-foreground">{displayName}</p>
             <p className="truncate text-xs text-foreground-muted">{email}</p>
           </div>
-          <Chip tone={isPremiumActive ? "gold" : "neutral"}>{isPremiumActive ? "Premium" : "Free"}</Chip>
+          <Chip tone={isPremiumActive ? "gold" : "neutral"}>{isPremiumActive ? t("nav.premium") : t("nav.free")}</Chip>
         </div>
         <button
           onClick={logout}
           className="mt-2 rounded-xl px-3 py-2 text-left text-sm font-semibold text-foreground-muted hover:bg-surface-muted"
         >
-          Log out
+          {t("nav.logout")}
         </button>
       </aside>
 
@@ -120,11 +142,12 @@ export default function AppShell({ children, title }: { children: ReactNode; tit
             <span className="font-display text-lg font-semibold text-primary">Gio</span>
           </Link>
           <div className="flex items-center gap-2">
-            <Chip tone={isPremiumActive ? "gold" : "neutral"}>{isPremiumActive ? "Premium" : "Free"}</Chip>
+            <LanguageToggle />
+            <Chip tone={isPremiumActive ? "gold" : "neutral"}>{isPremiumActive ? t("nav.premium") : t("nav.free")}</Chip>
             <button
               onClick={() => setMenuOpen(true)}
               className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-muted text-sm font-semibold text-foreground"
-              aria-label="Open menu"
+              aria-label={t("nav.openMenu")}
             >
               {displayName?.[0]?.toUpperCase() ?? "G"}
             </button>
@@ -147,7 +170,7 @@ export default function AppShell({ children, title }: { children: ReactNode; tit
               }`}
             >
               <span className="text-lg" aria-hidden>{tab.icon}</span>
-              {tab.label}
+              {t(tab.labelKey)}
             </Link>
           ))}
         </nav>
@@ -163,12 +186,12 @@ export default function AppShell({ children, title }: { children: ReactNode; tit
               className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-foreground hover:bg-surface-muted"
             >
               <span aria-hidden>{link.icon}</span>
-              {link.label}
+              {t(link.labelKey)}
             </Link>
           ))}
           <div className="my-2 h-px bg-border" />
           <Button variant="outline" onClick={logout}>
-            Log out
+            {t("nav.logout")}
           </Button>
         </div>
       </Sheet>

@@ -1,0 +1,34 @@
+{
+  "title": "进度",
+  "loading": "正在加载你的进度…",
+  "totalXp": "总经验值",
+  "xpNote": "仅用于进度展示 · 不可消耗",
+  "nextMilestone": "下一个里程碑",
+  "days": "{{count}} 天",
+  "allMilestones": "已达成所有里程碑",
+  "quests": {
+    "title": "今日任务",
+    "login": "登录",
+    "checkIn": "情绪打卡",
+    "innerReading": "深度解读",
+    "done": "已完成",
+    "pending": "待完成",
+    "bonus": "完成全部三项（+10 经验值）",
+    "earnedToday": "今日已获得",
+    "inProgress": "进行中",
+    "loginNotWired": "“登录”任务后端尚未接入。"
+  },
+  "garden": {
+    "title": "成长花园",
+    "note": "仅作视觉展示——每周重置，不发放经验值。"
+  },
+  "badges": {
+    "title": "徽章",
+    "rewards": "奖励 →",
+    "gate": "升级 Premium 查看你完整的私人徽章收藏。"
+  },
+  "streak": {
+    "title": "连续记录进度"
+  },
+  "viewRewards": "查看奖励"
+}

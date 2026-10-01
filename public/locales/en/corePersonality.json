@@ -1,0 +1,46 @@
+{
+  "title": "Core Personality",
+  "loading": "Loading your Core Personality…",
+  "notStarted": "Complete onboarding to see your Core Personality.",
+  "tabs": {
+    "overview": "Overview",
+    "colour": "Colour Breakdown",
+    "collection": "Collection"
+  },
+  "collection": {
+    "title": "Unlocked Collection",
+    "subtitle": "Every slot you've earned so far — and what's still waiting to be found.",
+    "loading": "Loading your collection…",
+    "affirmations": "Affirmations",
+    "insights": "Insights",
+    "reflections": "Reflections"
+  },
+  "sections": {
+    "birthdayNumber": "Birthday Number",
+    "lifePathNumber": "Life Path Number",
+    "talentNumber": "Talent Number"
+  },
+  "tree": {
+    "title": "Your Growth Tree",
+    "subtitle": "Every affirmation, insight, and reflection you unlock decorates your tree.",
+    "affirmation": "Affirmation",
+    "insight": "Insight",
+    "reflection": "Reflection"
+  },
+  "rail": {
+    "overview": "Overview",
+    "birthday": "Birthday",
+    "lifePath": "Life Path",
+    "talent": "Talent"
+  },
+  "colourBreakdown": {
+    "title": "Your Colour Breakdown",
+    "subtitle": "How in tune you are with each supportive colour right now. Tap a colour to read more.",
+    "dominant": "Your dominant colour — {{name}}",
+    "positive": "✦ Positive",
+    "negative": "▽ Negative"
+  },
+  "colourAffinity": {
+    "label": "Colour Affinity"
+  }
+}
