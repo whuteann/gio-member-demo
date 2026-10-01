@@ -1,0 +1,75 @@
+{
+  "title": "Membership",
+  "currentPlan": "Current plan",
+  "plan": {
+    "premium": "Premium",
+    "trial": "Free trial",
+    "free": "Free"
+  },
+  "cancelsOn": "Cancels on {{date}}",
+  "expires": "Expires {{date}}",
+  "trialEnds_one": "Trial ends in {{count}} day",
+  "trialEnds_other": "Trial ends in {{count}} days",
+  "status": {
+    "TRIAL": "TRIAL",
+    "ACTIVE": "ACTIVE",
+    "CANCELLED": "CANCELLED",
+    "PENDING": "PENDING",
+    "COMPLETED": "COMPLETED",
+    "FAILED": "FAILED",
+    "EXPIRED": "EXPIRED"
+  },
+  "freeNotice": "Free plan includes 3 Inner Readings per 7 days and 7 days of check-in history.",
+  "manage": {
+    "title": "Manage subscription",
+    "reactivate": "Reactivate Premium",
+    "cancel": "Cancel subscription"
+  },
+  "pricing": {
+    "premiumLabel": "Premium",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "monthlyNote": "Billed monthly.",
+    "yearlyNote": "Billed once a year.",
+    "yearlyDiscount": "-20%"
+  },
+  "includes": {
+    "title": "Premium includes",
+    "items": [
+      "Unlimited Inner Readings",
+      "Full check-in & reading history",
+      "In-depth colour reasoning + your colour history",
+      "In-depth Inner Reading — work, relationships, personal growth, conflict management",
+      "Monthly progress trends"
+    ]
+  },
+  "trial": {
+    "starting": "Starting…",
+    "start": "Start 7-day free trial"
+  },
+  "subscribe": {
+    "redirecting": "Redirecting to payment…",
+    "cta": "Subscribe · {{price}}",
+    "note": "You'll be redirected to Xendit to complete payment securely."
+  },
+  "billing": {
+    "title": "Billing history",
+    "print": "Print",
+    "invoice": "Invoice"
+  },
+  "paymentTitle": "Payment",
+  "success": {
+    "confirming": "Confirming your payment…",
+    "confirmedTitle": "You're Premium",
+    "confirmedBody": "Your payment was confirmed and Premium is now active.",
+    "viewMembership": "View membership",
+    "pendingTitle": "Still confirming",
+    "pendingBody": "Payment can take a short moment to confirm. Check back on your membership page shortly.",
+    "backToMembership": "Back to membership"
+  },
+  "failed": {
+    "title": "Payment didn't go through",
+    "body": "No charge was made. You can try again from your membership page.",
+    "backToMembership": "Back to membership"
+  }
+}

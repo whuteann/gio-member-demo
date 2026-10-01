@@ -1,8 +1,12 @@
 import { api } from "./client";
-import type { ProgressOut, RewardOut } from "./types";
+import type { ProgressOut, RewardOut, UnlockedContentOut } from "./types";
 
 export function getProgress(token: string) {
   return api.get<ProgressOut>("/progress", { token });
+}
+
+export function getUnlockedContent(token: string) {
+  return api.get<UnlockedContentOut>("/progress/unlocks", { token });
 }
 
 export function listRewards(token: string) {

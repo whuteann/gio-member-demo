@@ -1,0 +1,50 @@
+{
+  "title": "Journal",
+  "loading": "Loading your journal…",
+  "today": {
+    "title": "Today's Reflection",
+    "subtitle": "Write freely — your thoughts, feelings, or anything on your mind. Supports plain markdown.",
+    "placeholder": "Write what comes to mind…",
+    "save": "Save Entry",
+    "saving": "Saving…"
+  },
+  "stats": {
+    "entries": "Entries",
+    "sameAsLastWeek": "Same as last week",
+    "deltaFromLastWeek": "{{sign}} {{count}} from last week",
+    "topMood": "Most Common Mood",
+    "topTheme": "Top Theme"
+  },
+  "entries": {
+    "title": "Your Entries",
+    "empty": "No journal entries yet — write your first reflection above."
+  },
+  "moods": {
+    "Calm": "Calm",
+    "Hopeful": "Hopeful",
+    "Tired": "Tired",
+    "Anxious": "Anxious",
+    "Grateful": "Grateful",
+    "Content": "Content",
+    "Overwhelmed": "Overwhelmed",
+    "Energised": "Energised",
+    "Frustrated": "Frustrated",
+    "Sad": "Sad",
+    "Peaceful": "Peaceful",
+    "Excited": "Excited"
+  },
+  "themes": {
+    "Growth": "Growth",
+    "Responsibility": "Responsibility",
+    "Relationships": "Relationships",
+    "Self-Care": "Self-Care",
+    "Work": "Work",
+    "Clarity": "Clarity",
+    "Rest": "Rest",
+    "Gratitude": "Gratitude",
+    "Health": "Health",
+    "Creativity": "Creativity",
+    "Family": "Family",
+    "Identity": "Identity"
+  }
+}

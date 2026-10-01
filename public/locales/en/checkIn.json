@@ -1,0 +1,85 @@
+{
+  "meta": { "title": "Emotional Check-In — Gio" },
+  "loading": "Loading your check-ins…",
+  "header": {
+    "title": "Emotional Check-In",
+    "subtitle": "A little space to notice how you feel today."
+  },
+  "hero": {
+    "eyebrowDone": "You've made time for yourself today",
+    "eyebrowPending": "Your daily moment of reflection",
+    "titleDone": "How are you feeling now?",
+    "titlePending": "How are you feeling today?",
+    "body": "Pause for a moment. Notice your energy, your thoughts, and what you need. Every feeling has a place here.",
+    "ctaAgain": "Check In Again",
+    "ctaBegin": "Begin Check-In",
+    "meta": "4 questions · About 1 minute"
+  },
+  "week": {
+    "title": "This week",
+    "count": "{{count}} / 7 days",
+    "days": ["M", "T", "W", "T", "F", "S", "S"],
+    "ariaToday": ", today",
+    "ariaCompleted": "completed",
+    "ariaPending": "no check-in",
+    "footerDone": "Today's check-in is complete. Come back whenever you need a moment.",
+    "footerPending": "One small pause, at your own pace."
+  },
+  "recent": {
+    "title": "Recent Check-Ins",
+    "viewHistory": "View history",
+    "today": "Today",
+    "questionsAnswered": "{{count}} questions answered",
+    "emptyTitle": "Your first moment starts here.",
+    "emptyBody": "Your completed check-ins will appear here as your journey unfolds."
+  },
+  "history": {
+    "title": "Check-In History",
+    "loading": "Loading your check-in history…",
+    "newCheckIn": "+ New Check-In",
+    "empty": "No check-ins yet.",
+    "questions": "{{count}} questions",
+    "premiumTitle": "More history with Premium",
+    "premiumBody": "Free shows check-ins from the last 7 days — Premium unlocks your full history."
+  },
+  "session": {
+    "loadingQuestions": "Preparing today's questions for you…",
+    "back": "Back",
+    "next": "Next",
+    "continue": "Continue",
+    "completeCta": "Complete Check-In",
+    "completing": "Checking in…",
+    "backToHub": "← Emotional Check-In",
+    "notePrompt": "Anything you want to note privately?",
+    "notePlaceholder": "Optional — this stays private and is never used for recommendations.",
+    "noteSealed": "Sealed. Only you can read this, and it never reaches AI context or recommendations.",
+    "noteOpen": "Private notes are excluded from AI context and recommendations.",
+    "noteWordCount_one": "{{count}} word",
+    "noteWordCount_other": "{{count}} words",
+    "yourCheckIn": "Your check-in",
+    "doneTitle": "Check-in complete",
+    "xpAwarded": "+{{count}} XP",
+    "bonusAwarded": "+10 XP quest bonus",
+    "milestone": "{{count}}-day streak!",
+    "newBadge": "New badge earned",
+    "recommendationsNote": "Your recommendations have been refreshed based on this check-in.",
+    "goDashboard": "Dashboard",
+    "seeRecommendations": "See recommendations"
+  },
+  "result": {
+    "pageTitle": "Your Check-In",
+    "loading": "Loading your check-in…",
+    "notFoundTitle": "Check-in not found",
+    "backToHistory": "Back to history",
+    "fallbackComplete": "Check-in complete",
+    "dimensions": "Dimensions",
+    "latestInsight": "Latest Insight",
+    "reflectionQuestion": "💡 Reflection Question",
+    "reminder": "🌿 Reminder for you",
+    "friendlyAdvice": "🤝 Friendly advice",
+    "affirmation": "✨ Affirmation",
+    "yourNote": "Your note",
+    "seeRecommendations": "See recommendations",
+    "dashboard": "Dashboard"
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "meta": { "title": "情绪打卡 — Gio" },
+  "loading": "正在加载你的打卡记录…",
+  "header": {
+    "title": "情绪打卡",
+    "subtitle": "留一点空间，感受今天的自己。"
+  },
+  "hero": {
+    "eyebrowDone": "你今天已经为自己留出了时间",
+    "eyebrowPending": "你的每日反思时刻",
+    "titleDone": "现在感觉怎么样？",
+    "titlePending": "今天感觉怎么样？",
+    "body": "停下来一会儿。留意你的能量、你的想法，以及你需要什么。每一种感受在这里都有位置。",
+    "ctaAgain": "再次打卡",
+    "ctaBegin": "开始打卡",
+    "meta": "4 个问题 · 约 1 分钟"
+  },
+  "week": {
+    "title": "本周",
+    "count": "{{count}} / 7 天",
+    "days": ["一", "二", "三", "四", "五", "六", "日"],
+    "ariaToday": "，今天",
+    "ariaCompleted": "已完成",
+    "ariaPending": "未打卡",
+    "footerDone": "今天的打卡已完成。随时欢迎回来留一点时间给自己。",
+    "footerPending": "按你自己的节奏，留一点小小的停顿。"
+  },
+  "recent": {
+    "title": "最近的打卡",
+    "viewHistory": "查看历史",
+    "today": "今天",
+    "questionsAnswered": "已回答 {{count}} 个问题",
+    "emptyTitle": "你的第一次打卡将从这里开始。",
+    "emptyBody": "完成打卡后，记录会显示在这里，伴随你的旅程展开。"
+  },
+  "history": {
+    "title": "打卡历史",
+    "loading": "正在加载你的打卡历史…",
+    "newCheckIn": "+ 新打卡",
+    "empty": "还没有打卡记录。",
+    "questions": "{{count}} 个问题",
+    "premiumTitle": "升级 Premium 查看更多历史",
+    "premiumBody": "免费版仅显示近 7 天的打卡——Premium 解锁完整历史记录。"
+  },
+  "session": {
+    "loadingQuestions": "正在为你准备今天的问题…",
+    "back": "返回",
+    "next": "下一步",
+    "continue": "继续",
+    "completeCta": "完成打卡",
+    "completing": "打卡中…",
+    "backToHub": "← 情绪打卡",
+    "notePrompt": "有什么想私下记录的吗？",
+    "notePlaceholder": "可选——这部分内容保密，且不会用于生成推荐。",
+    "noteSealed": "已封存。只有你能看到这段文字，它不会进入 AI 分析或推荐流程。",
+    "noteOpen": "私密笔记不会用于 AI 分析或推荐。",
+    "noteWordCount_one": "{{count}} 个词",
+    "noteWordCount_other": "{{count}} 个词",
+    "yourCheckIn": "你的打卡",
+    "doneTitle": "打卡完成",
+    "xpAwarded": "+{{count}} 经验值",
+    "bonusAwarded": "+10 每日任务奖励经验值",
+    "milestone": "连续 {{count}} 天！",
+    "newBadge": "获得新徽章",
+    "recommendationsNote": "已根据这次打卡为你刷新推荐内容。",
+    "goDashboard": "首页",
+    "seeRecommendations": "查看推荐"
+  },
+  "result": {
+    "pageTitle": "你的打卡",
+    "loading": "正在加载你的打卡记录…",
+    "notFoundTitle": "未找到该打卡记录",
+    "backToHistory": "返回历史记录",
+    "fallbackComplete": "打卡完成",
+    "dimensions": "维度",
+    "latestInsight": "最新洞察",
+    "reflectionQuestion": "💡 反思问题",
+    "reminder": "🌿 给你的提醒",
+    "friendlyAdvice": "🤝 贴心建议",
+    "affirmation": "✨ 肯定语",
+    "yourNote": "你的笔记",
+    "seeRecommendations": "查看推荐",
+    "dashboard": "首页"
+  }
+}

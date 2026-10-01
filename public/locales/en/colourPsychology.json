@@ -1,0 +1,45 @@
+{
+  "meta": { "title": "Colour Psychology — Gio" },
+  "loading": "Loading your colour profile…",
+  "header": {
+    "title": "Colour Psychology",
+    "subtitle": "Colours influence how we think, feel and respond. Discover the colours that support your current state and growth."
+  },
+  "current": {
+    "label": "Your current supportive colour",
+    "affirmationLabel": "Affirmation for you",
+    "whyTitle": "Why this colour for you?",
+    "learnMore": "Learn more about {{name}} →",
+    "empty": "Complete a check-in or Inner Reading to get your first supportive colour."
+  },
+  "explore": {
+    "title": "Explore Colour Meanings"
+  },
+  "recommended": {
+    "title": "Recommended for You",
+    "subtitle": "Handpicked selections that align with your current energy.",
+    "empty": "No product matches available right now."
+  },
+  "howTo": {
+    "title": "How to use colour intentionally",
+    "tips": [
+      { "title": "Wear it", "body": "Use it in your clothing or everyday accessories." },
+      { "title": "See it", "body": "Spend time in natural greenery or matching surroundings." },
+      { "title": "Bring it near you", "body": "Add it to your workspace or daily essentials." },
+      { "title": "Be reminded", "body": "Use it as a gentle visual cue throughout your day." }
+    ]
+  },
+  "history": {
+    "title": "Your colour history",
+    "empty": "Your colour pattern will build up here as you check in and reflect over time.",
+    "gateTitle": "See your colour pattern",
+    "gateBody": "Premium reveals how your supportive colour has shifted over time, not just today's."
+  },
+  "detail": {
+    "back": "← Back to Colour Psychology",
+    "notFound": "Colour not found.",
+    "aboutTitle": "About {{name}}",
+    "whenTitle": "When it's recommended",
+    "affirmationsTitle": "Affirmations"
+  }
+}

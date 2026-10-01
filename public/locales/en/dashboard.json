@@ -1,0 +1,87 @@
+{
+  "greeting": "Hi, {{name}}",
+  "title": "Dashboard",
+  "loading": "Loading your dashboard…",
+  "innerState": {
+    "title": "Your inner state",
+    "defaultFocus": "Sustaining balance",
+    "empty": "Complete a check-in or Inner Reading to see your first snapshot."
+  },
+  "latestInsight": {
+    "title": "Latest Insight",
+    "viewFull": "View Full Reading",
+    "reflectionQuestion": "Reflection Question",
+    "empty": "Complete an Inner Reading to get your first personal insight."
+  },
+  "today": {
+    "title": "Today",
+    "checkIn": "Emotional Check-In",
+    "done": "Done",
+    "pending": "Pending",
+    "checkInNow": "Check in now",
+    "viewHistory": "View check-in history"
+  },
+  "innerReading": {
+    "title": "Inner Reading",
+    "emptyFree": "Your first Inner Reading is free and unlocks your recommendations.",
+    "viewLatest": "View latest reading",
+    "startFree": "Start free reading",
+    "weeklyLimitReached": "You've used your 3 free readings this week."
+  },
+  "personality": {
+    "title": "Your Personality",
+    "viewProfile": "View Profile",
+    "empty": "Complete your baseline assessment to see your Core Personality."
+  },
+  "forYou": {
+    "title": "For you",
+    "seeAll": "See all",
+    "empty": "Complete a check-in or reading to get your first recommendations."
+  },
+  "trend": {
+    "title": "Progress Trend",
+    "thisWeek": "This week, one point per day.",
+    "thisMonth": "This month, one point per day.",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "monthlyLocked": "Monthly trends need Premium",
+    "freeNotice": "Free shows your weekly trend.",
+    "upgrade": "Upgrade to Premium",
+    "upgradeSuffix": "to switch to a full monthly view."
+  },
+  "progress": {
+    "title": "Progress",
+    "xp": "{{count}} XP",
+    "viewProgress": "View progress"
+  },
+  "recentReadings": {
+    "title": "Recent Readings",
+    "viewAll": "View All",
+    "empty": "Your completed Inner Readings will show up here.",
+    "exploreAll": "Explore all your readings →"
+  },
+  "journal": {
+    "title": "Continue Your Reflection",
+    "newEntry": "New Journal Entry",
+    "prompt": "What has taken most of your emotional energy today?",
+    "placeholder": "Write what comes to mind…",
+    "viewJournal": "View Journal",
+    "saved": "Saved ✓",
+    "savePrivately": "🔒 Save Privately"
+  },
+  "premium": {
+    "title": "Go Premium",
+    "body": "Unlock repeat Inner Readings, full history, full recommendations and full Core Personality detail.",
+    "viewPlans": "View plans"
+  },
+  "languageSwitcher": {
+    "label": "System language"
+  },
+  "collection": {
+    "title": "Your Collection",
+    "subtitle": "Affirmations, insights, and reflections you've unlocked along the way.",
+    "affirmations": "Affirmation",
+    "insights": "Insight",
+    "reflections": "Reflection"
+  }
+}

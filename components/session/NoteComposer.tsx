@@ -1,5 +1,6 @@
 import { useRef, useState, type ChangeEvent } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { useTranslation } from "react-i18next";
 import type { DimensionKey } from "@/lib/types";
 import { DIMENSION_HEX, EASE_OUT, EASE_SOFT_BACK, GOLD_HEX } from "@/lib/sessionMotion";
 import DimensionGlyph from "./DimensionGlyph";
@@ -8,7 +9,6 @@ import Button from "@/components/ui/Button";
 type Answer = { dimension: DimensionKey; value: number };
 type Particle = { id: number; x: number; drift: number };
 
-const HEADING = "Anything you want to note privately?".split(" ");
 const MAX_PARTICLES = 10;
 
 const stagger = {
@@ -30,19 +30,23 @@ export default function NoteComposer({
   onNoteChange,
   onBack,
   onComplete,
+  submitting = false,
 }: {
   answers: Answer[];
   note: string;
   onNoteChange: (value: string) => void;
   onBack: () => void;
   onComplete: () => void;
+  submitting?: boolean;
 }) {
+  const { t } = useTranslation("checkIn");
   const reduce = useReducedMotion();
   const [focused, setFocused] = useState(false);
   const [particles, setParticles] = useState<Particle[]>([]);
   const nextId = useRef(0);
   const hasText = note.trim().length > 0;
   const wordCount = hasText ? note.trim().split(/\s+/).length : 0;
+  const heading = t("session.notePrompt").split(" ");
 
   function handleChange(e: ChangeEvent<HTMLTextAreaElement>) {
     const next = e.target.value;
@@ -71,16 +75,16 @@ export default function NoteComposer({
           </motion.div>
         ))}
         <motion.p variants={rise} className="ml-1 text-xs font-semibold uppercase tracking-wide text-foreground-muted">
-          Your check-in
+          {t("session.yourCheckIn")}
         </motion.p>
       </motion.div>
 
       <motion.h2
         variants={stagger}
         className="font-display text-2xl font-semibold leading-snug text-foreground sm:text-3xl"
-        aria-label={HEADING.join(" ")}
+        aria-label={heading.join(" ")}
       >
-        {HEADING.map((word, i) => (
+        {heading.map((word, i) => (
           <motion.span key={i} variants={rise} className="mr-[0.28em] inline-block" aria-hidden>
             {word}
           </motion.span>
@@ -119,7 +123,7 @@ export default function NoteComposer({
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
             rows={5}
-            placeholder="Optional — this stays private and is never used for recommendations."
+            placeholder={t("session.notePlaceholder")}
             className="block w-full resize-none rounded-3xl border border-transparent bg-surface p-5 text-sm leading-relaxed text-foreground outline-none"
           />
         </motion.div>
@@ -151,9 +155,7 @@ export default function NoteComposer({
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.3, ease: EASE_OUT }}
             >
-              {hasText
-                ? "Sealed. Only you can read this, and it never reaches AI context or recommendations."
-                : "Private notes are excluded from AI context and recommendations."}
+              {hasText ? t("session.noteSealed") : t("session.noteOpen")}
             </motion.span>
           </AnimatePresence>
         </span>
@@ -168,19 +170,19 @@ export default function NoteComposer({
               exit={{ opacity: 0, scale: 0.7 }}
               transition={{ duration: 0.3, ease: EASE_SOFT_BACK }}
             >
-              {wordCount} {wordCount === 1 ? "word" : "words"}
+              {t("session.noteWordCount", { count: wordCount })}
             </motion.span>
           ) : null}
         </AnimatePresence>
       </motion.div>
 
       <motion.div variants={rise} className="flex gap-3">
-        <Button variant="outline-solid" onClick={onBack}>
-          Back
+        <Button variant="outline-solid" onClick={onBack} disabled={submitting}>
+          {t("session.back")}
         </Button>
-        <motion.div className="flex-1" whileTap={{ scale: 0.98 }}>
-          <Button fullWidth onClick={onComplete}>
-            Complete Check-In
+        <motion.div className="flex-1" whileTap={submitting ? undefined : { scale: 0.98 }}>
+          <Button fullWidth onClick={onComplete} disabled={submitting}>
+            {submitting ? t("session.completing") : t("session.completeCta")}
           </Button>
         </motion.div>
       </motion.div>

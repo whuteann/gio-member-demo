@@ -1,0 +1,39 @@
+{
+  "language": {
+    "welcome": "Welcome to Gio",
+    "intro": "Let's set up your space. Next, we'll use your birthdate to reveal your Core Personality and your supportive colour.",
+    "preferredLanguage": "Preferred language",
+    "english": "English",
+    "chinese": "中文 (Mandarin)",
+    "consent": "I consent to Gio storing my check-in and reading history to personalise my experience. Private notes are never used for AI context or recommendations.",
+    "continue": "Continue"
+  },
+  "birthdate": {
+    "title": "When were you born?",
+    "intro": "Gio reads your birthdate to derive your Core Personality and a supportive colour matched to it — the same AI reading the rest of the app builds on.",
+    "label": "Birthdate",
+    "reveal": "Reveal my Core Personality",
+    "error": "Something went wrong reading your birthdate. Please try again."
+  },
+  "reading": {
+    "title": "Reading your birth code",
+    "body": "Deriving your Core Personality and a colour to support it — this takes a little longer than usual, it's worth the wait."
+  },
+  "results": {
+    "loading": "Loading your Core Personality…",
+    "sections": {
+      "overview": "Overview",
+      "colour": "Colour",
+      "birthday": "Birthday",
+      "lifePath": "Life Path",
+      "talent": "Talent",
+      "colours": "Colours"
+    },
+    "supportiveColour": "Your supportive colour",
+    "birthdayNumber": "Birthday Number",
+    "lifePathNumber": "Life Path Number",
+    "talentNumber": "Talent Number",
+    "startFirstReading": "Start my first Inner Reading",
+    "goToDashboard": "Go to Dashboard"
+  }
+}

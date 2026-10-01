@@ -3,8 +3,10 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import Link from "next/link";
 import { AnimatePresence, motion, MotionConfig } from "motion/react";
+import { useTranslation } from "react-i18next";
 import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useApiResource } from "@/lib/useApiResource";
+import { useLanguage } from "@/lib/useLanguage";
 import { getCheckInQuestions, submitCheckIn as apiSubmitCheckIn } from "@/lib/api/reflections";
 import type { CheckInSubmitResponse } from "@/lib/api/types";
 import { DIMENSIONS } from "@/lib/blueprints";
@@ -19,6 +21,7 @@ import ScaleSelector from "@/components/session/ScaleSelector";
 import StepProgress from "@/components/session/StepProgress";
 import NoteComposer from "@/components/session/NoteComposer";
 import CompletionMandala from "@/components/session/CompletionMandala";
+import PreparingSession from "@/components/session/PreparingSession";
 
 // Question-to-question transition. `custom` carries the direction of travel
 // (+1 forward, -1 back) so the slide always moves the way the user went.
@@ -69,6 +72,8 @@ const chipPop = {
 export default function CheckInPage() {
   const { settled, token } = useAuthGuard();
   const router = useRouter();
+  const { t } = useTranslation("checkIn");
+  const { language } = useLanguage();
 
   const { data: questionSet, loading: questionsLoading } = useApiResource(
     token ? () => getCheckInQuestions(token).then((r) => r.questions) : null,
@@ -87,12 +92,13 @@ export default function CheckInPage() {
   if (questionsLoading || questions.length === 0) {
     return (
       <AppShell>
-        <p className="text-sm text-foreground-muted">Loading today&apos;s questions…</p>
+        <PreparingSession label={t("session.loadingQuestions")} />
       </AppShell>
     );
   }
 
   const current = questions[step];
+  const questionText = (language === "zh" ? current.text_zh : current.text) ?? current.text;
   const dimensionMeta = DIMENSIONS.find((d) => d.key === current?.dimension)!;
   const currentColor = DIMENSION_HEX[current.dimension];
   const ambientColor = phase === "questions" ? currentColor : phase === "note" ? GOLD_HEX : SECONDARY_HEX;
@@ -109,7 +115,7 @@ export default function CheckInPage() {
     setSubmitting(true);
     const answers = questions.map((q, i) => ({
       dimension: q.dimension,
-      question_text: q.text,
+      question_text: (language === "zh" ? q.text_zh : q.text) ?? q.text,
       value: values[i],
     }));
     try {
@@ -123,14 +129,14 @@ export default function CheckInPage() {
 
   return (
     <>
-      <Head><title>Emotional Check-In — Gio</title></Head>
+      <Head><title>{t("meta.title")}</title></Head>
       <MotionConfig reducedMotion="user">
         <AppShell>
           <div className="session-stage relative isolate">
             <AmbientField color={ambientColor} />
             <div className="mx-auto max-w-lg">
               <Link href="/check-in" className="mb-6 inline-block text-sm font-semibold text-primary">
-                &larr; Emotional Check-In
+                {t("session.backToHub")}
               </Link>
 
               <AnimatePresence mode="wait">
@@ -172,21 +178,21 @@ export default function CheckInPage() {
                             className="text-xs font-semibold uppercase tracking-wide"
                             style={{ color: currentColor }}
                           >
-                            {dimensionMeta.label}
+                            {t(`common:dimensions.${dimensionMeta.key}.label`)}
                           </motion.p>
                           <motion.h2
                             variants={lineVariants}
                             className="font-display text-2xl font-medium leading-snug text-foreground sm:text-3xl"
                           >
-                            {current.text}
+                            {questionText}
                           </motion.h2>
                           <motion.div variants={lineVariants}>
                             <ScaleSelector
                               value={values[step] ?? null}
                               onChange={(v) => setValues((prev) => ({ ...prev, [step]: v }))}
                               color={currentColor}
-                              lowLabel={dimensionMeta.lowLabel}
-                              highLabel={dimensionMeta.highLabel}
+                              lowLabel={t(`common:dimensions.${dimensionMeta.key}.lowLabel`)}
+                              highLabel={t(`common:dimensions.${dimensionMeta.key}.highLabel`)}
                             />
                           </motion.div>
                         </motion.div>
@@ -205,7 +211,7 @@ export default function CheckInPage() {
                             className="overflow-hidden"
                           >
                             <Button variant="outline-solid" onClick={() => goTo(step - 1)}>
-                              Back
+                              {t("session.back")}
                             </Button>
                           </motion.div>
                         ) : null}
@@ -225,7 +231,7 @@ export default function CheckInPage() {
                             else setPhase("note");
                           }}
                         >
-                          {step + 1 < questions.length ? "Next" : "Continue"}
+                          {step + 1 < questions.length ? t("session.next") : t("session.continue")}
                         </Button>
                       </motion.div>
                     </div>
@@ -240,6 +246,7 @@ export default function CheckInPage() {
                       onNoteChange={setNote}
                       onBack={() => setPhase("questions")}
                       onComplete={finish}
+                      submitting={submitting}
                     />
                   </motion.div>
                 )}
@@ -256,35 +263,35 @@ export default function CheckInPage() {
                     <CompletionMandala answers={answerSummary} />
                     <motion.div variants={doneStagger} initial="hidden" animate="show" className="flex w-full flex-col items-center gap-5">
                       <motion.h2 variants={doneRise} className="font-display text-2xl font-semibold text-foreground">
-                        Check-in complete
+                        {t("session.doneTitle")}
                       </motion.h2>
                       <motion.div variants={doneStagger} className="flex flex-wrap justify-center gap-2">
                         {outcome.outcome.xp_awarded > 0 ? (
-                          <motion.span variants={chipPop}><Chip tone="gold">+{outcome.outcome.xp_awarded} XP</Chip></motion.span>
+                          <motion.span variants={chipPop}><Chip tone="gold">{t("session.xpAwarded", { count: outcome.outcome.xp_awarded })}</Chip></motion.span>
                         ) : null}
                         {outcome.outcome.bonus_awarded ? (
-                          <motion.span variants={chipPop}><Chip tone="gold">+10 XP quest bonus</Chip></motion.span>
+                          <motion.span variants={chipPop}><Chip tone="gold">{t("session.bonusAwarded")}</Chip></motion.span>
                         ) : null}
                         {outcome.outcome.milestone ? (
-                          <motion.span variants={chipPop}><Chip tone="accent">{outcome.outcome.milestone}-day streak!</Chip></motion.span>
+                          <motion.span variants={chipPop}><Chip tone="accent">{t("session.milestone", { count: outcome.outcome.milestone })}</Chip></motion.span>
                         ) : null}
                         {outcome.outcome.new_badges.map((b) => (
-                          <motion.span key={b} variants={chipPop}><Chip tone="primary">New badge earned</Chip></motion.span>
+                          <motion.span key={b} variants={chipPop}><Chip tone="primary">{t("session.newBadge")}</Chip></motion.span>
                         ))}
                       </motion.div>
                       <motion.div variants={doneRise} className="w-full">
                         <Card className="w-full text-left">
                           <p className="text-sm text-foreground-muted">
-                            Your recommendations have been refreshed based on this check-in.
+                            {t("session.recommendationsNote")}
                           </p>
                         </Card>
                       </motion.div>
                       <motion.div variants={doneRise} className="flex w-full gap-3">
                         <Button fullWidth variant="outline-solid" onClick={() => router.push("/dashboard")}>
-                          Dashboard
+                          {t("session.goDashboard")}
                         </Button>
                         <Button fullWidth onClick={() => router.push("/colour-psychology")}>
-                          See recommendations
+                          {t("session.seeRecommendations")}
                         </Button>
                       </motion.div>
                     </motion.div>

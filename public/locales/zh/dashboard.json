@@ -1,0 +1,87 @@
+{
+  "greeting": "你好，{{name}}",
+  "title": "仪表板",
+  "loading": "正在加载您的仪表板…",
+  "innerState": {
+    "title": "您的内在状态",
+    "defaultFocus": "保持平衡",
+    "empty": "完成一次情绪打卡或深度解读，即可查看您的第一份状态快照。"
+  },
+  "latestInsight": {
+    "title": "最新洞察",
+    "viewFull": "查看完整解读",
+    "reflectionQuestion": "反思问题",
+    "empty": "完成一次深度解读，获取您的第一份个人洞察。"
+  },
+  "today": {
+    "title": "今日",
+    "checkIn": "情绪打卡",
+    "done": "已完成",
+    "pending": "待完成",
+    "checkInNow": "立即打卡",
+    "viewHistory": "查看打卡历史"
+  },
+  "innerReading": {
+    "title": "深度解读",
+    "emptyFree": "您的第一次深度解读是免费的，并将解锁专属推荐。",
+    "viewLatest": "查看最新解读",
+    "startFree": "开始免费解读",
+    "weeklyLimitReached": "您本周的3次免费解读次数已用完。"
+  },
+  "personality": {
+    "title": "您的核心人格",
+    "viewProfile": "查看档案",
+    "empty": "完成基础评估，即可查看您的核心人格。"
+  },
+  "forYou": {
+    "title": "为您推荐",
+    "seeAll": "查看全部",
+    "empty": "完成一次打卡或解读，获取您的第一份推荐。"
+  },
+  "trend": {
+    "title": "进度趋势",
+    "thisWeek": "本周，每天一个数据点。",
+    "thisMonth": "本月，每天一个数据点。",
+    "weekly": "周视图",
+    "monthly": "月视图",
+    "monthlyLocked": "月度趋势需要 Premium 会员",
+    "freeNotice": "免费版仅显示每周趋势。",
+    "upgrade": "升级至 Premium",
+    "upgradeSuffix": "即可切换至完整月度视图。"
+  },
+  "progress": {
+    "title": "进度",
+    "xp": "{{count}} 经验值",
+    "viewProgress": "查看进度"
+  },
+  "recentReadings": {
+    "title": "最近解读",
+    "viewAll": "查看全部",
+    "empty": "您完成的深度解读将显示在这里。",
+    "exploreAll": "探索您的所有解读 →"
+  },
+  "journal": {
+    "title": "继续您的反思",
+    "newEntry": "新建日记条目",
+    "prompt": "今天什么占据了您最多的情绪能量？",
+    "placeholder": "写下您此刻的想法…",
+    "viewJournal": "查看日记",
+    "saved": "已保存 ✓",
+    "savePrivately": "🔒 私密保存"
+  },
+  "premium": {
+    "title": "升级 Premium",
+    "body": "解锁多次深度解读、完整历史记录、完整推荐内容以及完整的核心人格详情。",
+    "viewPlans": "查看方案"
+  },
+  "languageSwitcher": {
+    "label": "系统语言"
+  },
+  "collection": {
+    "title": "您的收藏",
+    "subtitle": "一路走来解锁的肯定语、洞察与反思。",
+    "affirmations": "肯定语",
+    "insights": "洞察",
+    "reflections": "反思"
+  }
+}

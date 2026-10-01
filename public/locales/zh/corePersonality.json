@@ -1,0 +1,46 @@
+{
+  "title": "核心人格",
+  "loading": "正在加载你的核心人格…",
+  "notStarted": "完成新手引导以查看你的核心人格。",
+  "tabs": {
+    "overview": "概览",
+    "colour": "色彩分析",
+    "collection": "收藏"
+  },
+  "collection": {
+    "title": "已解锁的收藏",
+    "subtitle": "你目前已获得的所有内容——以及尚待发现的部分。",
+    "loading": "正在加载你的收藏…",
+    "affirmations": "肯定语",
+    "insights": "洞察",
+    "reflections": "反思"
+  },
+  "sections": {
+    "birthdayNumber": "生日数字",
+    "lifePathNumber": "生命灵数",
+    "talentNumber": "天赋数字"
+  },
+  "tree": {
+    "title": "你的成长之树",
+    "subtitle": "你解锁的每一句肯定语、洞察与反思，都会点缀你的成长之树。",
+    "affirmation": "肯定语",
+    "insight": "洞察",
+    "reflection": "反思"
+  },
+  "rail": {
+    "overview": "概览",
+    "birthday": "生日",
+    "lifePath": "生命灵数",
+    "talent": "天赋"
+  },
+  "colourBreakdown": {
+    "title": "你的色彩分析",
+    "subtitle": "了解你此刻与每种支持色的契合程度。点击一种颜色查看更多。",
+    "dominant": "你的主导色彩——{{name}}",
+    "positive": "✦ 积极特质",
+    "negative": "▽ 消极特质"
+  },
+  "colourAffinity": {
+    "label": "个性色彩"
+  }
+}

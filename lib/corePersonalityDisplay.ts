@@ -1,6 +1,6 @@
 import { COLOUR_ORDER } from "@/lib/blueprints";
 import type { ColourKey, Language } from "@/lib/types";
-import type { CorePersonalityResultOut } from "@/lib/api/types";
+import type { CorePersonalityResultOut, NumberPoint } from "@/lib/api/types";
 
 export const COLOUR_SCORE_FIELD: Record<ColourKey, keyof CorePersonalityResultOut> = {
   scarlet: "scarlet_score",
@@ -33,14 +33,7 @@ export function colourScores(personality: CorePersonalityResultOut): Record<Colo
   };
 }
 
-export type LocalizedField =
-  | "title"
-  | "subtitle"
-  | "overview"
-  | "birthday_number_content"
-  | "life_path_number_content"
-  | "talent_number_content"
-  | "summary";
+export type LocalizedField = "title" | "subtitle" | "overview" | "summary";
 
 export function localized<F extends LocalizedField>(
   personality: CorePersonalityResultOut,
@@ -48,5 +41,20 @@ export function localized<F extends LocalizedField>(
   lang: Language
 ): string {
   const key = `${field}_${lang}` as `${F}_en` | `${F}_zh`;
-  return personality[key] ?? "";
+  // Falls back to English (same convention as lib/snapshotDisplay.ts's
+  // localizedSnapshot) rather than going blank — a personality whose zh
+  // backfill hasn't landed yet still shows something when the UI language
+  // is switched, instead of an empty card.
+  return personality[key] ?? personality[`${field}_en`] ?? "";
+}
+
+export type LocalizedPointsField = "birthday_number_points" | "life_path_number_points" | "talent_number_points";
+
+export function localizedPoints<F extends LocalizedPointsField>(
+  personality: CorePersonalityResultOut,
+  field: F,
+  lang: Language
+): NumberPoint[] {
+  const key = `${field}_${lang}` as `${F}_en` | `${F}_zh`;
+  return personality[key] ?? personality[`${field}_en`] ?? [];
 }

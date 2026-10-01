@@ -1,0 +1,34 @@
+{
+  "title": "Progress",
+  "loading": "Loading your progress…",
+  "totalXp": "Total XP",
+  "xpNote": "Progression only · not spendable",
+  "nextMilestone": "Next milestone",
+  "days": "{{count}} days",
+  "allMilestones": "All milestones reached",
+  "quests": {
+    "title": "Today's quests",
+    "login": "Log in",
+    "checkIn": "Emotional Check-In",
+    "innerReading": "Inner Reading",
+    "done": "Done",
+    "pending": "Pending",
+    "bonus": "Complete all three (+10 XP)",
+    "earnedToday": "Earned today",
+    "inProgress": "In progress",
+    "loginNotWired": "The \"Log in\" quest isn't wired up yet on the backend."
+  },
+  "garden": {
+    "title": "Growth Garden",
+    "note": "Visual only — resets weekly, never issues XP."
+  },
+  "badges": {
+    "title": "Badges",
+    "rewards": "Rewards →",
+    "gate": "See your full private badge collection with Premium."
+  },
+  "streak": {
+    "title": "Streak progress"
+  },
+  "viewRewards": "View Rewards"
+}
