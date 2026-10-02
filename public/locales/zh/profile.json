@@ -1,9 +1,9 @@
 {
   "title": "个人资料",
   "linkage": {
-    "title": "Gio 关联",
+    "title": "Auren 关联",
     "linked": "已关联",
-    "body": "你的 Gio 会员账户已与你的 GioByQuartzic 身份关联。",
+    "body": "你的 Auren 会员账户已与你的 GioByQuartzic 身份关联。",
     "gid": "GID：{{gid}}"
   },
   "details": {

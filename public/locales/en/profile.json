@@ -1,9 +1,9 @@
 {
   "title": "Profile",
   "linkage": {
-    "title": "Gio linkage",
+    "title": "Auren linkage",
     "linked": "Linked",
-    "body": "Your Gio Member account is linked to your GioByQuartzic identity.",
+    "body": "Your Auren Member account is linked to your GioByQuartzic identity.",
     "gid": "GID: {{gid}}"
   },
   "details": {

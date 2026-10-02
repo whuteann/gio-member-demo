@@ -61,7 +61,7 @@ export default function CorePersonalityPage() {
 
   return (
     <>
-      <Head><title>{t("title")} — Gio</title></Head>
+      <Head><title>{t("title")} — Auren</title></Head>
       <AppShell title={t("title")}>
         <div className="mx-auto flex max-w-lg flex-col gap-5">
           <div className="flex gap-1 rounded-full border border-border bg-surface p-1">

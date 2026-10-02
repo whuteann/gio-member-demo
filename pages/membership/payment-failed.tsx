@@ -13,7 +13,7 @@ export default function PaymentFailedPage() {
 
   return (
     <>
-      <Head><title>{t("paymentTitle")} — Gio</title></Head>
+      <Head><title>{t("paymentTitle")} — Auren</title></Head>
       <AppShell title={t("paymentTitle")}>
         <div className="mx-auto flex max-w-md flex-col items-center gap-4 py-10 text-center">
           <Card className="flex w-full flex-col items-center gap-3">

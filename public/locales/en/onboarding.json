@@ -1,16 +1,16 @@
 {
   "language": {
-    "welcome": "Welcome to Gio",
+    "welcome": "Welcome to Auren",
     "intro": "Let's set up your space. Next, we'll use your birthdate to reveal your Core Personality and your supportive colour.",
     "preferredLanguage": "Preferred language",
     "english": "English",
     "chinese": "中文 (Mandarin)",
-    "consent": "I consent to Gio storing my check-in and reading history to personalise my experience. Private notes are never used for AI context or recommendations.",
+    "consent": "I consent to Auren storing my check-in and reading history to personalise my experience. Private notes are never used for AI context or recommendations.",
     "continue": "Continue"
   },
   "birthdate": {
     "title": "When were you born?",
-    "intro": "Gio reads your birthdate to derive your Core Personality and a supportive colour matched to it — the same AI reading the rest of the app builds on.",
+    "intro": "Auren reads your birthdate to derive your Core Personality and a supportive colour matched to it — the same AI reading the rest of the app builds on.",
     "label": "Birthdate",
     "reveal": "Reveal my Core Personality",
     "error": "Something went wrong reading your birthdate. Please try again."

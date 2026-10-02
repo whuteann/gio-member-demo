@@ -2,6 +2,13 @@
   "greeting": "你好，{{name}}",
   "title": "仪表板",
   "loading": "正在加载您的仪表板…",
+  "installPrompt": {
+    "title": "将 Auren 固定到主屏幕",
+    "subtitle": "更快完成每日打卡，无需浏览器地址栏",
+    "iosInstructions": "点击分享图标，然后选择“添加到主屏幕”",
+    "add": "添加",
+    "dismiss": "关闭"
+  },
   "innerState": {
     "title": "您的内在状态",
     "defaultFocus": "保持平衡",

@@ -82,7 +82,7 @@ export default function OnboardingResultsPage() {
 
   return (
     <>
-      <Head><title>Your Core Personality — Gio</title></Head>
+      <Head><title>Your Core Personality — Auren</title></Head>
       <div className="relative isolate min-h-screen overflow-hidden">
         <AmbientField color={colour.swatch} />
         <div className="mx-auto flex min-h-screen max-w-lg flex-col justify-center px-6 py-10">

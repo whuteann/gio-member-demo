@@ -1,11 +1,11 @@
 import { api } from "./client";
 import type { MeResponse, TokenResponse } from "./types";
 
-export function register(params: { email: string; password: string; display_name: string; language: string }) {
+export function register(params: { phone_number: string; password: string; display_name: string; language: string }) {
   return api.post<TokenResponse>("/auth/register", params);
 }
 
-export function login(params: { email: string; password: string }) {
+export function login(params: { phone_number: string; password: string }) {
   return api.post<TokenResponse>("/auth/login", params);
 }
 

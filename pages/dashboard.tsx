@@ -13,6 +13,7 @@ import ColourOfTheDay from "@/components/ui/ColourOfTheDay";
 import FallingLeaves from "@/components/ui/FallingLeaves";
 import StreakFlame from "@/components/ui/StreakFlame";
 import GardenIllustration from "@/components/ui/GardenIllustration";
+import InstallPrompt from "@/components/ui/InstallPrompt";
 import ProductCard from "@/components/ui/ProductCard";
 import TrendChart from "@/components/ui/TrendChart";
 import UnlockedCollection from "@/components/ui/UnlockedCollection";
@@ -151,10 +152,11 @@ export default function DashboardPage() {
 
   return (
     <>
-      <Head><title>Dashboard — Gio</title></Head>
+      <Head><title>Dashboard — Auren</title></Head>
       <FallingLeaves colourKey={currentColourKey} />
       <AppShell title={t("greeting", { name: user?.display_name.split(" ")[0] ?? "" })}>
         <div className="grid gap-5 lg:grid-cols-3">
+          <InstallPrompt />
           <Card className="flex flex-col gap-1 lg:col-span-3">
             <h2 className="font-display text-lg font-semibold text-foreground">{t("collection.title")}</h2>
             <p className="mb-2 text-xs text-foreground-muted">{t("collection.subtitle")}</p>

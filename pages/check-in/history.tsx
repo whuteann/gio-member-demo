@@ -33,7 +33,7 @@ export default function CheckInHistoryPage() {
 
   return (
     <>
-      <Head><title>{t("history.title")} — Gio</title></Head>
+      <Head><title>{t("history.title")} — Auren</title></Head>
       <AppShell title={t("history.title")}>
         <div className="flex flex-col gap-3">
           <Link href="/check-in/session" className="self-start">

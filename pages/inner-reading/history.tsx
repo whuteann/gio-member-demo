@@ -32,7 +32,7 @@ export default function InnerReadingHistoryPage() {
 
   return (
     <>
-      <Head><title>{t("history.title")} — Gio</title></Head>
+      <Head><title>{t("history.title")} — Auren</title></Head>
       <AppShell title={t("history.title")}>
         <div className="flex flex-col gap-3">
           <Link href="/inner-reading/session" className="self-start">

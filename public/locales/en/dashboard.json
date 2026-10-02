@@ -2,6 +2,13 @@
   "greeting": "Hi, {{name}}",
   "title": "Dashboard",
   "loading": "Loading your dashboard…",
+  "installPrompt": {
+    "title": "Pin Auren to your home screen",
+    "subtitle": "Faster daily check-ins, no browser bar",
+    "iosInstructions": "Tap Share, then \"Add to Home Screen\"",
+    "add": "Add",
+    "dismiss": "Dismiss"
+  },
   "innerState": {
     "title": "Your inner state",
     "defaultFocus": "Sustaining balance",

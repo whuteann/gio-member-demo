@@ -22,7 +22,7 @@ export default function RegisterPage() {
   // no separate confirmation step, one control does both.
   const { language, setLanguage } = useLanguage();
   const [displayName, setDisplayName] = useState("");
-  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -41,7 +41,7 @@ export default function RegisterPage() {
     }
     setSubmitting(true);
     try {
-      const { access_token, refresh_token } = await apiRegister({ email, password, display_name: displayName, language });
+      const { access_token, refresh_token } = await apiRegister({ phone_number: phoneNumber, password, display_name: displayName, language });
       const me = await getMe(access_token);
       dispatch(setCredentials({ token: access_token, refreshToken: refresh_token, user: me.user, subscription: me.subscription }));
       router.push("/onboarding");
@@ -54,7 +54,7 @@ export default function RegisterPage() {
 
   return (
     <>
-      <Head><title>Create account — Gio</title></Head>
+      <Head><title>Create account — Auren</title></Head>
       <AuthLayout
         title={t("register.title")}
         subtitle={t("register.subtitle")}
@@ -76,12 +76,12 @@ export default function RegisterPage() {
             onChange={(e) => setDisplayName(e.target.value)}
           />
           <TextField
-            label={t("register.email")}
-            type="email"
-            autoComplete="email"
+            label={t("register.phoneNumber")}
+            type="tel"
+            autoComplete="tel"
             required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ""))}
           />
           <TextField
             label={t("register.password")}

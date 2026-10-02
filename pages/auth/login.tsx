@@ -23,7 +23,7 @@ export default function LoginPage() {
   // See docs/dev_log_0001.md.
   const { loginDemo } = useAppState();
   const { language, setLanguage } = useLanguage();
-  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -33,7 +33,7 @@ export default function LoginPage() {
     setError(null);
     setSubmitting(true);
     try {
-      const { access_token, refresh_token } = await apiLogin({ email, password });
+      const { access_token, refresh_token } = await apiLogin({ phone_number: phoneNumber, password });
       const me = await getMe(access_token);
       dispatch(setCredentials({ token: access_token, refreshToken: refresh_token, user: me.user, subscription: me.subscription }));
       router.push("/dashboard");
@@ -46,7 +46,7 @@ export default function LoginPage() {
 
   return (
     <>
-      <Head><title>Log in — Gio</title></Head>
+      <Head><title>Log in — Auren</title></Head>
       <AuthLayout
         title={t("login.title")}
         subtitle={t("login.subtitle")}
@@ -62,12 +62,12 @@ export default function LoginPage() {
         <LanguageSlider value={language} onChange={setLanguage} className="mb-5" />
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <TextField
-            label={t("login.email")}
-            type="email"
-            autoComplete="email"
+            label={t("login.phoneNumber")}
+            type="tel"
+            autoComplete="tel"
             required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ""))}
           />
           <TextField
             label={t("login.password")}
@@ -92,7 +92,7 @@ export default function LoginPage() {
           {t("login.or")}
           <div className="h-px flex-1 bg-border" />
         </div>
-        <Button
+        {/* <Button
           type="button"
           variant="outline"
           fullWidth
@@ -103,7 +103,7 @@ export default function LoginPage() {
           }}
         >
           {t("login.previewDemo")}
-        </Button>
+        </Button> */}
         <p className="mt-3 text-center text-xs text-foreground-muted">{t("login.previewDemoNote")}</p>
       </AuthLayout>
     </>

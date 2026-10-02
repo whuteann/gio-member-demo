@@ -29,7 +29,7 @@ export default function ColourMeaningPage() {
 
   return (
     <>
-      <Head><title>{name ? `${name} — ${t("header.title")}` : t("header.title")} — Gio</title></Head>
+      <Head><title>{name ? `${name} — ${t("header.title")}` : t("header.title")} — Auren</title></Head>
       <AppShell>
         <div className="mx-auto flex max-w-2xl flex-col gap-5">
           <Link href="/colour-psychology" className="text-sm font-semibold text-primary">

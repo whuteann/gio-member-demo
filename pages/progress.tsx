@@ -46,7 +46,7 @@ export default function ProgressPage() {
 
   return (
     <>
-      <Head><title>{t("title")} — Gio</title></Head>
+      <Head><title>{t("title")} — Auren</title></Head>
       <AppShell title={t("title")}>
         <div className="grid gap-5 lg:grid-cols-2">
           <Card className="flex items-center justify-between">
