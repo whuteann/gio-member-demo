@@ -5,6 +5,7 @@ import Head from "next/head";
 import { useTranslation } from "react-i18next";
 import AuthLayout from "@/components/layout/AuthLayout";
 import TextField from "@/components/ui/TextField";
+import PhoneNumberField from "@/components/ui/PhoneNumberField";
 import Button from "@/components/ui/Button";
 import LanguageSlider from "@/components/ui/LanguageSlider";
 import { useAppDispatch } from "@/store/hooks";
@@ -75,13 +76,11 @@ export default function RegisterPage() {
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
           />
-          <TextField
+          <PhoneNumberField
             label={t("register.phoneNumber")}
-            type="tel"
-            autoComplete="tel"
             required
             value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ""))}
+            onChange={setPhoneNumber}
           />
           <TextField
             label={t("register.password")}
