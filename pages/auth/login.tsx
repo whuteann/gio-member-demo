@@ -5,6 +5,7 @@ import Head from "next/head";
 import { useTranslation } from "react-i18next";
 import AuthLayout from "@/components/layout/AuthLayout";
 import TextField from "@/components/ui/TextField";
+import PhoneNumberField from "@/components/ui/PhoneNumberField";
 import Button from "@/components/ui/Button";
 import LanguageSlider from "@/components/ui/LanguageSlider";
 import { useAppState } from "@/context/AppStateContext";
@@ -61,13 +62,11 @@ export default function LoginPage() {
       >
         <LanguageSlider value={language} onChange={setLanguage} className="mb-5" />
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
-          <TextField
+          <PhoneNumberField
             label={t("login.phoneNumber")}
-            type="tel"
-            autoComplete="tel"
             required
             value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ""))}
+            onChange={setPhoneNumber}
           />
           <TextField
             label={t("login.password")}
