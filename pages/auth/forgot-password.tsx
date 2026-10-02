@@ -18,7 +18,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <>
-      <Head><title>Forgot password — Gio</title></Head>
+      <Head><title>Forgot password — Auren</title></Head>
       <AuthLayout
         title={t("forgotPassword.title")}
         subtitle={t("forgotPassword.subtitle")}

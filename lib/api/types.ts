@@ -5,7 +5,8 @@
 
 export interface ApiUser {
   id: string;
-  email: string;
+  phone_number: string;
+  email: string | null;
   display_name: string;
   gid: string;
   status: string;

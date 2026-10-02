@@ -35,7 +35,7 @@ export default function RecommendationPage() {
 
   return (
     <>
-      <Head><title>For You — Gio</title></Head>
+      <Head><title>For You — Auren</title></Head>
       <AppShell title="For You">
         <div className="mx-auto flex max-w-2xl flex-col gap-5">
           <Card className="flex items-center gap-4">

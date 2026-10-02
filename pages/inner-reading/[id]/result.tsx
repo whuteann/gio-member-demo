@@ -92,7 +92,7 @@ export default function InnerReadingResultPage() {
 
   return (
     <>
-      <Head><title>{t("result.pageTitle")} — Gio</title></Head>
+      <Head><title>{t("result.pageTitle")} — Auren</title></Head>
       <AppShell title={t("result.pageTitle")}>
         <div className="session-stage relative isolate">
           <AmbientField color={ambientColor} />

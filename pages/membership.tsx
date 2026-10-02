@@ -98,7 +98,7 @@ export default function MembershipPage() {
 
   return (
     <>
-      <Head><title>{t("title")} — Gio</title></Head>
+      <Head><title>{t("title")} — Auren</title></Head>
       <AppShell title={t("title")}>
         <div className="mx-auto flex max-w-lg flex-col gap-5">
           <Card className="flex items-center justify-between">

@@ -75,7 +75,7 @@ export default function ProfilePage() {
 
   return (
     <>
-      <Head><title>{t("title")} — Gio</title></Head>
+      <Head><title>{t("title")} — Auren</title></Head>
       <AppShell title={t("title")}>
         <div className="mx-auto flex max-w-lg flex-col gap-5">
           <Card className="flex items-center gap-4">
@@ -84,7 +84,7 @@ export default function ProfilePage() {
             </div>
             <div>
               <p className="font-display text-lg font-semibold text-foreground">{user.display_name}</p>
-              <p className="text-sm text-foreground-muted">{user.email}</p>
+              <p className="text-sm text-foreground-muted">{user.phone_number}</p>
             </div>
           </Card>
 

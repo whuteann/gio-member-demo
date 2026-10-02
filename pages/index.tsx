@@ -25,12 +25,13 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Gio — Know your inner state</title>
+        <title>Auren — Know your inner state</title>
       </Head>
       <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6 py-12 text-center">
-        <span className="text-5xl" aria-hidden>🌿</span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/auren-logo-icon.png" alt="" aria-hidden className="h-16 w-16" />
         <h1 className="mt-5 max-w-xs font-display text-4xl font-semibold leading-tight text-foreground">
-          Gio
+          Auren
         </h1>
         <p className="mt-3 max-w-xs text-base text-foreground-muted">{t("tagline")}</p>
         <div className="mt-8 flex w-full max-w-xs flex-col gap-3">
@@ -40,7 +41,7 @@ export default function Home() {
           <Link href="/auth/login" className="w-full">
             <Button fullWidth size="lg" variant="outline">{t("logIn")}</Button>
           </Link>
-          <button
+          {/* <button
             onClick={() => {
               loginDemo();
               router.push("/inner-reading");
@@ -48,7 +49,7 @@ export default function Home() {
             className="mt-2 text-sm font-semibold text-accent underline-offset-4 hover:underline"
           >
             {t("previewDemo")}
-          </button>
+          </button> */}
         </div>
       </div>
     </>

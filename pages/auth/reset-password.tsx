@@ -34,7 +34,7 @@ export default function ResetPasswordPage() {
 
   return (
     <>
-      <Head><title>Reset password — Gio</title></Head>
+      <Head><title>Reset password — Auren</title></Head>
       <AuthLayout title={t("resetPassword.title")} subtitle={t("resetPassword.subtitle")}>
         {done ? (
           <div className="flex flex-col gap-4 text-center">

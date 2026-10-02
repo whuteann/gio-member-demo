@@ -32,7 +32,7 @@ export default function RewardsPage() {
 
   return (
     <>
-      <Head><title>Rewards — Gio</title></Head>
+      <Head><title>Rewards — Auren</title></Head>
       <AppShell title="Rewards">
         {!premium ? (
           <div className="mb-5">

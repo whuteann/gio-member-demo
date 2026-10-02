@@ -81,7 +81,7 @@ export default function JournalPage() {
 
   return (
     <>
-      <Head><title>{t("title")} — Gio</title></Head>
+      <Head><title>{t("title")} — Auren</title></Head>
       <AppShell title={t("title")}>
         <div className="grid gap-5 lg:grid-cols-3">
           <Card className="flex flex-col gap-3 lg:col-span-2">

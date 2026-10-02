@@ -41,12 +41,30 @@ function LanguageSync() {
   return null;
 }
 
+// Registers public/sw.js — a no-op passthrough worker that exists purely so
+// Chrome counts this page as installable (see components/ui/InstallPrompt.tsx).
+// Guarded by the feature check since Safari < 11.1 and some embedded
+// webviews don't expose navigator.serviceWorker at all.
+function ServiceWorkerRegister() {
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(() => {
+        // Best-effort — losing the install-prompt capability on failure is
+        // fine, nothing else in the app depends on this worker existing.
+      });
+    }
+  }, []);
+
+  return null;
+}
+
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <div className={`${fraunces.variable} ${jakarta.variable} font-sans`}>
       <ReduxProvider>
         <I18nextProvider i18n={i18n}>
           <LanguageSync />
+          <ServiceWorkerRegister />
           <AppStateProvider>
             <Component {...pageProps} />
           </AppStateProvider>

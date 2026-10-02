@@ -1,5 +1,5 @@
 {
-  "meta": { "title": "Inner Reading — Gio" },
+  "meta": { "title": "Inner Reading — Auren" },
   "loading": "Loading your Inner Readings…",
   "header": {
     "title": "Inner Reading",
@@ -18,7 +18,7 @@
   },
   "begin": {
     "title": "Begin Your Inner Reading",
-    "body": "Answer a few simple questions honestly. Gio will help you understand what's happening within you and what you may need most today.",
+    "body": "Answer a few simple questions honestly. Auren will help you understand what's happening within you and what you may need most today.",
     "cta": "Begin Inner Reading",
     "features": [
       { "label": "Private & Secure", "body": "Your answers are encrypted and private." },

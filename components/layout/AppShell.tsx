@@ -66,7 +66,7 @@ export default function AppShell({ children, title }: { children: ReactNode; tit
   // only one shell renders at a time, so pick whichever is actually active.
   const usingRealSession = !!reduxToken && !!reduxUser;
   const displayName = usingRealSession ? reduxUser!.display_name : mock.user?.displayName;
-  const email = usingRealSession ? reduxUser!.email : mock.user?.email;
+  const identity = usingRealSession ? reduxUser!.phone_number : mock.user?.email;
   const isPremiumActive = usingRealSession ? (reduxSubscription ? isRealPremiumActive(reduxSubscription) : false) : mock.isPremiumActive;
   const logout = usingRealSession
     ? () => {
@@ -82,9 +82,9 @@ export default function AppShell({ children, title }: { children: ReactNode; tit
           needs a scrollbar of its own. */}
       <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-surface px-5 py-6 lg:flex lg:h-screen lg:overflow-y-auto">
         <div className="mb-8 flex items-center justify-between px-1">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <span className="text-2xl" aria-hidden>🌿</span>
-            <span className="font-display text-xl font-semibold text-primary">Gio</span>
+          <Link href="/dashboard" className="flex items-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/auren-logo-horizontal.png" alt="Auren" className="h-7 w-auto" />
           </Link>
           <LanguageToggle />
         </div>
@@ -122,7 +122,7 @@ export default function AppShell({ children, title }: { children: ReactNode; tit
         <div className="mt-4 flex items-center justify-between rounded-xl bg-surface-muted px-3 py-3">
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-foreground">{displayName}</p>
-            <p className="truncate text-xs text-foreground-muted">{email}</p>
+            <p className="truncate text-xs text-foreground-muted">{identity}</p>
           </div>
           <Chip tone={isPremiumActive ? "gold" : "neutral"}>{isPremiumActive ? t("nav.premium") : t("nav.free")}</Chip>
         </div>
@@ -137,9 +137,9 @@ export default function AppShell({ children, title }: { children: ReactNode; tit
       <div className="flex min-h-screen flex-1 flex-col lg:h-screen lg:min-h-0">
         {/* Mobile top bar */}
         <header className="flex items-center justify-between border-b border-border bg-surface px-4 py-3.5 lg:hidden">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <span className="text-xl" aria-hidden>🌿</span>
-            <span className="font-display text-lg font-semibold text-primary">Gio</span>
+          <Link href="/dashboard" className="flex items-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/auren-logo-horizontal.png" alt="Auren" className="h-6 w-auto" />
           </Link>
           <div className="flex items-center gap-2">
             <LanguageToggle />
