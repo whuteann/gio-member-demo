@@ -91,6 +91,15 @@ export default function LoginPage() {
           {t("login.or")}
           <div className="h-px flex-1 bg-border" />
         </div>
+        <Button
+          type="button"
+          variant="outline"
+          fullWidth
+          className="mt-5"
+          onClick={() => router.push("/auth/sign-in-with-gio")}
+        >
+          {t("signInWithGio.button")}
+        </Button>
         {/* <Button
           type="button"
           variant="outline"

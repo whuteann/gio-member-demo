@@ -25,7 +25,16 @@ interface RequestOptions {
 // Paths that must never trigger a refresh attempt on their own 401 — trying
 // to "refresh" a failed /auth/refresh call would recurse forever, and a
 // failed login/register is a credentials problem, not an expired session.
-const NO_REFRESH_PATHS = new Set(["/auth/login", "/auth/register", "/auth/refresh"]);
+// /account-link/sign-in-with-gio belongs here too: it's called with no
+// Auren session yet (there may be no Auren account at all), so a 401 from
+// an expired verify_gio_token must surface as an error, not trigger a
+// refresh against a nonexistent session and silently redirect/hang.
+const NO_REFRESH_PATHS = new Set([
+  "/auth/login",
+  "/auth/register",
+  "/auth/refresh",
+  "/account-link/sign-in-with-gio",
+]);
 
 // Several requests can 401 at once (e.g. a page's Promise.all after the
 // access token expires) — de-duped so they trigger one /auth/refresh call,

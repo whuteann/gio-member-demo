@@ -105,6 +105,20 @@ export default function RegisterPage() {
             {submitting ? t("register.creatingAccount") : t("register.createAccount")}
           </Button>
         </form>
+        <div className="mt-5 flex items-center gap-3 text-xs text-foreground-muted">
+          <div className="h-px flex-1 bg-border" />
+          {t("login.or")}
+          <div className="h-px flex-1 bg-border" />
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          fullWidth
+          className="mt-5"
+          onClick={() => router.push("/auth/sign-in-with-gio")}
+        >
+          {t("signInWithGio.button")}
+        </Button>
       </AuthLayout>
     </>
   );
