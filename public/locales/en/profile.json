@@ -6,6 +6,28 @@
     "body": "Your Auren Member account is linked to your GioByQuartzic identity.",
     "gid": "GID: {{gid}}"
   },
+  "gioLink": {
+    "title": "Connect your Gio account",
+    "linked": "Connected",
+    "linkedBody": "Your Auren account is connected to a Gio (bracelet-website) account.",
+    "body": "Already have a GioByQuartzic bracelet account? Connect it to this Auren account.",
+    "phoneLabel": "Gio account phone number",
+    "passwordLabel": "Gio account password",
+    "continue": "Continue",
+    "verify": "Verify",
+    "confirmLink": "Confirm connection",
+    "notFound": "No Gio account found with this phone number.",
+    "invalidCredentials": "Invalid phone number or password.",
+    "genericError": "Something went wrong. Please try again.",
+    "statusCheckFailed": "Couldn't check your Gio connection status right now.",
+    "retry": "Retry",
+    "openGio": "Open my Gio account",
+    "handoffError": "Couldn't open your Gio account right now. Please try again.",
+    "ssoSigningIn": "Signing you in...",
+    "ssoMissingToken": "This link is missing its sign-in token.",
+    "ssoExpired": "This sign-in link has expired. Please go back and try again.",
+    "ssoBackToLogin": "Back to login"
+  },
   "details": {
     "title": "Details",
     "displayName": "Display name",

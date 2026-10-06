@@ -9,6 +9,10 @@ export function listRecommendations(token: string) {
   return api.get<RecommendationOut[]>("/recommendations", { token });
 }
 
+export function getRecommendation(token: string, id: string) {
+  return api.get<RecommendationOut>(`/recommendations/${id}`, { token });
+}
+
 export function listColours(token: string) {
   return api.get<ColourOut[]>("/colours", { token });
 }
