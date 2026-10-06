@@ -41,5 +41,20 @@
     "aboutTitle": "About {{name}}",
     "whenTitle": "When it's recommended",
     "affirmationsTitle": "Affirmations"
+  },
+  "recommendationLetter": {
+    "pageTitle": "Your Recommendation",
+    "colourPill": "Colour of the Day",
+    "focusPill": "Focus Pillar",
+    "materialPill": "Material Affinity",
+    "featureTitle": "Featured for you",
+    "featureBadge": "Featured",
+    "moreProducts": "Also matched",
+    "phoneCaseTitle": "Phone case pick",
+    "phoneCaseCardTitle": "Matched for your phone",
+    "phoneCaseCardSubtitle": "A small everyday piece in the same spirit as today's picks.",
+    "demoBadge": "Preview",
+    "more": "Read the full letter →",
+    "notFound": "Recommendation not found."
   }
 }

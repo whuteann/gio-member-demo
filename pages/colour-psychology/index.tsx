@@ -14,7 +14,8 @@ import { colourKeyForFocus } from "@/lib/recommendation";
 import AppShell from "@/components/layout/AppShell";
 import Card from "@/components/ui/Card";
 import Chip from "@/components/ui/Chip";
-import ProductCard from "@/components/ui/ProductCard";
+import RecommendationLetter from "@/components/ui/RecommendationLetter";
+import PhoneCaseSection from "@/components/ui/PhoneCaseSection";
 import ColourOfTheDay from "@/components/ui/ColourOfTheDay";
 import EntitlementGate from "@/components/ui/EntitlementGate";
 
@@ -63,7 +64,6 @@ export default function ColourPsychologyPage() {
   const currentColour = currentColourKey ? COLOUR_LIBRARY[currentColourKey] : null;
   const focusReason = recommendation ? FOCUS_COLOUR_REASON[recommendation.current_focus] : null;
   const personalitySubtitle = personality ? localized(personality, "subtitle", language) : null;
-  const productItems = recommendation?.items.filter((i) => i.type === "PRODUCT") ?? [];
   // "Your colour history" is premium-only — history from the API is already
   // limited to 1 (today's) for free users server-side, so the earlier
   // entries beyond that only ever exist for premium.
@@ -191,36 +191,23 @@ export default function ColourPsychologyPage() {
                 <h2 className="font-display text-lg font-semibold text-foreground">{t("recommended.title")}</h2>
               </div>
               <p className="text-xs text-foreground-muted">{t("recommended.subtitle")}</p>
-              {productItems.length > 0 ? (
-                <div className="flex flex-col gap-3">
-                  {productItems.map((item) => (
-                    <ProductCard
-                      key={`${item.type}-${item.rank}`}
-                      language={language}
-                      colourName={isZh ? recommendation?.colour_name_zh : recommendation?.colour_name}
-                      colourSwatch={recommendation?.colour_swatch}
-                      item={{
-                        id: String(item.rank),
-                        type: item.type as "COLOUR" | "ROUTINE" | "SCENT" | "WEARABLE" | "PRODUCT",
-                        referenceId: item.reference_id,
-                        title: item.title,
-                        titleZh: item.title_zh,
-                        reason: item.reason,
-                        reasonZh: item.reason_zh,
-                        rank: item.rank,
-                        imageUrl: item.image_url ?? undefined,
-                        price: item.price ?? undefined,
-                        currency: item.currency,
-                        destinationUrl: item.destination_url ?? undefined,
-                        materialTag: item.material_tag,
-                      }}
-                    />
-                  ))}
-                </div>
+              {recommendation ? (
+                <RecommendationLetter recommendation={recommendation} language={language} />
               ) : (
                 <p className="text-sm text-foreground-muted">{t("recommended.empty")}</p>
               )}
             </Card>
+
+            {recommendation ? (
+              <Card className="flex flex-col gap-3">
+                <h2 className="font-display text-lg font-semibold text-foreground">{t("recommendationLetter.phoneCaseCardTitle")}</h2>
+                <p className="text-xs text-foreground-muted">{t("recommendationLetter.phoneCaseCardSubtitle")}</p>
+                <PhoneCaseSection
+                  items={recommendation.items.filter((i) => i.type === "PHONE_CASE")}
+                  language={language}
+                />
+              </Card>
+            ) : null}
           </div>
 
           <div className="flex flex-col gap-5">

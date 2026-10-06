@@ -26,6 +26,7 @@ export default function ProductCard({
 }) {
   const title = (language === "zh" ? item.titleZh : item.title) ?? item.title;
   const reason = (language === "zh" ? item.reasonZh : item.reason) ?? item.reason;
+  const specs = item.specifications ?? [];
 
   return (
     <Link
@@ -72,6 +73,17 @@ export default function ProductCard({
           {reason}
           <span aria-hidden>&rdquo;</span>
         </p>
+
+        {specs.length > 0 ? (
+          <dl className="flex flex-col gap-0.5 border-t border-border pt-2">
+            {specs.map((spec, i) => (
+              <div key={i} className="flex justify-between gap-3 text-[11px]">
+                <dt className="text-foreground-muted">{language === "zh" ? spec.label_zh : spec.label_en}</dt>
+                <dd className="text-right font-medium text-foreground">{language === "zh" ? spec.value_zh : spec.value_en}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : null}
       </div>
     </Link>
   );

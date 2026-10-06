@@ -15,6 +15,7 @@ import TextField from "@/components/ui/TextField";
 import SelectField from "@/components/ui/SelectField";
 import Button from "@/components/ui/Button";
 import Chip from "@/components/ui/Chip";
+import GioLinkSection from "@/components/profile/GioLinkSection";
 
 export default function ProfilePage() {
   const { settled, token, user } = useAuthGuard();
@@ -99,6 +100,8 @@ export default function ProfilePage() {
             <p className="mt-2 font-mono text-xs text-foreground-muted">{t("linkage.gid", { gid: user.gid })}</p>
           </Card>
 
+          <GioLinkSection token={token} />
+
           <Card>
             <form onSubmit={onSubmit} className="flex flex-col gap-4">
               <h2 className="font-display text-lg font-semibold text-foreground">{t("details.title")}</h2>
@@ -115,7 +118,6 @@ export default function ProfilePage() {
                 <option value="en">English</option>
                 <option value="zh">中文 (Mandarin)</option>
               </SelectField>
-              <TextField label={t("details.timezone")} value={user.timezone} disabled readOnly />
               <Button type="submit">{saved ? t("details.saved") : t("details.save")}</Button>
             </form>
           </Card>

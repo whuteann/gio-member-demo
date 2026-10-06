@@ -1,6 +1,8 @@
 // Domain types mirroring the Phase 1 System Outline (§12 Database Model Outline).
 // This is a client-only demo "backend" — these types stand in for DB rows.
 
+import type { SpecificationOut } from "@/lib/api/types";
+
 export type Language = "en" | "zh";
 
 export type SubscriptionPlan = "FREE" | "PREMIUM";
@@ -148,7 +150,8 @@ export type RecommendationItemType =
   | "ROUTINE"
   | "SCENT"
   | "WEARABLE"
-  | "PRODUCT";
+  | "PRODUCT"
+  | "PHONE_CASE";
 
 export interface RecommendationItem {
   id: string;
@@ -164,6 +167,7 @@ export interface RecommendationItem {
   currency?: string;
   destinationUrl?: string;
   materialTag?: string | null;
+  specifications?: SpecificationOut[] | null;
 }
 
 export type ColourKey = "scarlet" | "russet" | "gold" | "forest" | "ocean";

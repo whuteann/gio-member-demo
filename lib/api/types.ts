@@ -286,6 +286,13 @@ export interface TrendOut {
 
 // --- Recommendations / colours -------------------------------------------
 
+export interface SpecificationOut {
+  label_en: string;
+  label_zh: string;
+  value_en: string;
+  value_zh: string;
+}
+
 export interface RecommendationItemOut {
   type: string;
   reference_id: string | null;
@@ -299,6 +306,7 @@ export interface RecommendationItemOut {
   currency: string;
   destination_url: string | null;
   material_tag: string | null;
+  specifications: SpecificationOut[] | null;
 }
 
 export interface RecommendationOut {
@@ -311,6 +319,9 @@ export interface RecommendationOut {
   colour_name: string;
   colour_name_zh: string;
   colour_swatch: string;
+  material_affinity: string | null;
+  letter_en: string | null;
+  letter_zh: string | null;
   status: string;
   generated_at: string;
   items: RecommendationItemOut[];

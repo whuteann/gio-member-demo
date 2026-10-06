@@ -41,5 +41,20 @@
     "aboutTitle": "关于{{name}}",
     "whenTitle": "适合推荐的情境",
     "affirmationsTitle": "肯定语"
+  },
+  "recommendationLetter": {
+    "pageTitle": "你的专属推荐",
+    "colourPill": "今日色彩",
+    "focusPill": "聚焦重点",
+    "materialPill": "材质亲和",
+    "featureTitle": "为你精选",
+    "featureBadge": "精选",
+    "moreProducts": "同时为你匹配",
+    "phoneCaseTitle": "手机壳推荐",
+    "phoneCaseCardTitle": "为你的手机匹配",
+    "phoneCaseCardSubtitle": "延续今日推荐精神的小日常之选。",
+    "demoBadge": "预览",
+    "more": "阅读完整信件 →",
+    "notFound": "未找到该推荐。"
   }
 }

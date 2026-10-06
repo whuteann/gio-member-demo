@@ -6,6 +6,28 @@
     "body": "你的 Auren 会员账户已与你的 GioByQuartzic 身份关联。",
     "gid": "GID：{{gid}}"
   },
+  "gioLink": {
+    "title": "连接你的 Gio 账户",
+    "linked": "已连接",
+    "linkedBody": "你的 Auren 账户已与一个 Gio（bracelet-website）账户连接。",
+    "body": "已经有 GioByQuartzic 手镯账户了吗？将它连接到这个 Auren 账户。",
+    "phoneLabel": "Gio 账户手机号码",
+    "passwordLabel": "Gio 账户密码",
+    "continue": "继续",
+    "verify": "验证",
+    "confirmLink": "确认连接",
+    "notFound": "未找到使用此手机号码的 Gio 账户。",
+    "invalidCredentials": "手机号码或密码无效。",
+    "genericError": "出错了，请再试一次。",
+    "statusCheckFailed": "暂时无法检查你的 Gio 连接状态。",
+    "retry": "重试",
+    "openGio": "打开我的 Gio 账户",
+    "handoffError": "暂时无法打开你的 Gio 账户，请再试一次。",
+    "ssoSigningIn": "正在为你登录…",
+    "ssoMissingToken": "此链接缺少登录令牌。",
+    "ssoExpired": "此登录链接已过期，请返回重试。",
+    "ssoBackToLogin": "返回登录"
+  },
   "details": {
     "title": "详细信息",
     "displayName": "显示名称",
