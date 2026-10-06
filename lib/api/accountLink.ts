@@ -35,6 +35,13 @@ export interface GioLinkStatusResponse {
   bracelet_user_id?: string | null;
 }
 
+export interface SignInWithGioResponse {
+  is_new: boolean;
+  access_token: string;
+  refresh_token: string;
+  token_type: string;
+}
+
 async function braceletFetch<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(`${BRACELET_BACKEND_API_BASE_URL}${path}`, {
     method: "POST",
@@ -96,6 +103,21 @@ export function confirmGioSide(verify_gio_token: string, verify_auren_token: str
 
 export function getGioLinkStatus(token: string) {
   return api.get<GioLinkStatusResponse>("/account-link/status", { token });
+}
+
+// "Sign in with Gio" — provisioning entry point (see
+// AUREN_SIGN_IN_WITH_GIO_PLAN.md). No Auren session required — identity
+// proof is entirely the verify_gio_token from authenticateGio() above.
+// `password` is the plaintext just typed on the Gio password step, used
+// only to seed a brand-new account's credentials; ignored for a returning
+// user. See client.ts's NO_REFRESH_PATHS for why this path is excluded
+// from the 401-refresh-and-redirect logic (no session exists yet here).
+export function signInWithGio(verify_gio_token: string, display_name: string, password: string) {
+  return api.post<SignInWithGioResponse>("/account-link/sign-in-with-gio", {
+    verify_gio_token,
+    display_name,
+    password,
+  });
 }
 
 // --- Cross-platform authenticated navigation ---------------------------
