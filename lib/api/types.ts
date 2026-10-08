@@ -306,6 +306,7 @@ export interface RecommendationItemOut {
   currency: string;
   destination_url: string | null;
   material_tag: string | null;
+  category: string | null;
   specifications: SpecificationOut[] | null;
 }
 

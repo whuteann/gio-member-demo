@@ -80,6 +80,7 @@ export default function RecommendationLetter({
               currency: feature.currency,
               destinationUrl: feature.destination_url ?? undefined,
               materialTag: feature.material_tag,
+              category: feature.category,
               specifications: feature.specifications,
             }}
           />
@@ -113,6 +114,7 @@ export default function RecommendationLetter({
                 currency: item.currency,
                 destinationUrl: item.destination_url ?? undefined,
                 materialTag: item.material_tag,
+                category: item.category,
                 specifications: item.specifications,
               }}
             />

@@ -19,5 +19,6 @@ export const DEMO_PHONE_CASE: RecommendationItemOut = {
   currency: "MYR",
   destination_url: null,
   material_tag: null,
+  category: null,
   specifications: null,
 };

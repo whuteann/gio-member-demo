@@ -167,6 +167,7 @@ export interface RecommendationItem {
   currency?: string;
   destinationUrl?: string;
   materialTag?: string | null;
+  category?: string | null;
   specifications?: SpecificationOut[] | null;
 }
 
