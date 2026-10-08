@@ -349,6 +349,8 @@ export default function DashboardPage() {
                       price: item.price ?? undefined,
                       currency: item.currency,
                       destinationUrl: item.destination_url ?? undefined,
+                      materialTag: item.material_tag,
+                      category: item.category,
                     }}
                   />
                 ))}

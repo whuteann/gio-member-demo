@@ -29,6 +29,11 @@ function SidebarRow({ item, language }: { item: RecommendationItemOut; language:
             <p className="flex-none text-xs font-semibold text-accent">{formatPrice(item.price, item.currency ?? "MYR")}</p>
           ) : null}
         </div>
+        {item.category ? (
+          <span className="inline-flex w-fit items-center rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-semibold text-gold">
+            {item.category}
+          </span>
+        ) : null}
         <p className="line-clamp-2 text-xs text-foreground-muted">{reason}</p>
       </div>
     </div>
@@ -116,10 +121,19 @@ export default function RecommendationMagazine({
                   </p>
                 ) : null}
               </div>
-              {feature.material_tag ? (
-                <span className="mt-2 inline-flex items-center rounded-full bg-surface-muted px-2.5 py-1 text-[11px] font-semibold text-foreground-muted">
-                  {feature.material_tag}
-                </span>
+              {feature.category || feature.material_tag ? (
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {feature.category ? (
+                    <span className="inline-flex items-center rounded-full bg-gold/15 px-2.5 py-1 text-[11px] font-semibold text-gold">
+                      {feature.category}
+                    </span>
+                  ) : null}
+                  {feature.material_tag ? (
+                    <span className="inline-flex items-center rounded-full bg-surface-muted px-2.5 py-1 text-[11px] font-semibold text-foreground-muted">
+                      {feature.material_tag}
+                    </span>
+                  ) : null}
+                </div>
               ) : null}
             </div>
           ) : null}

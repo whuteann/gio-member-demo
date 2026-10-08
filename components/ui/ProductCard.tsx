@@ -49,12 +49,17 @@ export default function ProductCard({
           ) : null}
         </div>
 
-        {colourName || item.materialTag ? (
+        {colourName || item.category || item.materialTag ? (
           <div className="flex flex-wrap gap-1.5">
             {colourName ? (
               <span className="inline-flex items-center gap-1 rounded-full bg-surface-muted px-2 py-0.5 text-[10px] font-semibold text-foreground-muted">
                 <span className="h-1.5 w-1.5 rounded-full" style={{ background: colourSwatch }} aria-hidden />
                 {colourName}
+              </span>
+            ) : null}
+            {item.category ? (
+              <span className="inline-flex items-center rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-semibold text-gold">
+                {item.category}
               </span>
             ) : null}
             {item.materialTag ? (
