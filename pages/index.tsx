@@ -3,14 +3,12 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import Head from "next/head";
 import { useTranslation } from "react-i18next";
-import { useAppState } from "@/context/AppStateContext";
 import { useAppSelector } from "@/store/hooks";
 import Button from "@/components/ui/Button";
 
 export default function Home() {
   const router = useRouter();
   const { t } = useTranslation("landing");
-  const { loginDemo } = useAppState();
   const token = useAppSelector((s) => s.auth.token);
   const user = useAppSelector((s) => s.auth.user);
 
@@ -41,15 +39,6 @@ export default function Home() {
           <Link href="/auth/login" className="w-full">
             <Button fullWidth size="lg" variant="outline">{t("logIn")}</Button>
           </Link>
-          {/* <button
-            onClick={() => {
-              loginDemo();
-              router.push("/inner-reading");
-            }}
-            className="mt-2 text-sm font-semibold text-accent underline-offset-4 hover:underline"
-          >
-            {t("previewDemo")}
-          </button> */}
         </div>
       </div>
     </>

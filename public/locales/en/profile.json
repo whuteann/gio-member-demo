@@ -31,10 +31,13 @@
   "details": {
     "title": "Details",
     "displayName": "Display name",
+    "email": "Email",
+    "emailMissingNotice": "Add an email address so you can reset your password if you ever forget it.",
     "preferredLanguage": "Preferred language",
     "timezone": "Timezone",
     "save": "Save changes",
-    "saved": "Saved ✓"
+    "saved": "Saved ✓",
+    "saveFailed": "Couldn't save your changes. Please try again."
   },
   "password": {
     "title": "Change password",

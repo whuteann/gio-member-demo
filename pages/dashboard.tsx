@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useApiResource } from "@/lib/useApiResource";
 import { useLanguage } from "@/lib/useLanguage";
+import { localizedReading } from "@/lib/readingDisplay";
 import AppShell from "@/components/layout/AppShell";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
@@ -117,7 +118,10 @@ export default function DashboardPage() {
   const recentReadings = readings.slice(0, 3);
   const currentColourKey = (recommendation?.colour_key as ColourKey | undefined) ?? "gold";
   const recommendedColour = COLOUR_LIBRARY[currentColourKey];
-  const personalityLanguage: Language = (personality?.primary_language as Language) ?? "en";
+  // The app language, not the one the content was generated in — the same
+  // personality is rendered on /core-personality and /onboarding/results,
+  // and all three must agree when the language is switched. localized()
+  // falls back to English when the other language hasn't generated yet.
   const userLanguage: Language = language;
   const atWeeklyLimit = !premium && readingsUsedThisWeek(readings) >= INNER_READING_WEEKLY_FREE_LIMIT;
   const trendPoints = data.trend.points.map((p) => ({ date: p.date, label: p.label }));
@@ -307,15 +311,15 @@ export default function DashboardPage() {
                   />
                   <div className="min-w-0">
                     <p className="truncate font-display text-base font-semibold text-foreground">
-                      {localized(personality, "title", personalityLanguage)}
+                      {localized(personality, "title", userLanguage)}
                     </p>
                     <p className="truncate text-xs text-foreground-muted">
-                      {localized(personality, "subtitle", personalityLanguage)}
+                      {localized(personality, "subtitle", userLanguage)}
                     </p>
                   </div>
                 </div>
                 <p className="line-clamp-3 text-xs text-foreground-muted">
-                  {localized(personality, "overview", personalityLanguage)}
+                  {localized(personality, "overview", userLanguage)}
                 </p>
               </>
             ) : (
@@ -447,8 +451,8 @@ export default function DashboardPage() {
                           <span className="text-base font-bold leading-none">{created.getDate()}</span>
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-semibold text-foreground">{reading.title}</p>
-                          <p className="line-clamp-2 text-xs text-foreground-muted">{reading.subtitle}</p>
+                          <p className="truncate text-sm font-semibold text-foreground">{localizedReading(reading, "title", language)}</p>
+                          <p className="line-clamp-2 text-xs text-foreground-muted">{localizedReading(reading, "subtitle", language)}</p>
                         </div>
                         <div className="flex flex-none flex-col items-end gap-1 text-foreground-muted">
                           <span className="text-xs">

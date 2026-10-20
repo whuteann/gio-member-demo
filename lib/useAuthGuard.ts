@@ -3,10 +3,12 @@ import { useRouter } from "next/router";
 import { useAppSelector } from "@/store/hooks";
 
 /**
- * Route guard for backend-wired pages — parallels lib/useAppGuard.ts (the
- * original mock/local-session guard, still used by pages that aren't wired
- * to gio-backend yet) but reads the real session from Redux instead of the
- * localStorage mock. See docs/dev_log_0001.md for which pages use which.
+ * The route guard. Reads the real backend session from Redux.
+ *
+ * There used to be a second one (lib/useAppGuard.ts) reading a parallel
+ * localStorage "mock" session for pages not yet wired to gio-backend —
+ * docs/dev_log_0001.md describes that split. Both it and the store behind
+ * it are gone; this is the only guard now.
  */
 export function useAuthGuard(options?: { requireOnboarding?: boolean }) {
   const requireOnboarding = options?.requireOnboarding ?? true;

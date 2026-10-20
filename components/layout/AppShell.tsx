@@ -2,7 +2,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { useAppState } from "@/context/AppStateContext";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { clearCredentials } from "@/store/authSlice";
 import { useLanguage } from "@/lib/useLanguage";
@@ -54,26 +53,24 @@ function isActive(pathname: string, href: string) {
 export default function AppShell({ children, title }: { children: ReactNode; title?: string }) {
   const router = useRouter();
   const { t } = useTranslation("common");
-  const mock = useAppState();
   const dispatch = useAppDispatch();
   const reduxToken = useAppSelector((s) => s.auth.token);
   const reduxUser = useAppSelector((s) => s.auth.user);
   const reduxSubscription = useAppSelector((s) => s.auth.subscription);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // A real backend session (Redux) always wins over the old localStorage
-  // mock — the two are independent logins (see docs/dev_log_0001.md), but
-  // only one shell renders at a time, so pick whichever is actually active.
+  // The backend session is the only session there is. This used to fall
+  // back to a parallel localStorage "mock" login when Redux had none; that
+  // store is gone, so an absent session simply renders no identity — every
+  // page using this shell is behind an auth guard anyway.
   const usingRealSession = !!reduxToken && !!reduxUser;
-  const displayName = usingRealSession ? reduxUser!.display_name : mock.user?.displayName;
-  const identity = usingRealSession ? reduxUser!.phone_number : mock.user?.email;
-  const isPremiumActive = usingRealSession ? (reduxSubscription ? isRealPremiumActive(reduxSubscription) : false) : mock.isPremiumActive;
-  const logout = usingRealSession
-    ? () => {
-        dispatch(clearCredentials());
-        router.push("/auth/login");
-      }
-    : mock.logout;
+  const displayName = usingRealSession ? reduxUser!.display_name : undefined;
+  const identity = usingRealSession ? reduxUser!.phone_number : undefined;
+  const isPremiumActive = usingRealSession && reduxSubscription ? isRealPremiumActive(reduxSubscription) : false;
+  const logout = () => {
+    dispatch(clearCredentials());
+    router.push("/auth/login");
+  };
 
   return (
     <div className="min-h-screen bg-background lg:flex lg:h-screen lg:overflow-hidden">

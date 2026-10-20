@@ -1,4 +1,5 @@
 import { api, ApiError } from "./client";
+import type { Language } from "@/lib/types";
 import type {
   AnswerIn,
   CheckInResultsOut,
@@ -37,8 +38,11 @@ export function getReadingQuestions(token: string) {
   return api.get<QuestionSetOut>("/inner-readings/questions", { token });
 }
 
-export function submitInnerReading(token: string, answers: AnswerIn[]) {
-  return api.post<InnerReadingSubmitResponse>("/inner-readings", { answers }, { token });
+export function submitInnerReading(token: string, answers: AnswerIn[], language: Language) {
+  // The reading is written in this language synchronously; the other one is
+  // generated in the background and is there by the time the user opens it
+  // from history.
+  return api.post<InnerReadingSubmitResponse>("/inner-readings", { answers, language }, { token });
 }
 
 export function listInnerReadings(token: string) {

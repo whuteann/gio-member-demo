@@ -29,9 +29,31 @@
     "openMenu": "打开菜单"
   },
   "dimensions": {
-    "emotional_energy": { "label": "情绪能量", "lowLabel": "疲惫", "highLabel": "充沛" },
-    "mental_clarity": { "label": "思维清晰度", "lowLabel": "模糊", "highLabel": "清晰" },
-    "inner_pressure": { "label": "内在压力", "lowLabel": "轻松", "highLabel": "沉重" },
-    "grounding": { "label": "扎根感", "lowLabel": "不稳", "highLabel": "踏实" }
+    "emotional_energy": {
+      "label": "情绪能量",
+      "lowLabel": "疲惫",
+      "highLabel": "充沛"
+    },
+    "mental_clarity": {
+      "label": "思维清晰度",
+      "lowLabel": "模糊",
+      "highLabel": "清晰"
+    },
+    "inner_pressure": {
+      "label": "内在压力",
+      "lowLabel": "轻松",
+      "highLabel": "沉重"
+    },
+    "grounding": {
+      "label": "扎根感",
+      "lowLabel": "不稳",
+      "highLabel": "踏实"
+    }
+  },
+  "colourOfTheDay": "今日色彩",
+  "entitlementGate": {
+    "title": "这是 Premium 专属功能",
+    "cta": "查看 Premium 方案",
+    "rewardsBody": "Premium 会员可解锁并兑换符合条件的奖励。"
   }
 }

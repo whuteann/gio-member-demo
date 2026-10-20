@@ -1,5 +1,7 @@
 // Domain types mirroring the Phase 1 System Outline (§12 Database Model Outline).
-// This is a client-only demo "backend" — these types stand in for DB rows.
+// Shared view-model types. These predate the real API (lib/api/types.ts
+// mirrors the backend schemas) and are what the deterministic helpers in
+// lib/scoring.ts and lib/blueprints.ts still pass around.
 
 import type { SpecificationOut } from "@/lib/api/types";
 
@@ -38,7 +40,7 @@ export interface User {
   corePersonalityLastRecalibratedAt: string | null;
   lastLoginAt: string | null;
   createdAt: string;
-  // Collected once during onboarding (see AppStateContext#completeOnboardingBirthdate)
+  // Collected once during onboarding (see POST /core-personality/calculate)
   // and kept for the life of the account — it's what the Core Personality
   // page's numerology and Colour Breakdown sections are derived from, so it
   // survives recalibration even though recalibration itself doesn't use it.
@@ -283,15 +285,6 @@ export interface UserReward {
   redeemedAt: string | null;
 }
 
-export interface Product {
-  id: string;
-  title: string;
-  colourTag: string;
-  elementTag: string[];
-  price: number;
-  imageSeed: string;
-  available: boolean;
-}
 
 export interface JournalEntry {
   id: string;

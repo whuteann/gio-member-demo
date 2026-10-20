@@ -5,7 +5,6 @@ import type {
   ColourMeaning,
   DimensionKey,
   FiveTraits,
-  Product,
   QuestionVariant,
   RewardDefinition,
 } from "./types";
@@ -627,16 +626,6 @@ export const REWARD_DEFINITIONS: RewardDefinition[] = [
   },
 ];
 
-export const PRODUCTS: Product[] = [
-  { id: "p_candle_amber", title: "Amber Root Candle", colourTag: "amber", elementTag: ["grounding", "calm"], price: 68, imageSeed: "gio-candle-amber", available: true },
-  { id: "p_oil_clarity", title: "Clarity Roller Oil", colourTag: "teal", elementTag: ["clarity", "focus"], price: 42, imageSeed: "gio-oil-teal", available: true },
-  { id: "p_tea_calm", title: "Quiet Hours Tea Blend", colourTag: "moss", elementTag: ["calm", "grounding"], price: 28, imageSeed: "gio-tea-moss", available: true },
-  { id: "p_journal_deep", title: "Deep Focus Journal", colourTag: "clay", elementTag: ["clarity", "reflection"], price: 36, imageSeed: "gio-journal-clay", available: true },
-  { id: "p_bracelet_anchor", title: "Anchor Bead Bracelet", colourTag: "ivory", elementTag: ["grounding", "steadiness"], price: 54, imageSeed: "gio-bracelet-ivory", available: true },
-  { id: "p_incense_spark", title: "Bright Spark Incense", colourTag: "coral", elementTag: ["energy", "lift"], price: 24, imageSeed: "gio-incense-coral", available: true },
-  { id: "p_soak_release", title: "Pressure Release Salt Soak", colourTag: "slate", elementTag: ["release", "calm"], price: 32, imageSeed: "gio-soak-slate", available: true },
-  { id: "p_wrap_horizon", title: "Open Horizon Wrap Ring", colourTag: "gold", elementTag: ["adaptability", "lift"], price: 46, imageSeed: "gio-ring-gold", available: false },
-];
 
 // A real backend would derive these from the entry's content (sentiment /
 // topic extraction). For this mockup they're assigned deterministically from
@@ -1066,24 +1055,6 @@ export const TALENT_NUMBER_TRAITS: Record<number, { abilities: FiveTraits; weakn
 // with an LLM; here `pickPhrasing` simulates that by re-rolling a seeded pick
 // across a handful of template phrasings, so the copy varies with each new
 // archetype/colour pairing (and re-rolls whenever a fresh recommendation
-// comes in) while staying reproducible for a given seed.
-export function buildColourPersonalityInsight(colour: ColourMeaning, archetype: ArchetypeCopy, seed: string): string {
-  // archetype.name already reads "The Steady Anchor" etc. — strip the
-  // leading article so it drops cleanly into the middle of a sentence
-  // ("the steady anchor you are") instead of doubling up ("Your the...").
-  const archetypeName = archetype.name.replace(/^the\s+/i, "").toLowerCase();
-  const [traitA, traitB] = colour.traits.map((t) => t.toLowerCase());
-  const colourName = colour.name;
-  const colourNameLower = colourName.toLowerCase();
-
-  const templates = [
-    `As the ${archetypeName} you are, you already lean on ${archetype.traits[0].toLowerCase()} — ${colourName} builds on that by bringing more ${traitA} and ${traitB} into how you move through your day.`,
-    `${colourName} pairs naturally with the ${archetypeName} type. ${archetype.colourReason} ${colourName} answers that directly, offering ${traitA} exactly where you tend to run low.`,
-    `Your ${archetypeName} nature and ${colourNameLower} share the same instinct toward ${traitB}. Leaning into this colour right now reinforces a strength you already carry, rather than asking you to become someone else.`,
-    `${archetype.colourReason} That's exactly where ${colourNameLower} is useful — its ${traitA} and ${traitB} give the ${archetypeName} in you a small, concrete way to rebalance.`,
-  ];
-  return pickPhrasing(seed, templates);
-}
 
 export function buildQuestionOrder(pool: Record<DimensionKey, string[]>, count: number, seed: string): QuestionVariant[] {
   const dims: DimensionKey[] = ["emotional_energy", "mental_clarity", "inner_pressure", "grounding"];

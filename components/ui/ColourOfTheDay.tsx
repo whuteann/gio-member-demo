@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { ColourKey } from "@/lib/types";
 
 // Uploaded vector icons, one per supportive colour (public/icons). Filenames
@@ -29,13 +30,14 @@ export default function ColourOfTheDay({
   label?: boolean;
   className?: string;
 }) {
+  const { t } = useTranslation("common");
   const backdrop = `color-mix(in srgb, ${swatch} 22%, white)`;
 
   return (
     <div className={`flex flex-col items-center gap-2 ${className}`}>
       {label ? (
         <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
-          Color of the Day
+          {t("colourOfTheDay")}
         </p>
       ) : null}
       <div

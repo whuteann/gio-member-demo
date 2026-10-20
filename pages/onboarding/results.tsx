@@ -3,13 +3,13 @@ import Head from "next/head";
 import { motion } from "motion/react";
 import { useTranslation } from "react-i18next";
 import { useAuthGuard } from "@/lib/useAuthGuard";
+import { useLanguage } from "@/lib/useLanguage";
 import { useApiResource } from "@/lib/useApiResource";
 import { getCurrentCorePersonality } from "@/lib/api/corePersonality";
 import { ApiError } from "@/lib/api/client";
 import { COLOUR_LIBRARY } from "@/lib/blueprints";
 import { colourScores, localized, localizedPoints, topColourKey } from "@/lib/corePersonalityDisplay";
 import { EASE_OUT } from "@/lib/sessionMotion";
-import type { Language } from "@/lib/types";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import ColourOfTheDay from "@/components/ui/ColourOfTheDay";
@@ -57,6 +57,15 @@ export default function OnboardingResultsPage() {
     [token]
   );
 
+  // Everything on this page follows the app language — the AI copy, the
+  // static colour copy and the headings alike. Both languages are stored
+  // (generation_status READY means the second one landed), and localized()
+  // already falls back to English for a personality whose backfill hasn't,
+  // so switching language never blanks a card. Same source as
+  // core-personality.tsx, ColourBreakdown and the colour-psychology pages.
+  const { language } = useLanguage();
+  const isZh = language === "zh";
+
   if (!settled || !token || !user) return null;
   if (loading) {
     return (
@@ -72,11 +81,6 @@ export default function OnboardingResultsPage() {
     return null;
   }
 
-  // primary_language reflects what was actually requested/generated at
-  // /calculate time — the authoritative source here, not user.preferred_language
-  // (onboarding no longer syncs that field; see submitBirthdate in
-  // pages/onboarding.tsx).
-  const language: Language = (personality.primary_language as Language) ?? "en";
   const topColour = topColourKey(personality);
   const colour = COLOUR_LIBRARY[topColour];
 
@@ -112,11 +116,11 @@ export default function OnboardingResultsPage() {
                     aria-hidden
                   />
                   <div>
-                    <p className="text-sm font-semibold text-foreground">{colour.name}</p>
-                    <p className="text-xs text-foreground-muted">{colour.traits.join(" • ")}</p>
+                    <p className="text-sm font-semibold text-foreground">{isZh ? colour.nameZh : colour.name}</p>
+                    <p className="text-xs text-foreground-muted">{(isZh ? colour.traitsZh : colour.traits).join(" • ")}</p>
                   </div>
                 </div>
-                <p className="text-sm leading-relaxed text-foreground-muted">{colour.benefit}</p>
+                <p className="text-sm leading-relaxed text-foreground-muted">{isZh ? colour.benefitZh : colour.benefit}</p>
               </Card>
             </motion.div>
 

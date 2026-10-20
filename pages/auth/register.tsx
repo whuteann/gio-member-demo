@@ -24,6 +24,7 @@ export default function RegisterPage() {
   const { language, setLanguage } = useLanguage();
   const [displayName, setDisplayName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -42,7 +43,7 @@ export default function RegisterPage() {
     }
     setSubmitting(true);
     try {
-      const { access_token, refresh_token } = await apiRegister({ phone_number: phoneNumber, password, display_name: displayName, language });
+      const { access_token, refresh_token } = await apiRegister({ phone_number: phoneNumber, password, display_name: displayName, language, email });
       const me = await getMe(access_token);
       dispatch(setCredentials({ token: access_token, refreshToken: refresh_token, user: me.user, subscription: me.subscription }));
       router.push("/onboarding");
@@ -81,6 +82,17 @@ export default function RegisterPage() {
             required
             value={phoneNumber}
             onChange={setPhoneNumber}
+          />
+          {/* Required, not optional: the forgot-password flow is keyed on
+              email, so an account without one can never recover its
+              password. Phone stays the login identity. */}
+          <TextField
+            label={t("register.email")}
+            type="email"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <TextField
             label={t("register.password")}

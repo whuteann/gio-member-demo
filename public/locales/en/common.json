@@ -29,9 +29,31 @@
     "openMenu": "Open menu"
   },
   "dimensions": {
-    "emotional_energy": { "label": "Emotional Energy", "lowLabel": "Drained", "highLabel": "Energised" },
-    "mental_clarity": { "label": "Mental Clarity", "lowLabel": "Foggy", "highLabel": "Clear" },
-    "inner_pressure": { "label": "Inner Pressure", "lowLabel": "Light", "highLabel": "Heavy" },
-    "grounding": { "label": "Grounding", "lowLabel": "Unsteady", "highLabel": "Rooted" }
+    "emotional_energy": {
+      "label": "Emotional Energy",
+      "lowLabel": "Drained",
+      "highLabel": "Energised"
+    },
+    "mental_clarity": {
+      "label": "Mental Clarity",
+      "lowLabel": "Foggy",
+      "highLabel": "Clear"
+    },
+    "inner_pressure": {
+      "label": "Inner Pressure",
+      "lowLabel": "Light",
+      "highLabel": "Heavy"
+    },
+    "grounding": {
+      "label": "Grounding",
+      "lowLabel": "Unsteady",
+      "highLabel": "Rooted"
+    }
+  },
+  "colourOfTheDay": "Color of the Day",
+  "entitlementGate": {
+    "title": "This is a Premium feature",
+    "cta": "View Premium plans",
+    "rewardsBody": "Premium members can unlock and redeem eligible rewards."
   }
 }
