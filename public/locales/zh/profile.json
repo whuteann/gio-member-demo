@@ -31,10 +31,13 @@
   "details": {
     "title": "详细信息",
     "displayName": "显示名称",
+    "email": "邮箱",
+    "emailMissingNotice": "请添加邮箱地址，以便在忘记密码时重置密码。",
     "preferredLanguage": "首选语言",
     "timezone": "时区",
     "save": "保存更改",
-    "saved": "已保存 ✓"
+    "saved": "已保存 ✓",
+    "saveFailed": "无法保存更改，请重试。"
   },
   "password": {
     "title": "修改密码",

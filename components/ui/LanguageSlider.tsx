@@ -10,7 +10,7 @@ const OPTIONS: { value: Language; label: string }[] = [
  * A two-option pill toggle with a sliding highlight, used wherever a member
  * picks their preferred language before or during onboarding. This demo has
  * no live translations wired up yet — the selection is stored as a
- * preference (see AppStateContext#updateProfile) but doesn't change any
+ * preference (see PATCH /me) but doesn't change any
  * on-screen copy today.
  */
 export default function LanguageSlider({

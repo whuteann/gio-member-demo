@@ -24,7 +24,9 @@ export default function ProfilePage() {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [displayName, setDisplayName] = useState(user?.display_name ?? "");
+  const [email, setEmail] = useState(user?.email ?? "");
   const [saved, setSaved] = useState(false);
+  const [detailsError, setDetailsError] = useState<string | null>(null);
 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -37,10 +39,21 @@ export default function ProfilePage() {
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     if (!token) return;
-    const updated = await updateMe(token, { display_name: displayName });
-    dispatch(setUser(updated));
-    setSaved(true);
-    setTimeout(() => setSaved(false), 1800);
+    setDetailsError(null);
+    try {
+      const updated = await updateMe(token, {
+        display_name: displayName,
+        // Only sent when non-empty: the API treats an omitted email as
+        // "leave it alone", and there is deliberately no way to clear it.
+        ...(email.trim() ? { email: email.trim() } : {}),
+      });
+      dispatch(setUser(updated));
+      setSaved(true);
+      setTimeout(() => setSaved(false), 1800);
+    } catch (err) {
+      // 409 when the address belongs to another account.
+      setDetailsError(err instanceof ApiError ? err.message : t("details.saveFailed"));
+    }
   }
 
   async function onChangePassword(e: FormEvent) {
@@ -110,6 +123,20 @@ export default function ProfilePage() {
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
               />
+              <TextField
+                label={t("details.email")}
+                type="email"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              {/* Without an address, forgot-password can do nothing for this
+                  account — every account created before signup collected an
+                  email is in this state. */}
+              {!user.email ? (
+                <p className="text-xs leading-relaxed text-foreground-muted">{t("details.emailMissingNotice")}</p>
+              ) : null}
+              {detailsError ? <p className="text-sm font-medium text-danger">{detailsError}</p> : null}
               <SelectField
                 label={t("details.preferredLanguage")}
                 value={language}

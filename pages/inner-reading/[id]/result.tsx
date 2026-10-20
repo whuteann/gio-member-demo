@@ -11,6 +11,7 @@ import { getInnerReading } from "@/lib/api/reflections";
 import { COLOUR_LIBRARY, DIMENSIONS } from "@/lib/blueprints";
 import { colourKeyForFocus } from "@/lib/recommendation";
 import { buildInnerState } from "@/lib/scoring";
+import { localizedLifeAreas, localizedReading } from "@/lib/readingDisplay";
 import { EASE_OUT, EASE_SOFT_BACK, GOLD_HEX } from "@/lib/sessionMotion";
 import AppShell from "@/components/layout/AppShell";
 import Card from "@/components/ui/Card";
@@ -87,6 +88,16 @@ export default function InnerReadingResultPage() {
   };
   const derived = buildInnerState({ id: reading.id, userId: "", sourceType: "INNER_READING", sourceId: reading.id, dims });
   const recommendedColour = COLOUR_LIBRARY[colourKeyForFocus(derived.currentFocus)];
+  // The reading's own fields, in the app's language. `derived.currentFocus`
+  // stays English-only (it comes from lib/scoring.ts and still picks the
+  // colour above), so the chip shows the AI's bilingual phrasing instead and
+  // only falls back to the derived label for readings taken before it was
+  // stored.
+  const narrative = localizedReading(reading, "narrative", language);
+  const insight = localizedReading(reading, "insight", language);
+  const reflectionQuestion = localizedReading(reading, "reflection_question", language);
+  const currentFocus = localizedReading(reading, "current_focus", language) ?? derived.currentFocus;
+  const lifeAreas = localizedLifeAreas(reading, language);
   const ambientColor = recommendedColour?.swatch ?? GOLD_HEX;
   const colourKey = recommendedColour?.key ?? "gold";
 
@@ -105,7 +116,7 @@ export default function InnerReadingResultPage() {
             <motion.div variants={cardRise}>
               <Card className="flex flex-col items-center gap-3 text-center">
                 <ColourOfTheDay colourKey={colourKey} swatch={ambientColor} size={128} />
-                <Chip tone="primary">{derived.currentFocus}</Chip>
+                <Chip tone="primary">{currentFocus}</Chip>
                 <p className="text-xs text-foreground-muted">
                   {new Date(reading.completed_at ?? "").toLocaleString(dateLocale)}
                 </p>
@@ -140,28 +151,28 @@ export default function InnerReadingResultPage() {
             <motion.div variants={cardRise}>
               <Card>
                 <h2 className="mb-2 font-display text-lg font-semibold text-foreground">{t("result.yourReading")}</h2>
-                <p className="text-sm leading-relaxed text-foreground-muted">{reading.narrative}</p>
+                <p className="text-sm leading-relaxed text-foreground-muted">{narrative}</p>
               </Card>
             </motion.div>
 
-            {reading.insight ? (
+            {insight ? (
               <motion.div variants={cardRise}>
                 <Card className="flex flex-col gap-3">
                   <h2 className="font-display text-lg font-semibold text-foreground">{t("result.latestInsight")}</h2>
-                  <p className="text-sm font-medium text-foreground">{reading.insight}</p>
-                  {reading.reflection_question ? (
+                  <p className="text-sm font-medium text-foreground">{insight}</p>
+                  {reflectionQuestion ? (
                     <div className="flex flex-col gap-1 border-t border-border pt-3">
                       <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
                         {t("result.reflectionQuestion")}
                       </p>
-                      <p className="text-sm text-foreground-muted">{reading.reflection_question}</p>
+                      <p className="text-sm text-foreground-muted">{reflectionQuestion}</p>
                     </div>
                   ) : null}
                 </Card>
               </motion.div>
             ) : null}
 
-            {reading.is_premium_content && reading.life_area_insights ? (
+            {reading.is_premium_content && lifeAreas ? (
               <motion.div variants={cardRise}>
                 <Card className="flex flex-col gap-4">
                   <h2 className="font-display text-lg font-semibold text-foreground">{t("result.inDepthTitle")}</h2>
@@ -172,7 +183,7 @@ export default function InnerReadingResultPage() {
                         <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
                           {t(`result.lifeAreas.${key}`)}
                         </p>
-                        <p className="mt-1 text-sm text-foreground-muted">{reading.life_area_insights![key as keyof typeof reading.life_area_insights]}</p>
+                        <p className="mt-1 text-sm text-foreground-muted">{lifeAreas![key as keyof typeof lifeAreas]}</p>
                       </div>
                     </div>
                   ))}

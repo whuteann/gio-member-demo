@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useApiResource } from "@/lib/useApiResource";
 import { useLanguage } from "@/lib/useLanguage";
+import { localizedReading } from "@/lib/readingDisplay";
 import { isPremiumActive, INNER_READING_WEEKLY_FREE_LIMIT, readingsUsedThisWeek } from "@/lib/api/entitlement";
 import { getLatestSnapshot, listInnerReadings } from "@/lib/api/reflections";
 import { getProgress } from "@/lib/api/progress";
@@ -190,10 +191,10 @@ export default function InnerReadingHubPage() {
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-2">
-                            <p className="truncate text-sm font-semibold text-foreground">{reading.title}</p>
+                            <p className="truncate text-sm font-semibold text-foreground">{localizedReading(reading, "title", language)}</p>
                             <Chip tone="neutral">{reading.category}</Chip>
                           </div>
-                          <p className="line-clamp-2 text-xs text-foreground-muted">{reading.subtitle}</p>
+                          <p className="line-clamp-2 text-xs text-foreground-muted">{localizedReading(reading, "subtitle", language)}</p>
                         </div>
                         <div className="flex flex-none flex-col items-end gap-1 text-foreground-muted">
                           <span className="text-xs">{formatReadingTimestamp(reading.created_at, today)}</span>

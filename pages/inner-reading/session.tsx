@@ -98,7 +98,7 @@ export default function InnerReadingSessionPage() {
         value: values[i],
       }));
       try {
-        const result = await apiSubmitInnerReading(token, answers);
+        const result = await apiSubmitInnerReading(token, answers, language);
         router.push(`/inner-reading/${result.reading_id}/result`);
       } catch (err) {
         if (err instanceof ApiError && err.status === 403) {

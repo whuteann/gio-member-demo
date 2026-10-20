@@ -1,5 +1,7 @@
 {
-  "meta": { "title": "色彩心理学 — Auren" },
+  "meta": {
+    "title": "色彩心理学 — Auren"
+  },
   "loading": "正在加载你的色彩档案…",
   "header": {
     "title": "色彩心理学",
@@ -23,10 +25,22 @@
   "howTo": {
     "title": "如何有意识地运用色彩",
     "tips": [
-      { "title": "穿戴它", "body": "运用在你的衣物或日常配饰中。" },
-      { "title": "看见它", "body": "多接触自然绿意或相配的环境。" },
-      { "title": "放在身边", "body": "加入你的工作空间或日常用品中。" },
-      { "title": "提醒自己", "body": "把它当作一天中温和的视觉提示。" }
+      {
+        "title": "穿戴它",
+        "body": "运用在你的衣物或日常配饰中。"
+      },
+      {
+        "title": "看见它",
+        "body": "多接触自然绿意或相配的环境。"
+      },
+      {
+        "title": "放在身边",
+        "body": "加入你的工作空间或日常用品中。"
+      },
+      {
+        "title": "提醒自己",
+        "body": "把它当作一天中温和的视觉提示。"
+      }
     ]
   },
   "history": {
@@ -55,7 +69,6 @@
     "phoneCaseCardSubtitle": "延续今日推荐精神的小日常之选。",
     "primaryCaseBadge": "首选",
     "secondaryCaseTitle": "你也可能喜欢",
-    "demoBadge": "预览",
     "more": "阅读完整信件 →",
     "notFound": "未找到该推荐。"
   }

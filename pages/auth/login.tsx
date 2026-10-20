@@ -8,7 +8,6 @@ import TextField from "@/components/ui/TextField";
 import PhoneNumberField from "@/components/ui/PhoneNumberField";
 import Button from "@/components/ui/Button";
 import LanguageSlider from "@/components/ui/LanguageSlider";
-import { useAppState } from "@/context/AppStateContext";
 import { useAppDispatch } from "@/store/hooks";
 import { setCredentials } from "@/store/authSlice";
 import { useLanguage } from "@/lib/useLanguage";
@@ -19,10 +18,6 @@ export default function LoginPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { t } = useTranslation("auth");
-  // Kept only for the mock-preview path below — pages not yet wired to
-  // gio-backend still read from this local, localStorage-only "account".
-  // See docs/dev_log_0001.md.
-  const { loginDemo } = useAppState();
   const { language, setLanguage } = useLanguage();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
@@ -100,19 +95,6 @@ export default function LoginPage() {
         >
           {t("signInWithGio.button")}
         </Button>
-        {/* <Button
-          type="button"
-          variant="outline"
-          fullWidth
-          className="mt-5"
-          onClick={() => {
-            loginDemo();
-            router.push("/progress");
-          }}
-        >
-          {t("login.previewDemo")}
-        </Button> */}
-        <p className="mt-3 text-center text-xs text-foreground-muted">{t("login.previewDemoNote")}</p>
       </AuthLayout>
     </>
   );

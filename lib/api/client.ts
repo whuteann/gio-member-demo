@@ -33,6 +33,9 @@ const NO_REFRESH_PATHS = new Set([
   "/auth/login",
   "/auth/register",
   "/auth/refresh",
+  "/auth/forgot-password",
+  "/auth/verify-reset-otp",
+  "/auth/reset-password",
   "/account-link/sign-in-with-gio",
 ]);
 

@@ -2,7 +2,6 @@ import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import type { RecommendationItemOut } from "@/lib/api/types";
 import type { Language } from "@/lib/types";
-import { DEMO_PHONE_CASE } from "@/lib/recommendationDemo";
 
 function formatPrice(price: number, currency: string): string {
   if (currency === "MYR") return `RM ${price}`;
@@ -108,16 +107,17 @@ function SecondaryCaseRow({ item, language }: { item: RecommendationItemOut; lan
  * recommendation is rendered. The primary pick (`items[0]`) is rendered
  * prominently (bigger card, badge); a secondary pick (`items[1]`, when
  * present) renders as a smaller, compact row beneath it — never the same
- * visual weight, so "primary" reads as primary at a glance. Falls back
- * to one frontend-only demo item when `items` is empty (no real phone
- * case candidates this run) — clearly labelled so it's never mistaken
- * for a real pick.
+ * visual weight, so "primary" reads as primary at a glance.
+ *
+ * Renders nothing at all when `items` is empty. It used to substitute a
+ * hardcoded demo case so the section always had something to show; an
+ * invented product is worse than an absent one, however it is labelled.
+ * Only items the API actually returned are ever displayed.
  */
 export default function PhoneCaseSection({ items, language }: { items: RecommendationItemOut[]; language: Language }) {
   const { t } = useTranslation("colourPsychology");
-  const isDemo = items.length === 0;
-  const displayItems = isDemo ? [DEMO_PHONE_CASE] : items;
-  const [primary, secondary] = displayItems;
+  if (items.length === 0) return null;
+  const [primary, secondary] = items;
 
   return (
     <div className="flex flex-col gap-3">
@@ -125,11 +125,6 @@ export default function PhoneCaseSection({ items, language }: { items: Recommend
         <p className="text-[10px] font-semibold uppercase tracking-wide text-foreground-muted">
           {t("recommendationLetter.phoneCaseTitle")}
         </p>
-        {isDemo ? (
-          <span className="rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-semibold text-gold">
-            {t("recommendationLetter.demoBadge")}
-          </span>
-        ) : null}
       </div>
       {primary ? <PrimaryCaseCard item={primary} language={language} /> : null}
       {secondary ? (

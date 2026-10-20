@@ -221,13 +221,29 @@ export interface InnerReadingOut {
   mental_clarity: number | null;
   inner_pressure: number | null;
   grounding: number | null;
+  // Bilingual pairs: the unsuffixed field is English, `_zh` the Chinese —
+  // same layout the backend uses (CheckInSession's convention, not Core
+  // Personality's _en/_zh). Read them through localizedReading(), never
+  // directly, or the page silently shows one language. `_zh` is null until
+  // the background pass finishes (generation_status flips PARTIAL -> READY).
   result_summary: string | null;
+  result_summary_zh: string | null;
   narrative: string | null;
+  narrative_zh: string | null;
   insight: string | null;
+  insight_zh: string | null;
   reflection_question: string | null;
+  reflection_question_zh: string | null;
   title: string | null;
+  title_zh: string | null;
   subtitle: string | null;
+  subtitle_zh: string | null;
+  current_focus: string | null;
+  current_focus_zh: string | null;
   life_area_insights: { work: string; relationships: string; personal_growth: string; conflict_management: string } | null;
+  life_area_insights_zh: { work: string; relationships: string; personal_growth: string; conflict_management: string } | null;
+  primary_language: string | null;
+  generation_status: string;
   is_premium_content: boolean;
   category: string;
   emoji: string;

@@ -1,4 +1,5 @@
 import Head from "next/head";
+import { useTranslation } from "react-i18next";
 import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useApiResource } from "@/lib/useApiResource";
 import { isPremiumActive } from "@/lib/api/entitlement";
@@ -10,6 +11,7 @@ import Button from "@/components/ui/Button";
 import EntitlementGate from "@/components/ui/EntitlementGate";
 
 export default function RewardsPage() {
+  const { t } = useTranslation("common");
   const { settled, token, subscription } = useAuthGuard();
   const premium = subscription ? isPremiumActive(subscription) : false;
 
@@ -36,7 +38,7 @@ export default function RewardsPage() {
       <AppShell title="Rewards">
         {!premium ? (
           <div className="mb-5">
-            <EntitlementGate description="Premium members can unlock and redeem eligible rewards." />
+            <EntitlementGate description={t("entitlementGate.rewardsBody")} />
           </div>
         ) : null}
         <div className="grid gap-4 sm:grid-cols-2">

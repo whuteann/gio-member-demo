@@ -1,5 +1,7 @@
 {
-  "meta": { "title": "Colour Psychology — Auren" },
+  "meta": {
+    "title": "Colour Psychology — Auren"
+  },
   "loading": "Loading your colour profile…",
   "header": {
     "title": "Colour Psychology",
@@ -23,10 +25,22 @@
   "howTo": {
     "title": "How to use colour intentionally",
     "tips": [
-      { "title": "Wear it", "body": "Use it in your clothing or everyday accessories." },
-      { "title": "See it", "body": "Spend time in natural greenery or matching surroundings." },
-      { "title": "Bring it near you", "body": "Add it to your workspace or daily essentials." },
-      { "title": "Be reminded", "body": "Use it as a gentle visual cue throughout your day." }
+      {
+        "title": "Wear it",
+        "body": "Use it in your clothing or everyday accessories."
+      },
+      {
+        "title": "See it",
+        "body": "Spend time in natural greenery or matching surroundings."
+      },
+      {
+        "title": "Bring it near you",
+        "body": "Add it to your workspace or daily essentials."
+      },
+      {
+        "title": "Be reminded",
+        "body": "Use it as a gentle visual cue throughout your day."
+      }
     ]
   },
   "history": {
@@ -55,7 +69,6 @@
     "phoneCaseCardSubtitle": "A small everyday piece in the same spirit as today's picks.",
     "primaryCaseBadge": "Top pick",
     "secondaryCaseTitle": "Also for you",
-    "demoBadge": "Preview",
     "more": "Read the full letter →",
     "notFound": "Recommendation not found."
   }
