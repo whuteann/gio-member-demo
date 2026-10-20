@@ -1,5 +1,7 @@
 import Head from "next/head";
 import { useTranslation } from "react-i18next";
+import { useLanguage } from "@/lib/useLanguage";
+import { localizedGamification } from "@/lib/gamificationDisplay";
 import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useApiResource } from "@/lib/useApiResource";
 import { isPremiumActive } from "@/lib/api/entitlement";
@@ -12,6 +14,7 @@ import EntitlementGate from "@/components/ui/EntitlementGate";
 
 export default function RewardsPage() {
   const { t } = useTranslation("common");
+  const { language } = useLanguage();
   const { settled, token, subscription } = useAuthGuard();
   const premium = subscription ? isPremiumActive(subscription) : false;
 
@@ -20,8 +23,8 @@ export default function RewardsPage() {
   if (!settled || !token) return null;
   if (loading || !rewards) {
     return (
-      <AppShell title="Rewards">
-        <p className="text-sm text-foreground-muted">Loading your rewards…</p>
+      <AppShell title={t("rewards.title")}>
+        <p className="text-sm text-foreground-muted">{t("rewards.loading")}</p>
       </AppShell>
     );
   }
@@ -34,8 +37,8 @@ export default function RewardsPage() {
 
   return (
     <>
-      <Head><title>Rewards — Auren</title></Head>
-      <AppShell title="Rewards">
+      <Head><title>{t("rewards.metaTitle")}</title></Head>
+      <AppShell title={t("rewards.title")}>
         {!premium ? (
           <div className="mb-5">
             <EntitlementGate description={t("entitlementGate.rewardsBody")} />
@@ -47,20 +50,20 @@ export default function RewardsPage() {
               <div className="flex items-start justify-between gap-3">
                 <span className="text-3xl" aria-hidden>{def.icon}</span>
                 {def.state === "REDEEMED" ? (
-                  <Chip tone="success">Redeemed</Chip>
+                  <Chip tone="success">{t("rewards.redeemed")}</Chip>
                 ) : def.state === "UNLOCKED" ? (
-                  <Chip tone="gold">Unlocked</Chip>
+                  <Chip tone="gold">{t("rewards.unlocked")}</Chip>
                 ) : (
-                  <Chip tone="neutral">Locked</Chip>
+                  <Chip tone="neutral">{t("rewards.locked")}</Chip>
                 )}
               </div>
               <div>
-                <h3 className="font-display text-base font-semibold text-foreground">{def.title}</h3>
-                <p className="mt-0.5 text-xs text-foreground-muted">{def.description}</p>
+                <h3 className="font-display text-base font-semibold text-foreground">{localizedGamification(def, "title", language)}</h3>
+                <p className="mt-0.5 text-xs text-foreground-muted">{localizedGamification(def, "description", language)}</p>
               </div>
-              <p className="text-xs font-semibold text-foreground-muted">{def.requirement}</p>
+              <p className="text-xs font-semibold text-foreground-muted">{localizedGamification(def, "requirement", language)}</p>
               {premium && def.state === "UNLOCKED" ? (
-                <Button size="sm" onClick={() => redeem(def.key)}>Redeem</Button>
+                <Button size="sm" onClick={() => redeem(def.key)}>{t("rewards.redeem")}</Button>
               ) : null}
             </Card>
           ))}

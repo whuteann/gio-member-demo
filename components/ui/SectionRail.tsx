@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 
 export interface RailSection {
@@ -79,9 +80,10 @@ export default function SectionRail({ sections }: { sections: RailSection[] }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sections.map((s) => s.id).join(",")]);
 
+  const { t } = useTranslation("common");
   return (
     <nav
-      aria-label="Jump to section"
+      aria-label={t("ui.jumpToSection")}
       className="fixed right-1 top-1/2 z-20 flex -translate-y-1/2 flex-col items-center gap-5 sm:right-3"
     >
       <div className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-border" />

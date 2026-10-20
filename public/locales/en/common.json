@@ -55,5 +55,37 @@
     "title": "This is a Premium feature",
     "cta": "View Premium plans",
     "rewardsBody": "Premium members can unlock and redeem eligible rewards."
+  },
+  "ui": {
+    "close": "Close",
+    "previous": "Previous",
+    "next": "Next",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "jumpToSection": "Jump to section",
+    "countryCode": "Country code",
+    "currentStreak": "current streak",
+    "date": "Date",
+    "colourJourneyAlt": "An abstract composition generated from your recent supportive colours",
+    "unlockedEmpty": "Complete a check-in or reading to start unlocking affirmations, insights, and reflections.",
+    "unlockedLocked": "Keep reflecting to unlock this one.",
+    "noMatches": "No matches — try a different search."
+  },
+  "rewards": {
+    "metaTitle": "Rewards — Auren",
+    "title": "Rewards",
+    "loading": "Loading your rewards…",
+    "redeemed": "Redeemed",
+    "unlocked": "Unlocked",
+    "locked": "Locked",
+    "redeem": "Redeem"
+  },
+  "garden": {
+    "seed": "Seed",
+    "sprouting": "Sprouting",
+    "budding": "Budding",
+    "blooming": "Blooming",
+    "fullBloom": "Full bloom",
+    "thisWeek": "{{label}} this week"
   }
 }

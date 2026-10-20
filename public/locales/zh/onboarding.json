@@ -35,5 +35,9 @@
     "talentNumber": "天赋数",
     "startFirstReading": "开始我的第一次深度解读",
     "goToDashboard": "前往仪表板"
+  },
+  "meta": {
+    "title": "欢迎 — Auren",
+    "resultsTitle": "你的核心人格 — Auren"
   }
 }

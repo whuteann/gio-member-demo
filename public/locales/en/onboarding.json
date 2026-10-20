@@ -35,5 +35,9 @@
     "talentNumber": "Talent Number",
     "startFirstReading": "Start my first Inner Reading",
     "goToDashboard": "Go to Dashboard"
+  },
+  "meta": {
+    "title": "Welcome — Auren",
+    "resultsTitle": "Your Core Personality — Auren"
   }
 }

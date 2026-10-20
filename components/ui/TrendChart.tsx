@@ -1,9 +1,13 @@
+import { useTranslation } from "react-i18next";
 import { useState, type PointerEvent as ReactPointerEvent } from "react";
 import type { DimensionKey } from "@/lib/types";
 import type { TrendPoint } from "@/lib/trend";
 
 export interface TrendSeriesMeta {
   key: DimensionKey;
+  /** English-only, from blueprints' DIMENSIONS — kept for callers that still
+   *  pass it, but never rendered. Labels are resolved from `key` through
+   *  common:dimensions.* so they follow the app language. */
   label: string;
   color: string;
 }
@@ -25,6 +29,7 @@ export default function TrendChart({
   series: Record<DimensionKey, (number | null)[]>;
   dimensions: TrendSeriesMeta[];
 }) {
+  const { t } = useTranslation("common");
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
   const [showTable, setShowTable] = useState(false);
 
@@ -188,7 +193,7 @@ export default function TrendChart({
               return (
                 <div key={dim.key} className="flex items-center gap-1.5 text-foreground-muted">
                   <span className="inline-block h-0.5 w-3 rounded-full" style={{ background: dim.color }} />
-                  <span className="flex-1">{dim.label}</span>
+                  <span className="flex-1">{t(`dimensions.${dim.key}.label`)}</span>
                   <span className="font-semibold text-foreground">{v ?? "—"}</span>
                 </div>
               );
@@ -202,7 +207,7 @@ export default function TrendChart({
           {dimensions.map((dim) => (
             <div key={dim.key} className="flex items-center gap-1.5 text-xs text-foreground-muted">
               <span className="inline-block h-0.5 w-3.5 rounded-full" style={{ background: dim.color }} />
-              {dim.label}
+              {t(`dimensions.${dim.key}.label`)}
             </div>
           ))}
         </div>
@@ -220,9 +225,9 @@ export default function TrendChart({
           <table className="w-full text-left text-xs">
             <thead className="sticky top-0 bg-surface-muted text-foreground-muted">
               <tr>
-                <th className="px-2.5 py-1.5 font-semibold">Date</th>
+                <th className="px-2.5 py-1.5 font-semibold">{t("ui.date")}</th>
                 {dimensions.map((dim) => (
-                  <th key={dim.key} className="px-2.5 py-1.5 font-semibold">{dim.label}</th>
+                  <th key={dim.key} className="px-2.5 py-1.5 font-semibold">{t(`dimensions.${dim.key}.label`)}</th>
                 ))}
               </tr>
             </thead>

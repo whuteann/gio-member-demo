@@ -36,7 +36,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <>
-      <Head><title>Forgot password — Auren</title></Head>
+      <Head><title>{t("meta.forgotPassword")}</title></Head>
       <AuthLayout
         title={t("forgotPassword.title")}
         subtitle={t("forgotPassword.subtitle")}

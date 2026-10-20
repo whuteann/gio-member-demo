@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { UnlockedItemOut } from "@/lib/api/types";
@@ -41,6 +42,7 @@ export default function UnlockedCollection({
    * placeholders here, that gallery view lives on Core Personality instead. */
   onlyUnlocked?: boolean;
 }) {
+  const { t } = useTranslation("common");
   const reduce = useReducedMotion();
   const flatAll = sections.flatMap((s) => s.items.map((item) => ({ ...item, sectionLabel: s.label, sectionEmoji: s.emoji })));
   const flat = onlyUnlocked ? flatAll.filter((item) => item.unlocked) : flatAll;
@@ -64,7 +66,7 @@ export default function UnlockedCollection({
   if (flat.length === 0) {
     return onlyUnlocked ? (
       <p className={`text-center text-sm text-foreground-muted ${className}`}>
-        Complete a check-in or reading to start unlocking affirmations, insights, and reflections.
+        {t("ui.unlockedEmpty")}
       </p>
     ) : null;
   }
@@ -81,7 +83,7 @@ export default function UnlockedCollection({
         <button
           type="button"
           onClick={() => go(-1)}
-          aria-label="Previous"
+          aria-label={t("ui.previous")}
           className="flex h-8 w-8 flex-none items-center justify-center rounded-full text-lg text-foreground-muted hover:bg-surface-muted hover:text-foreground"
         >
           ‹
@@ -108,7 +110,7 @@ export default function UnlockedCollection({
                   <div className="flex h-14 w-14 items-center justify-center rounded-full bg-foreground text-xl" aria-hidden>
                     🔒
                   </div>
-                  <p className="text-xs text-foreground-muted">Keep reflecting to unlock this one.</p>
+                  <p className="text-xs text-foreground-muted">{t("ui.unlockedLocked")}</p>
                 </>
               )}
             </motion.div>
@@ -117,7 +119,7 @@ export default function UnlockedCollection({
         <button
           type="button"
           onClick={() => go(1)}
-          aria-label="Next"
+          aria-label={t("ui.next")}
           className="flex h-8 w-8 flex-none items-center justify-center rounded-full text-lg text-foreground-muted hover:bg-surface-muted hover:text-foreground"
         >
           ›

@@ -90,5 +90,8 @@
     "affirmations": "Affirmation",
     "insights": "Insight",
     "reflections": "Reflection"
+  },
+  "meta": {
+    "title": "Dashboard — Auren"
   }
 }

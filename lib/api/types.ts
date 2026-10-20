@@ -375,8 +375,12 @@ export interface GardenOut {
 export interface BadgeOut {
   key: string;
   group: "consistency" | "depth" | "growth";
+  // Read through localizedGamification(), never directly — `_zh` is null
+  // for any definition without a translation yet.
   title: string;
+  title_zh: string | null;
   description: string;
+  description_zh: string | null;
   icon: string;
   earned: boolean;
   earned_at: string | null;
@@ -407,9 +411,12 @@ export interface UnlockedContentOut {
 export interface RewardOut {
   key: string;
   title: string;
+  title_zh: string | null;
   description: string;
+  description_zh: string | null;
   icon: string;
   requirement: string;
+  requirement_zh: string | null;
   state: "LOCKED" | "UNLOCKED" | "REDEEMED";
   unlocked_at: string | null;
   redeemed_at: string | null;

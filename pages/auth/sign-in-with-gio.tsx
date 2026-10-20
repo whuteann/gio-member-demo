@@ -82,7 +82,7 @@ export default function SignInWithGioPage() {
 
   return (
     <>
-      <Head><title>Sign in with Gio — Auren</title></Head>
+      <Head><title>{t("meta.signInWithGio")}</title></Head>
       <AuthLayout
         title={t("signInWithGio.title")}
         subtitle={step === "phone" ? t("signInWithGio.phoneSubtitle") : t("signInWithGio.passwordSubtitle")}

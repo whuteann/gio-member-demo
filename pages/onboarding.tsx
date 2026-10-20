@@ -96,7 +96,7 @@ export default function OnboardingPage() {
 
   return (
     <>
-      <Head><title>Welcome — Auren</title></Head>
+      <Head><title>{t("meta.title")}</title></Head>
       <div className="relative isolate min-h-screen overflow-hidden">
         {step === "reading" ? <AmbientField color={AMBIENT_FALLBACK} /> : null}
         <div className="mx-auto flex min-h-screen max-w-lg flex-col justify-center px-6 py-10">

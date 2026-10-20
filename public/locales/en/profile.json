@@ -54,5 +54,8 @@
     "title": "Privacy",
     "body": "Private check-in notes are always stored separately and excluded from AI context and recommendations — this cannot be changed."
   },
-  "logout": "Log out"
+  "logout": "Log out",
+  "meta": {
+    "sso": "Signing in — Auren"
+  }
 }

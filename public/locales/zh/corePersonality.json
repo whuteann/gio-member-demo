@@ -42,5 +42,19 @@
   },
   "colourAffinity": {
     "label": "个性色彩"
+  },
+  "numerology": {
+    "moreAboutYou": "更多关于你",
+    "birthdayNumber": "生日数",
+    "birthdayNumberSub": "来自你出生的那一天",
+    "light": "☀️ 光明面",
+    "dark": "🌑 阴影面",
+    "lifePathNumber": "生命路径数",
+    "lifePathNumberSub": "来自你完整的出生日期",
+    "careerFields": "🧭 适合的职业领域",
+    "talentNumber": "天赋数",
+    "talentNumberSub": "原始总和，再化简",
+    "abilities": "🛠️ 潜在能力",
+    "weaknesses": "⚠️ 潜在弱点"
   }
 }
