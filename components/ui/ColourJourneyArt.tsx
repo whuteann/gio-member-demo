@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useId, useMemo } from "react";
 
 export interface ColourJourneyEntry {
@@ -43,6 +44,7 @@ function seeded(seed: string): () => number {
  * one at the top of the panel.
  */
 export default function ColourJourneyArt({ entries }: { entries: ColourJourneyEntry[] }) {
+  const { t } = useTranslation("common");
   const uid = useId().replace(/:/g, "");
 
   const art = useMemo(() => {
@@ -77,7 +79,7 @@ export default function ColourJourneyArt({ entries }: { entries: ColourJourneyEn
       viewBox={`0 0 ${W} ${H}`}
       className="h-auto w-full rounded-2xl"
       role="img"
-      aria-label="An abstract composition generated from your recent supportive colours"
+      aria-label={t("ui.colourJourneyAlt")}
     >
       <defs>
         <linearGradient id={`${uid}-base`} x1="0" y1="1" x2="0.15" y2="0">

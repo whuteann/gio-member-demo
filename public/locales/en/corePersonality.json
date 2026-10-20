@@ -42,5 +42,19 @@
   },
   "colourAffinity": {
     "label": "Colour Affinity"
+  },
+  "numerology": {
+    "moreAboutYou": "More about you",
+    "birthdayNumber": "Birthday Number",
+    "birthdayNumberSub": "From the day you were born",
+    "light": "☀️ Light",
+    "dark": "🌑 Dark",
+    "lifePathNumber": "Life Path Number",
+    "lifePathNumberSub": "From your full birthdate",
+    "careerFields": "🧭 Suitable Career Fields",
+    "talentNumber": "Talent Number",
+    "talentNumberSub": "Raw sum, reduced",
+    "abilities": "🛠️ Potential Abilities",
+    "weaknesses": "⚠️ Potential Weaknesses"
   }
 }

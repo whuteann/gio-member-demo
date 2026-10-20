@@ -1,5 +1,8 @@
 {
   "tagline": "与自己对话，解读您的内在状态，按自己的节奏成长。",
   "getStarted": "开始使用",
-  "logIn": "登录"
+  "logIn": "登录",
+  "meta": {
+    "title": "Auren — 读懂你的内在状态"
+  }
 }

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
 import {
   BIRTHDAY_NUMBER_TRAITS,
@@ -46,6 +47,7 @@ function NumberBadge({ children }: { children: ReactNode }) {
  * simulates AI-generated content.
  */
 export default function NumerologySection({ birthdate }: { birthdate: string }) {
+  const { t } = useTranslation("corePersonality");
   const birthday = birthdayNumber(birthdate);
   const lifePath = lifePathNumber(birthdate);
   const talent = talentNumber(birthdate);
@@ -57,7 +59,7 @@ export default function NumerologySection({ birthdate }: { birthdate: string }) 
     <>
       <div className="flex items-center gap-3">
         <div className="h-px flex-1 bg-border" />
-        <p className="whitespace-nowrap text-xs font-semibold uppercase tracking-wide text-accent">More about you</p>
+        <p className="whitespace-nowrap text-xs font-semibold uppercase tracking-wide text-accent">{t("numerology.moreAboutYou")}</p>
         <div className="h-px flex-1 bg-border" />
       </div>
 
@@ -65,12 +67,12 @@ export default function NumerologySection({ birthdate }: { birthdate: string }) 
         <div className="flex items-center gap-3">
           <NumberBadge>{birthday}</NumberBadge>
           <div>
-            <h3 className="font-display text-lg font-semibold text-foreground">Birthday Number</h3>
-            <p className="text-xs text-foreground-muted">From the day you were born</p>
+            <h3 className="font-display text-lg font-semibold text-foreground">{t("numerology.birthdayNumber")}</h3>
+            <p className="text-xs text-foreground-muted">{t("numerology.birthdayNumberSub")}</p>
           </div>
         </div>
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-primary">☀️ Light</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-primary">{t("numerology.light")}</p>
           <ul className="flex flex-col gap-2">
             {birthdayTraits.light.map((trait) => (
               <TraitRow key={trait} trait={trait} />
@@ -78,7 +80,7 @@ export default function NumerologySection({ birthdate }: { birthdate: string }) 
           </ul>
         </div>
         <div className="rounded-2xl p-3" style={{ background: "color-mix(in srgb, var(--color-danger) 8%, white)" }}>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-danger">🌑 Dark</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-danger">{t("numerology.dark")}</p>
           <ul className="flex flex-col gap-2">
             {birthdayTraits.dark.map((trait) => (
               <TraitRow key={trait} trait={trait} />
@@ -91,12 +93,12 @@ export default function NumerologySection({ birthdate }: { birthdate: string }) 
         <div className="flex items-center gap-3">
           <NumberBadge>{lifePath}</NumberBadge>
           <div>
-            <h3 className="font-display text-lg font-semibold text-foreground">Life Path Number</h3>
-            <p className="text-xs text-foreground-muted">From your full birthdate</p>
+            <h3 className="font-display text-lg font-semibold text-foreground">{t("numerology.lifePathNumber")}</h3>
+            <p className="text-xs text-foreground-muted">{t("numerology.lifePathNumberSub")}</p>
           </div>
         </div>
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-primary">🧭 Suitable Career Fields</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-primary">{t("numerology.careerFields")}</p>
           <ul className="flex flex-col gap-2">
             {careers.map((trait) => (
               <TraitRow key={trait} trait={trait} />
@@ -111,12 +113,12 @@ export default function NumerologySection({ birthdate }: { birthdate: string }) 
             <span className="text-sm font-bold">{talent.raw} → {talent.reduced}</span>
           </NumberBadge>
           <div>
-            <h3 className="font-display text-lg font-semibold text-foreground">Talent Number</h3>
-            <p className="text-xs text-foreground-muted">Raw sum, reduced</p>
+            <h3 className="font-display text-lg font-semibold text-foreground">{t("numerology.talentNumber")}</h3>
+            <p className="text-xs text-foreground-muted">{t("numerology.talentNumberSub")}</p>
           </div>
         </div>
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-primary">🛠️ Potential Abilities</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-primary">{t("numerology.abilities")}</p>
           <ul className="flex flex-col gap-2">
             {talentTraits.abilities.map((trait) => (
               <TraitRow key={trait} trait={trait} />
@@ -124,7 +126,7 @@ export default function NumerologySection({ birthdate }: { birthdate: string }) 
           </ul>
         </div>
         <div className="rounded-2xl p-3" style={{ background: "color-mix(in srgb, var(--color-danger) 8%, white)" }}>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-danger">⚠️ Potential Weaknesses</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-danger">{t("numerology.weaknesses")}</p>
           <ul className="flex flex-col gap-2">
             {talentTraits.weaknesses.map((trait) => (
               <TraitRow key={trait} trait={trait} />

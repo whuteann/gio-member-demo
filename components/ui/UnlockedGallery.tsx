@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import type { UnlockedItemOut } from "@/lib/api/types";
@@ -25,6 +26,7 @@ const PAGE_SIZE = 8;
  * since there's nothing in them to match against.
  */
 export default function UnlockedGallery({ sections, language }: { sections: Section[]; language: Language }) {
+  const { t } = useTranslation("common");
   const [activeKey, setActiveKey] = useState(sections[0]?.key);
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
@@ -109,7 +111,7 @@ export default function UnlockedGallery({ sections, language }: { sections: Sect
           className="flex w-full flex-col divide-y divide-border overflow-hidden rounded-2xl border border-border"
         >
           {pageItems.length === 0 ? (
-            <li className="px-3.5 py-6 text-center text-sm text-foreground-muted">No matches — try a different search.</li>
+            <li className="px-3.5 py-6 text-center text-sm text-foreground-muted">{t("ui.noMatches")}</li>
           ) : (
             pageItems.map((item) => {
               const text = item.unlocked ? ((language === "zh" ? item.text_zh : item.text_en) ?? item.text_en) : null;
@@ -147,7 +149,7 @@ export default function UnlockedGallery({ sections, language }: { sections: Sect
             type="button"
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={clampedPage === 1}
-            aria-label="Previous page"
+            aria-label={t("ui.previousPage")}
             className="flex h-8 w-8 items-center justify-center rounded-full text-foreground-muted hover:bg-surface-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
           >
             ‹
@@ -159,7 +161,7 @@ export default function UnlockedGallery({ sections, language }: { sections: Sect
             type="button"
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={clampedPage === totalPages}
-            aria-label="Next page"
+            aria-label={t("ui.nextPage")}
             className="flex h-8 w-8 items-center justify-center rounded-full text-foreground-muted hover:bg-surface-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
           >
             ›

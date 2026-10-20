@@ -30,5 +30,8 @@
   "streak": {
     "title": "Streak progress"
   },
-  "viewRewards": "View Rewards"
+  "viewRewards": "View Rewards",
+  "meta": {
+    "title": "Progress — Auren"
+  }
 }

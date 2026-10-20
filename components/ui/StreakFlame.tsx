@@ -1,4 +1,6 @@
+import { useTranslation } from "react-i18next";
 export default function StreakFlame({ current }: { current: number }) {
+  const { t } = useTranslation("common");
   const lit = current > 0;
   return (
     <div className="flex items-center gap-2">
@@ -7,7 +9,7 @@ export default function StreakFlame({ current }: { current: number }) {
       </span>
       <div>
         <p className="font-display text-lg font-semibold leading-tight text-foreground">{current} day{current === 1 ? "" : "s"}</p>
-        <p className="text-xs text-foreground-muted">current streak</p>
+        <p className="text-xs text-foreground-muted">{t("ui.currentStreak")}</p>
       </div>
     </div>
   );

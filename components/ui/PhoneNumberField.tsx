@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 // SEA/ASEAN dial codes, digits only (no "+") — matches the backend's
 // digits-only phone_number contract (app/schemas/auth.py). Sorted
 // longest-first at use site so a 3-digit code never gets mistaken for a
@@ -29,6 +30,7 @@ interface PhoneNumberFieldProps {
 }
 
 export default function PhoneNumberField({ label, value, onChange, error, required }: PhoneNumberFieldProps) {
+  const { t } = useTranslation("common");
   const sortedByLongestCode = [...SEA_COUNTRY_CODES].sort((a, b) => b.code.length - a.code.length);
   const matched = sortedByLongestCode.find((c) => value.startsWith(c.code));
   const countryCode = matched?.code ?? DEFAULT_COUNTRY_CODE;
@@ -41,7 +43,7 @@ export default function PhoneNumberField({ label, value, onChange, error, requir
         className={`flex items-stretch overflow-hidden rounded-xl border bg-surface transition-colors focus-within:border-primary ${error ? "border-danger" : "border-border"}`}
       >
         <select
-          aria-label="Country code"
+          aria-label={t("ui.countryCode")}
           value={countryCode}
           onChange={(e) => onChange(e.target.value + localNumber)}
           className="flex-none border-r border-border bg-transparent py-3 pl-3 pr-2 text-sm text-foreground outline-none"

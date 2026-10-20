@@ -30,5 +30,8 @@
   "streak": {
     "title": "连续记录进度"
   },
-  "viewRewards": "查看奖励"
+  "viewRewards": "查看奖励",
+  "meta": {
+    "title": "进度 — Auren"
+  }
 }

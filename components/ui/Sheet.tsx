@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
 import { useEffect } from "react";
 
@@ -12,6 +13,7 @@ export default function Sheet({
   title?: string;
   children: ReactNode;
 }) {
+  const { t } = useTranslation("common");
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -24,7 +26,7 @@ export default function Sheet({
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/40 backdrop-blur-sm sm:items-center">
       <button
-        aria-label="Close"
+        aria-label={t("ui.close")}
         className="absolute inset-0 cursor-default"
         onClick={onClose}
       />

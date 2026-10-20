@@ -51,7 +51,7 @@ export default function SsoHandoffPage() {
 
   return (
     <>
-      <Head><title>Signing in — Auren</title></Head>
+      <Head><title>{t("meta.sso")}</title></Head>
       <div className="flex min-h-screen items-center justify-center bg-background px-6">
         <div className="flex flex-col items-center gap-4 text-center">
           {error ? (

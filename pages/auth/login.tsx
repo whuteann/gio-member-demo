@@ -42,7 +42,7 @@ export default function LoginPage() {
 
   return (
     <>
-      <Head><title>Log in — Auren</title></Head>
+      <Head><title>{t("meta.login")}</title></Head>
       <AuthLayout
         title={t("login.title")}
         subtitle={t("login.subtitle")}

@@ -23,7 +23,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Auren — Know your inner state</title>
+        <title>{t("meta.title")}</title>
       </Head>
       <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6 py-12 text-center">
         {/* eslint-disable-next-line @next/next/no-img-element */}

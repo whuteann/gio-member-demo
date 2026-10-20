@@ -123,6 +123,15 @@ export default function DashboardPage() {
   // and all three must agree when the language is switched. localized()
   // falls back to English when the other language hasn't generated yet.
   const userLanguage: Language = language;
+  // The latest reading's own copy, in the app's language. These three were
+  // read straight off the row, which is why the Latest Insight card showed
+  // English while the inner-state card above it showed the same insight in
+  // Chinese (that one goes through localizedSnapshot).
+  const latestInsight = latestReading ? localizedReading(latestReading, "insight", userLanguage) : null;
+  const latestReflectionQuestion = latestReading
+    ? localizedReading(latestReading, "reflection_question", userLanguage)
+    : null;
+  const latestNarrative = latestReading ? localizedReading(latestReading, "narrative", userLanguage) : null;
   const atWeeklyLimit = !premium && readingsUsedThisWeek(readings) >= INNER_READING_WEEKLY_FREE_LIMIT;
   const trendPoints = data.trend.points.map((p) => ({ date: p.date, label: p.label }));
   const trendSeries = {
@@ -156,7 +165,7 @@ export default function DashboardPage() {
 
   return (
     <>
-      <Head><title>Dashboard — Auren</title></Head>
+      <Head><title>{t("meta.title")}</title></Head>
       <FallingLeaves colourKey={currentColourKey} />
       <AppShell title={t("greeting", { name: user?.display_name.split(" ")[0] ?? "" })}>
         <div className="grid gap-5 lg:grid-cols-3">
@@ -186,6 +195,9 @@ export default function DashboardPage() {
               <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-5">
                 {(() => {
                   const dimValue = (dim: (typeof DIMENSIONS)[number]) => dimValueOf(snapshot, dim.key);
+                  // Splits a two-word English label across two lines.
+                  // Chinese labels contain no spaces, so this returns them
+                  // unchanged — which is what we want.
                   const stackedLabel = (label: string) => {
                     const [first, ...rest] = label.split(" ");
                     if (rest.length === 0) return label;
@@ -205,7 +217,7 @@ export default function DashboardPage() {
                       <div key={dim.key} className="min-w-0">
                         <p className="flex items-start gap-1.5 text-[10px] font-semibold leading-snug text-foreground-muted min-h-[27.5px]">
                           <span className="mt-0.5 inline-block h-2 w-2 shrink-0 rounded-full" style={{ background: dim.color }} />
-                          <span>{stackedLabel(dim.label)}</span>
+                          <span>{stackedLabel(t(`common:dimensions.${dim.key}.label`))}</span>
                         </p>
                         <p className="flex items-baseline gap-1.5 font-display text-xl font-semibold text-foreground">
                           <span>{dimValue(dim)}</span>
@@ -242,16 +254,16 @@ export default function DashboardPage() {
                 </Link>
               ) : null}
             </div>
-            {latestReading?.insight ? (
+            {latestInsight ? (
               <>
                 <p className="text-2xl leading-none text-accent">&ldquo;</p>
-                <p className="-mt-3 text-sm font-medium text-foreground">{latestReading.insight}</p>
-                {latestReading.reflection_question ? (
+                <p className="-mt-3 text-sm font-medium text-foreground">{latestInsight}</p>
+                {latestReflectionQuestion ? (
                   <div className="mt-1 flex flex-col gap-1 border-t border-border pt-3">
                     <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
                       💡 {t("latestInsight.reflectionQuestion")}
                     </p>
-                    <p className="text-sm text-foreground-muted">{latestReading.reflection_question}</p>
+                    <p className="text-sm text-foreground-muted">{latestReflectionQuestion}</p>
                   </div>
                 ) : null}
               </>
@@ -280,7 +292,7 @@ export default function DashboardPage() {
           <Card className="flex flex-col gap-3">
             <h2 className="font-display text-lg font-semibold text-foreground">{t("innerReading.title")}</h2>
             {latestReading ? (
-              <p className="text-sm text-foreground-muted line-clamp-3">{latestReading.narrative}</p>
+              <p className="text-sm text-foreground-muted line-clamp-3">{latestNarrative}</p>
             ) : (
               <p className="text-sm text-foreground-muted">{t("innerReading.emptyFree")}</p>
             )}

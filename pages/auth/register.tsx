@@ -56,7 +56,7 @@ export default function RegisterPage() {
 
   return (
     <>
-      <Head><title>Create account — Auren</title></Head>
+      <Head><title>{t("meta.register")}</title></Head>
       <AuthLayout
         title={t("register.title")}
         subtitle={t("register.subtitle")}

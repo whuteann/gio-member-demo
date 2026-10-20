@@ -106,7 +106,7 @@ export default function ResetPasswordPage() {
 
   return (
     <>
-      <Head><title>Reset password — Auren</title></Head>
+      <Head><title>{t("meta.resetPassword")}</title></Head>
       <AuthLayout
         title={stage === "otp" ? t("verifyOtp.title") : t("resetPassword.title")}
         subtitle={
