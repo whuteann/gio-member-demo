@@ -69,7 +69,8 @@
     "colourJourneyAlt": "An abstract composition generated from your recent supportive colours",
     "unlockedEmpty": "Complete a check-in or reading to start unlocking affirmations, insights, and reflections.",
     "unlockedLocked": "Keep reflecting to unlock this one.",
-    "noMatches": "No matches — try a different search."
+    "noMatches": "No matches — try a different search.",
+    "unlockedCount": "{{count}} / {{total}} unlocked"
   },
   "rewards": {
     "metaTitle": "Rewards — Auren",
