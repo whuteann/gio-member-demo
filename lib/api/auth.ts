@@ -1,12 +1,18 @@
 import { api } from "./client";
-import type { MeResponse, TokenResponse } from "./types";
+import type { MeResponse, TokenResponse, VerificationRequiredResponse } from "./types";
 
+/** Creates the account and emails a verification code. Returns NO tokens —
+ *  the session is issued by verifyEmail() once the code checks out. */
 export function register(params: { phone_number: string; password: string; display_name: string; language: string; email: string }) {
-  return api.post<TokenResponse>("/auth/register", params);
+  return api.post<VerificationRequiredResponse>("/auth/register", params);
 }
 
+/** Resolves to a TokenResponse normally, or a VerificationRequiredResponse
+ *  when the password was right but the account never verified — in which
+ *  case a fresh code has already been sent. Narrow with
+ *  isVerificationRequired() before reading tokens. */
 export function login(params: { phone_number: string; password: string }) {
-  return api.post<TokenResponse>("/auth/login", params);
+  return api.post<TokenResponse | VerificationRequiredResponse>("/auth/login", params);
 }
 
 export function refreshAccessToken(refreshToken: string) {
@@ -44,4 +50,17 @@ export function verifyResetOtp(params: { email: string; otp: string }) {
 
 export function resetPassword(params: { email: string; otp: string; new_password: string }) {
   return api.post<void>("/auth/reset-password", params);
+}
+
+// --- Signup email verification -------------------------------------------
+
+/** Exchanges a valid code for the account's first session. */
+export function verifyEmail(params: { email: string; otp: string }) {
+  return api.post<TokenResponse>("/auth/verify-email", params);
+}
+
+/** Always resolves 200 with the same message, whether or not the address
+ *  exists or is already verified. Never branch on it. */
+export function resendVerification(params: { email: string }) {
+  return api.post<{ detail: string }>("/auth/resend-verification", params);
 }

@@ -69,7 +69,8 @@
     "colourJourneyAlt": "由你近期的支持色生成的抽象画面",
     "unlockedEmpty": "完成一次打卡或解读，开始解锁肯定语、洞察与反思。",
     "unlockedLocked": "继续反思，即可解锁这一项。",
-    "noMatches": "没有匹配结果——换个关键词试试。"
+    "noMatches": "没有匹配结果——换个关键词试试。",
+    "unlockedCount": "已解锁 {{count}} / {{total}}"
   },
   "rewards": {
     "metaTitle": "奖励 — Auren",

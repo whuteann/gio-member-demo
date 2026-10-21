@@ -8,15 +8,12 @@ import TextField from "@/components/ui/TextField";
 import PhoneNumberField from "@/components/ui/PhoneNumberField";
 import Button from "@/components/ui/Button";
 import LanguageSlider from "@/components/ui/LanguageSlider";
-import { useAppDispatch } from "@/store/hooks";
-import { setCredentials } from "@/store/authSlice";
 import { useLanguage } from "@/lib/useLanguage";
-import { getMe, register as apiRegister } from "@/lib/api/auth";
+import { register as apiRegister } from "@/lib/api/auth";
 import { ApiError } from "@/lib/api/client";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const dispatch = useAppDispatch();
   const { t } = useTranslation("auth");
   // The picked language is both the live UI language (via useLanguage)
   // and the account's initial preferred_language sent at registration —
@@ -43,10 +40,12 @@ export default function RegisterPage() {
     }
     setSubmitting(true);
     try {
-      const { access_token, refresh_token } = await apiRegister({ phone_number: phoneNumber, password, display_name: displayName, language, email });
-      const me = await getMe(access_token);
-      dispatch(setCredentials({ token: access_token, refreshToken: refresh_token, user: me.user, subscription: me.subscription }));
-      router.push("/onboarding");
+      // No session yet, by design: /auth/register issues no tokens, so an
+      // unverified account cannot call anything. The code has been emailed;
+      // the verify page carries the address in the URL, the same way
+      // reset-password does.
+      await apiRegister({ phone_number: phoneNumber, password, display_name: displayName, language, email });
+      router.push({ pathname: "/auth/verify-email", query: { email } });
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t("genericError"));
     } finally {

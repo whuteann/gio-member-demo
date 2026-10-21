@@ -13,6 +13,7 @@ export interface ApiUser {
   preferred_language: string;
   timezone: string;
   birthdate: string | null;
+  email_verified: boolean;
   onboarding_completed_at: string | null;
   core_personality_last_recalibrated_at: string | null;
   last_login_at: string | null;
@@ -58,6 +59,22 @@ export interface TokenResponse {
   access_token: string;
   refresh_token: string;
   token_type: string;
+}
+
+/** What /auth/register returns, and what /auth/login returns when the
+ *  account exists but never verified its email. Neither carries tokens —
+ *  those come from /auth/verify-email. Discriminated by
+ *  `verification_required`, which is absent on a TokenResponse. */
+export interface VerificationRequiredResponse {
+  email: string;
+  verification_required: true;
+  detail: string;
+}
+
+export function isVerificationRequired(
+  response: TokenResponse | VerificationRequiredResponse
+): response is VerificationRequiredResponse {
+  return (response as VerificationRequiredResponse).verification_required === true;
 }
 
 // --- Personality -------------------------------------------------------

@@ -126,7 +126,10 @@ export default function UnlockedCollection({
         </button>
       </div>
       <p className="text-xs text-foreground-muted">
-        {unlockedCount} / {flatAll.length} unlocked
+        {/* One interpolated key rather than `{n} / {m} unlocked` — Chinese
+            puts the verb first (已解锁 3 / 60), so the word order cannot be
+            assembled from fragments. */}
+        {t("ui.unlockedCount", { count: unlockedCount, total: flatAll.length })}
       </p>
     </div>
   );

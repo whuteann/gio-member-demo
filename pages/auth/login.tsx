@@ -12,6 +12,7 @@ import { useAppDispatch } from "@/store/hooks";
 import { setCredentials } from "@/store/authSlice";
 import { useLanguage } from "@/lib/useLanguage";
 import { getMe, login as apiLogin } from "@/lib/api/auth";
+import { isVerificationRequired } from "@/lib/api/types";
 import { ApiError } from "@/lib/api/client";
 
 export default function LoginPage() {
@@ -29,7 +30,15 @@ export default function LoginPage() {
     setError(null);
     setSubmitting(true);
     try {
-      const { access_token, refresh_token } = await apiLogin({ phone_number: phoneNumber, password });
+      const result = await apiLogin({ phone_number: phoneNumber, password });
+      // Right password, but the account never verified its email. The
+      // backend has already sent a fresh code, so a lost signup email is
+      // recoverable by simply logging in.
+      if (isVerificationRequired(result)) {
+        router.push({ pathname: "/auth/verify-email", query: { email: result.email } });
+        return;
+      }
+      const { access_token, refresh_token } = result;
       const me = await getMe(access_token);
       dispatch(setCredentials({ token: access_token, refreshToken: refresh_token, user: me.user, subscription: me.subscription }));
       router.push("/dashboard");
