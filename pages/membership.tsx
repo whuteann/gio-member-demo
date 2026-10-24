@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Head from "next/head";
 import { useTranslation } from "react-i18next";
 import { useAuthGuard } from "@/lib/useAuthGuard";
@@ -6,6 +6,7 @@ import { useApiResource } from "@/lib/useApiResource";
 import { useLanguage } from "@/lib/useLanguage";
 import { useAppDispatch } from "@/store/hooks";
 import { setSubscription } from "@/store/authSlice";
+import { getMe } from "@/lib/api/auth";
 import { isPremiumActive } from "@/lib/api/entitlement";
 import {
   cancelSubscription,
@@ -41,6 +42,18 @@ export default function MembershipPage() {
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("MONTHLY");
 
   const { data: payments } = useApiResource(token ? () => listSubscriptionPayments(token) : null, [token]);
+
+  // `subscription` from useAuthGuard() is Redux state set once at login —
+  // it never updates on its own, so an admin-side plan change (or any
+  // other server-side subscription change) would otherwise stay invisible
+  // here until the next full login. Refetch on mount and resync Redux,
+  // same pattern already used by this page's own cancel/reactivate/
+  // checkout handlers below.
+  const { data: freshMe } = useApiResource(token ? () => getMe(token) : null, [token]);
+  useEffect(() => {
+    if (freshMe) dispatch(setSubscription(freshMe.subscription));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [freshMe]);
 
   if (!settled || !token || !subscription) return null;
 
