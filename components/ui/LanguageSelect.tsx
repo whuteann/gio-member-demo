@@ -131,7 +131,12 @@ export default function LanguageSelect({
             animate={{ opacity: 1, y: 0 }}
             exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -4 }}
             transition={{ duration: 0.14 }}
-            className="absolute z-30 mt-1.5 w-full min-w-[11rem] overflow-hidden rounded-2xl border border-border bg-surface p-1 shadow-[0_18px_40px_-20px_rgba(38,43,33,0.45)]"
+            className={`absolute z-30 mt-1.5 min-w-[11rem] overflow-hidden rounded-2xl border border-border bg-surface p-1 shadow-[0_18px_40px_-20px_rgba(38,43,33,0.45)] ${
+              // `compact` triggers live at a right edge (sidebar header,
+              // mobile header), and the list is wider than the trigger —
+              // anchored left it would run off the edge.
+              variant === "full" ? "w-full" : "right-0"
+            }`}
           >
             {OPTIONS.map((opt, i) => {
               const isSelected = opt.value === value;
