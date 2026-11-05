@@ -9,20 +9,21 @@ import { isPremiumActive as isRealPremiumActive } from "@/lib/api/entitlement";
 import Sheet from "@/components/ui/Sheet";
 import Button from "@/components/ui/Button";
 import Chip from "@/components/ui/Chip";
+import LanguageSelect from "@/components/ui/LanguageSelect";
 
-// A subtle text-only toggle — moved here from a dedicated dashboard card
-// per product feedback ("more subtle design in the header"). Visible on
-// every page via AppShell instead of just /dashboard.
-function LanguageToggle({ className = "" }: { className?: string }) {
+// Visible on every page via AppShell rather than only /dashboard, per
+// product feedback ("more subtle design in the header"). Was a text button
+// that flipped en<->zh; a two-state flip cannot reach a third language, so
+// it is the shared picker in its compact variant now.
+function LanguagePicker({ className = "" }: { className?: string }) {
   const { language, setLanguage } = useLanguage();
   return (
-    <button
-      type="button"
-      onClick={() => setLanguage(language === "en" ? "zh" : "en")}
-      className={`rounded-full px-2.5 py-1 text-xs font-semibold text-foreground-muted transition-colors hover:bg-surface-muted hover:text-foreground ${className}`}
-    >
-      {language === "en" ? "EN" : "中文"}
-    </button>
+    <LanguageSelect
+      value={language}
+      onChange={setLanguage}
+      variant="compact"
+      className={className}
+    />
   );
 }
 
@@ -83,7 +84,7 @@ export default function AppShell({ children, title }: { children: ReactNode; tit
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/auren-logo-horizontal.png" alt="Auren" className="h-7 w-auto" />
           </Link>
-          <LanguageToggle />
+          <LanguagePicker />
         </div>
         <nav className="flex flex-1 flex-col gap-1">
           {TABS.map((tab) => (
@@ -139,7 +140,7 @@ export default function AppShell({ children, title }: { children: ReactNode; tit
             <img src="/auren-logo-horizontal.png" alt="Auren" className="h-6 w-auto" />
           </Link>
           <div className="flex items-center gap-2">
-            <LanguageToggle />
+            <LanguagePicker />
             <Chip tone={isPremiumActive ? "gold" : "neutral"}>{isPremiumActive ? t("nav.premium") : t("nav.free")}</Chip>
             <button
               onClick={() => setMenuOpen(true)}
