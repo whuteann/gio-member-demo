@@ -4,16 +4,18 @@ import { useTranslation } from "react-i18next";
 import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useApiResource } from "@/lib/useApiResource";
 import { useLanguage } from "@/lib/useLanguage";
+import { dateLocaleFor } from "@/lib/dateLocale";
 import { listCheckIns } from "@/lib/api/reflections";
 import { addDays, localDateString, weekStartString } from "@/lib/gamification";
 import AppShell from "@/components/layout/AppShell";
 import Chip from "@/components/ui/Chip";
+import { pickUnsuffixed } from "@/lib/languageFallback";
 
 export default function CheckInHubPage() {
   const { settled, token } = useAuthGuard();
   const { t } = useTranslation("checkIn");
   const { language } = useLanguage();
-  const dateLocale = language === "zh" ? "zh-CN" : "en-US";
+  const dateLocale = dateLocaleFor(language);
   const { data: sessions, loading } = useApiResource(token ? () => listCheckIns(token) : null, [token]);
 
   if (!settled || !token) return null;
@@ -104,10 +106,10 @@ export default function CheckInHubPage() {
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-2">
-                            <p className="truncate text-sm font-semibold text-foreground">{(language === "zh" ? session.title_zh : session.title) ?? session.title ?? (localDateString(date) === today ? t("recent.today") : date.toLocaleDateString(dateLocale, { weekday: "short", month: "short", day: "numeric" }))}</p>
+                            <p className="truncate text-sm font-semibold text-foreground">{pickUnsuffixed<string>(session as unknown as Record<string, unknown>, "title", language) ?? (localDateString(date) === today ? t("recent.today") : date.toLocaleDateString(dateLocale, { weekday: "short", month: "short", day: "numeric" }))}</p>
                             {session.category ? <Chip tone="neutral">{session.category}</Chip> : null}
                           </div>
-                          <p className="line-clamp-2 text-xs text-foreground-muted">{(language === "zh" ? session.subtitle_zh : session.subtitle) ?? session.subtitle ?? session.summary ?? t("recent.questionsAnswered", { count: session.answers.length })}</p>
+                          <p className="line-clamp-2 text-xs text-foreground-muted">{pickUnsuffixed<string>(session as unknown as Record<string, unknown>, "subtitle", language) ?? session.summary ?? t("recent.questionsAnswered", { count: session.answers.length })}</p>
                         </div>
                         <div className="flex flex-none flex-col items-end gap-1 text-foreground-muted">
                           <span className="text-xs">{date.toLocaleTimeString(dateLocale, { hour: "numeric", minute: "2-digit" })}</span>

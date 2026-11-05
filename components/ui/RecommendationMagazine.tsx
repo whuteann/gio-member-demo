@@ -2,6 +2,8 @@ import { useTranslation } from "react-i18next";
 import type { RecommendationItemOut, RecommendationOut } from "@/lib/api/types";
 import type { Language } from "@/lib/types";
 import PhoneCaseSection from "./PhoneCaseSection";
+import { pickSuffixed, pickUnsuffixed } from "@/lib/languageFallback";
+import { localizedSpec } from "@/lib/specDisplay";
 
 function formatPrice(price: number, currency: string): string {
   if (currency === "MYR") return `RM ${price}`;
@@ -9,9 +11,9 @@ function formatPrice(price: number, currency: string): string {
 }
 
 function SidebarRow({ item, language }: { item: RecommendationItemOut; language: Language }) {
-  const isZh = language === "zh";
-  const title = (isZh ? item.title_zh : item.title) ?? item.title;
-  const reason = (isZh ? item.reason_zh : item.reason) ?? item.reason;
+  const itemRow = item as unknown as Record<string, unknown>;
+  const title = pickUnsuffixed<string>(itemRow, "title", language) ?? item.title;
+  const reason = pickUnsuffixed<string>(itemRow, "reason", language) ?? item.reason;
   return (
     <div className="flex gap-3 border-b border-border py-4 first:pt-0 last:border-b-0 last:pb-0">
       {item.image_url ? (
@@ -54,16 +56,19 @@ export default function RecommendationMagazine({
   language: Language;
 }) {
   const { t } = useTranslation("colourPsychology");
-  const isZh = language === "zh";
+  const row = recommendation as unknown as Record<string, unknown>;
+  const colourName =
+    pickUnsuffixed<string>(row, "colour_name", language) ?? recommendation.colour_name;
 
   const productItems = recommendation.items.filter((i) => i.type === "PRODUCT");
   const [feature, ...otherProducts] = productItems;
   const phoneCaseItems = recommendation.items.filter((i) => i.type === "PHONE_CASE");
 
-  const focusLabel = isZh ? recommendation.current_focus_zh : recommendation.current_focus;
-  const letter = (isZh ? recommendation.letter_zh : recommendation.letter_en) ?? recommendation.summary;
-  const featureTitle = feature ? ((isZh ? feature.title_zh : feature.title) ?? feature.title) : null;
-  const featureReason = feature ? ((isZh ? feature.reason_zh : feature.reason) ?? feature.reason) : null;
+  const focusLabel = pickUnsuffixed<string>(row, "current_focus", language);
+  const letter = pickSuffixed<string>(row, "letter", language) ?? recommendation.summary;
+  const featureRow = feature as unknown as Record<string, unknown> | null;
+  const featureTitle = feature ? (pickUnsuffixed<string>(featureRow, "title", language) ?? feature.title) : null;
+  const featureReason = feature ? (pickUnsuffixed<string>(featureRow, "reason", language) ?? feature.reason) : null;
 
   return (
     <div className="flex flex-col gap-6">
@@ -71,7 +76,7 @@ export default function RecommendationMagazine({
         <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-muted px-3 py-1 text-xs font-semibold text-foreground-muted">
           <span aria-hidden>{t("recommendationLetter.colourPill")}</span>
           <span className="h-2 w-2 rounded-full" style={{ background: recommendation.colour_swatch }} aria-hidden />
-          {isZh ? recommendation.colour_name_zh : recommendation.colour_name}
+          {colourName}
         </span>
         {focusLabel ? (
           <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
@@ -154,8 +159,8 @@ export default function RecommendationMagazine({
             <dl className="flex flex-col gap-2 rounded-2xl border border-border bg-surface-muted/60 p-4">
               {feature.specifications.map((spec, i) => (
                 <div key={i} className="flex justify-between gap-3 text-sm">
-                  <dt className="text-foreground-muted">{isZh ? spec.label_zh : spec.label_en}</dt>
-                  <dd className="text-right font-semibold text-foreground">{isZh ? spec.value_zh : spec.value_en}</dd>
+                  <dt className="text-foreground-muted">{localizedSpec(spec, "label", language)}</dt>
+                  <dd className="text-right font-semibold text-foreground">{localizedSpec(spec, "value", language)}</dd>
                 </div>
               ))}
             </dl>

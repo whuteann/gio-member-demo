@@ -1,5 +1,7 @@
 import Link from "next/link";
 import type { Language, RecommendationItem } from "@/lib/types";
+import { pickUnsuffixed } from "@/lib/languageFallback";
+import { localizedSpec } from "@/lib/specDisplay";
 
 // MYR is the only currency this catalog is actually priced in today (see
 // gio-backend/docs/behaviour_log_0012.md) — "RM" reads correctly for that;
@@ -24,8 +26,13 @@ export default function ProductCard({
   colourName?: string;
   colourSwatch?: string;
 }) {
-  const title = (language === "zh" ? item.titleZh : item.title) ?? item.title;
-  const reason = (language === "zh" ? item.reasonZh : item.reason) ?? item.reason;
+  // This shape is camelCase (lib/types.ts::RecommendationItem), so the
+  // snake_case helpers don't apply directly — remap, then use the same
+  // fallback chain as everywhere else.
+  const localized = { title: item.title, title_zh: item.titleZh, title_ms: item.titleMs,
+                      reason: item.reason, reason_zh: item.reasonZh, reason_ms: item.reasonMs };
+  const title = pickUnsuffixed<string>(localized, "title", language) ?? item.title;
+  const reason = pickUnsuffixed<string>(localized, "reason", language) ?? item.reason;
   const specs = item.specifications ?? [];
 
   return (
@@ -83,8 +90,8 @@ export default function ProductCard({
           <dl className="flex flex-col gap-0.5 border-t border-border pt-2">
             {specs.map((spec, i) => (
               <div key={i} className="flex justify-between gap-3 text-[11px]">
-                <dt className="text-foreground-muted">{language === "zh" ? spec.label_zh : spec.label_en}</dt>
-                <dd className="text-right font-medium text-foreground">{language === "zh" ? spec.value_zh : spec.value_en}</dd>
+                <dt className="text-foreground-muted">{localizedSpec(spec, "label", language)}</dt>
+                <dd className="text-right font-medium text-foreground">{localizedSpec(spec, "value", language)}</dd>
               </div>
             ))}
           </dl>

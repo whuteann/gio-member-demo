@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useApiResource } from "@/lib/useApiResource";
 import { useLanguage } from "@/lib/useLanguage";
+import { dateLocaleFor } from "@/lib/dateLocale";
 import { getCheckInResults } from "@/lib/api/reflections";
 import { localizedSnapshot } from "@/lib/snapshotDisplay";
 import { COLOUR_LIBRARY, DIMENSIONS } from "@/lib/blueprints";
@@ -46,7 +47,7 @@ export default function CheckInResultPage() {
   const router = useRouter();
   const { t } = useTranslation("checkIn");
   const { language } = useLanguage();
-  const dateLocale = language === "zh" ? "zh-CN" : "en-US";
+  const dateLocale = dateLocaleFor(language);
   const id = typeof router.query.id === "string" ? router.query.id : null;
 
   const { data: results, loading, error } = useApiResource(

@@ -1,0 +1,37 @@
+{
+  "title": "Kemajuan",
+  "loading": "Memuatkan kemajuan anda…",
+  "totalXp": "Jumlah XP",
+  "xpNote": "Kemajuan sahaja · tidak boleh ditebus",
+  "nextMilestone": "Pencapaian seterusnya",
+  "days": "{{count}} hari",
+  "allMilestones": "Semua pencapaian dicapai",
+  "quests": {
+    "title": "Misi hari ini",
+    "login": "Log masuk",
+    "checkIn": "Daftar Emosi",
+    "innerReading": "Bacaan Dalaman",
+    "done": "Selesai",
+    "pending": "Belum selesai",
+    "bonus": "Lengkapkan ketiga-tiganya (+10 XP)",
+    "earnedToday": "Diperoleh hari ini",
+    "inProgress": "Sedang berjalan",
+    "loginNotWired": "Misi \"Log masuk\" belum disambungkan pada bahagian pelayan."
+  },
+  "garden": {
+    "title": "Taman Pertumbuhan",
+    "note": "Visual sahaja — ditetapkan semula setiap minggu, tidak memberi XP."
+  },
+  "badges": {
+    "title": "Lencana",
+    "rewards": "Ganjaran →",
+    "gate": "Lihat koleksi lencana peribadi anda sepenuhnya dengan Premium."
+  },
+  "streak": {
+    "title": "Kemajuan rentetan"
+  },
+  "viewRewards": "Lihat Ganjaran",
+  "meta": {
+    "title": "Kemajuan — Auren"
+  }
+}

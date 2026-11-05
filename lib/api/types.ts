@@ -1,3 +1,5 @@
+import type { Language } from "@/lib/types";
+
 // Response/request shapes mirroring gio-backend's Pydantic schemas
 // (app/schemas/*.py) field-for-field. Kept separate from lib/types.ts,
 // which models the OLD localStorage mock's domain — the two are allowed to
@@ -135,27 +137,39 @@ export interface CorePersonalityResultOut {
   id: string;
   primary_language: string | null;
   generation_status: "PARTIAL" | "READY";
+  /** Which languages the generated content actually has, e.g. ["en", "ms"].
+   *  generation_status alone can't tell "Malay still generating" from
+   *  "Malay failed and is never coming". Null on rows written before
+   *  migration b8d4f1a6c307. */
+  languages_ready: Language[] | null;
 
   birthday_number: number | null;
   birthday_number_points_en: NumberPoint[] | null;
   birthday_number_points_zh: NumberPoint[] | null;
+  birthday_number_points_ms: NumberPoint[] | null;
 
   life_path_number: number | null;
   life_path_number_points_en: NumberPoint[] | null;
   life_path_number_points_zh: NumberPoint[] | null;
+  life_path_number_points_ms: NumberPoint[] | null;
 
   talent_number: string | null;
   talent_number_points_en: NumberPoint[] | null;
   talent_number_points_zh: NumberPoint[] | null;
+  talent_number_points_ms: NumberPoint[] | null;
 
   title_en: string | null;
   title_zh: string | null;
+  title_ms: string | null;
   subtitle_en: string | null;
   subtitle_zh: string | null;
+  subtitle_ms: string | null;
   overview_en: string | null;
   overview_zh: string | null;
+  overview_ms: string | null;
   summary_en: string | null;
   summary_zh: string | null;
+  summary_ms: string | null;
 
   scarlet_score: number | null;
   russet_score: number | null;
@@ -174,6 +188,7 @@ export interface QuestionOut {
   dimension: DimensionKey;
   text: string;
   text_zh: string | null;
+  text_ms: string | null;
 }
 
 export interface QuestionSetOut {
@@ -220,8 +235,10 @@ export interface CheckInSessionOut {
   summary: string | null;
   title: string | null;
   title_zh: string | null;
+  title_ms: string | null;
   subtitle: string | null;
   subtitle_zh: string | null;
+  subtitle_ms: string | null;
   category: string;
   emoji: string;
   started_at: string;
@@ -238,29 +255,39 @@ export interface InnerReadingOut {
   mental_clarity: number | null;
   inner_pressure: number | null;
   grounding: number | null;
-  // Bilingual pairs: the unsuffixed field is English, `_zh` the Chinese —
+  // One field per language: the unsuffixed field is English, `_zh`/`_ms`
   // same layout the backend uses (CheckInSession's convention, not Core
-  // Personality's _en/_zh). Read them through localizedReading(), never
-  // directly, or the page silently shows one language. `_zh` is null until
-  // the background pass finishes (generation_status flips PARTIAL -> READY).
+  // Personality's _en/_zh/_ms). Read them through localizedReading(), never
+  // directly, or the page silently shows one language. Each stays null until
+  // its own background pass finishes — see `languages_ready`, since
+  // generation_status only flips to READY once every language is in.
   result_summary: string | null;
   result_summary_zh: string | null;
+  result_summary_ms: string | null;
   narrative: string | null;
   narrative_zh: string | null;
+  narrative_ms: string | null;
   insight: string | null;
   insight_zh: string | null;
+  insight_ms: string | null;
   reflection_question: string | null;
   reflection_question_zh: string | null;
+  reflection_question_ms: string | null;
   title: string | null;
   title_zh: string | null;
+  title_ms: string | null;
   subtitle: string | null;
   subtitle_zh: string | null;
+  subtitle_ms: string | null;
   current_focus: string | null;
   current_focus_zh: string | null;
+  current_focus_ms: string | null;
   life_area_insights: { work: string; relationships: string; personal_growth: string; conflict_management: string } | null;
   life_area_insights_zh: { work: string; relationships: string; personal_growth: string; conflict_management: string } | null;
   primary_language: string | null;
   generation_status: string;
+  /** See CorePersonalityResultOut.languages_ready. */
+  languages_ready: Language[] | null;
   is_premium_content: boolean;
   category: string;
   emoji: string;
@@ -285,16 +312,22 @@ export interface InnerStateSnapshotOut {
   colour_key: string | null;
   insight_en: string | null;
   insight_zh: string | null;
+  insight_ms: string | null;
   reflection_question_en: string | null;
   reflection_question_zh: string | null;
+  reflection_question_ms: string | null;
   reminder_en: string | null;
   reminder_zh: string | null;
+  reminder_ms: string | null;
   current_focus_en: string | null;
   current_focus_zh: string | null;
+  current_focus_ms: string | null;
   friendly_advice_en: string | null;
   friendly_advice_zh: string | null;
+  friendly_advice_ms: string | null;
   affirmation_en: string | null;
   affirmation_zh: string | null;
+  affirmation_ms: string | null;
   created_at: string;
 }
 
@@ -331,8 +364,10 @@ export interface RecommendationItemOut {
   reference_id: string | null;
   title: string;
   title_zh: string | null;
+  title_ms: string | null;
   reason: string;
   reason_zh: string | null;
+  reason_ms: string | null;
   rank: number;
   image_url: string | null;
   price: number | null;
@@ -347,15 +382,19 @@ export interface RecommendationOut {
   id: string;
   current_focus: string;
   current_focus_zh: string | null;
+  current_focus_ms: string | null;
   summary: string;
   summary_zh: string | null;
+  summary_ms: string | null;
   colour_key: string;
   colour_name: string;
   colour_name_zh: string;
+  colour_name_ms: string;
   colour_swatch: string;
   material_affinity: string | null;
   letter_en: string | null;
   letter_zh: string | null;
+  letter_ms: string | null;
   status: string;
   generated_at: string;
   items: RecommendationItemOut[];
@@ -392,12 +431,14 @@ export interface GardenOut {
 export interface BadgeOut {
   key: string;
   group: "consistency" | "depth" | "growth";
-  // Read through localizedGamification(), never directly — `_zh` is null
+  // Read through localizedGamification(), never directly — `_zh`/`_ms` is null
   // for any definition without a translation yet.
   title: string;
   title_zh: string | null;
+  title_ms: string | null;
   description: string;
   description_zh: string | null;
+  description_ms: string | null;
   icon: string;
   earned: boolean;
   earned_at: string | null;
@@ -416,6 +457,7 @@ export interface UnlockedItemOut {
   unlocked: boolean;
   text_en: string | null;
   text_zh: string | null;
+  text_ms: string | null;
   unlocked_at: string | null;
 }
 
@@ -429,11 +471,14 @@ export interface RewardOut {
   key: string;
   title: string;
   title_zh: string | null;
+  title_ms: string | null;
   description: string;
   description_zh: string | null;
+  description_ms: string | null;
   icon: string;
   requirement: string;
   requirement_zh: string | null;
+  requirement_ms: string | null;
   state: "LOCKED" | "UNLOCKED" | "REDEEMED";
   unlocked_at: string | null;
   redeemed_at: string | null;

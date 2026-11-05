@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useApiResource } from "@/lib/useApiResource";
 import { useLanguage } from "@/lib/useLanguage";
+import { dateLocaleFor } from "@/lib/dateLocale";
 import { localizedReading } from "@/lib/readingDisplay";
 import { INNER_READING_WEEKLY_FREE_LIMIT, isPremiumActive, readingsUsedThisWeek } from "@/lib/api/entitlement";
 import { listInnerReadings } from "@/lib/api/reflections";
@@ -16,7 +17,7 @@ export default function InnerReadingHistoryPage() {
   const { settled, token, subscription } = useAuthGuard();
   const { t } = useTranslation("innerReading");
   const { language } = useLanguage();
-  const dateLocale = language === "zh" ? "zh-CN" : "en-US";
+  const dateLocale = dateLocaleFor(language);
   const premium = subscription ? isPremiumActive(subscription) : false;
 
   const { data: readings, loading } = useApiResource(token ? () => listInnerReadings(token) : null, [token]);

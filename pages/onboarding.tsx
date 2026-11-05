@@ -7,8 +7,8 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setUser } from "@/store/authSlice";
 import { calculateCorePersonality } from "@/lib/api/corePersonality";
 import { useLanguage } from "@/lib/useLanguage";
+import LanguageSelect from "@/components/ui/LanguageSelect";
 import { EASE_OUT, EASE_IN_OUT, EASE_SOFT_BACK } from "@/lib/sessionMotion";
-import type { Language } from "@/lib/types";
 import Button from "@/components/ui/Button";
 import BalanceOrb from "@/components/ui/BalanceOrb";
 import AmbientField from "@/components/session/AmbientField";
@@ -111,19 +111,7 @@ export default function OnboardingPage() {
 
                 <div>
                   <p className="mb-2 text-sm font-semibold text-foreground">{t("language.preferredLanguage")}</p>
-                  <div className="grid grid-cols-2 gap-3">
-                    {(["en", "zh"] as Language[]).map((lang) => (
-                      <button
-                        key={lang}
-                        onClick={() => setLanguage(lang)}
-                        className={`rounded-2xl border px-4 py-3 text-sm font-semibold transition-colors ${
-                          language === lang ? "border-primary bg-primary text-primary-foreground" : "border-border bg-surface text-foreground"
-                        }`}
-                      >
-                        {lang === "en" ? t("language.english") : t("language.chinese")}
-                      </button>
-                    ))}
-                  </div>
+                  <LanguageSelect value={language} onChange={setLanguage} />
                 </div>
 
                 <label className="flex items-start gap-3 rounded-2xl border border-border bg-surface p-4 text-sm text-foreground-muted">

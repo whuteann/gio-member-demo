@@ -2,6 +2,8 @@ import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import type { RecommendationItemOut } from "@/lib/api/types";
 import type { Language } from "@/lib/types";
+import { pickUnsuffixed } from "@/lib/languageFallback";
+import { localizedSpec } from "@/lib/specDisplay";
 
 function formatPrice(price: number, currency: string): string {
   if (currency === "MYR") return `RM ${price}`;
@@ -10,9 +12,9 @@ function formatPrice(price: number, currency: string): string {
 
 function PrimaryCaseCard({ item, language }: { item: RecommendationItemOut; language: Language }) {
   const { t } = useTranslation("colourPsychology");
-  const isZh = language === "zh";
-  const title = (isZh ? item.title_zh : item.title) ?? item.title;
-  const reason = (isZh ? item.reason_zh : item.reason) ?? item.reason;
+  const row = item as unknown as Record<string, unknown>;
+  const title = pickUnsuffixed<string>(row, "title", language) ?? item.title;
+  const reason = pickUnsuffixed<string>(row, "reason", language) ?? item.reason;
   const specs = item.specifications ?? [];
 
   return (
@@ -56,8 +58,8 @@ function PrimaryCaseCard({ item, language }: { item: RecommendationItemOut; lang
           <dl className="flex flex-col gap-0.5 border-t border-border pt-1.5">
             {specs.map((spec, specIndex) => (
               <div key={specIndex} className="flex justify-between gap-3 text-[11px]">
-                <dt className="text-foreground-muted">{isZh ? spec.label_zh : spec.label_en}</dt>
-                <dd className="text-right font-medium text-foreground">{isZh ? spec.value_zh : spec.value_en}</dd>
+                <dt className="text-foreground-muted">{localizedSpec(spec, "label", language)}</dt>
+                <dd className="text-right font-medium text-foreground">{localizedSpec(spec, "value", language)}</dd>
               </div>
             ))}
           </dl>
@@ -68,9 +70,9 @@ function PrimaryCaseCard({ item, language }: { item: RecommendationItemOut; lang
 }
 
 function SecondaryCaseRow({ item, language }: { item: RecommendationItemOut; language: Language }) {
-  const isZh = language === "zh";
-  const title = (isZh ? item.title_zh : item.title) ?? item.title;
-  const reason = (isZh ? item.reason_zh : item.reason) ?? item.reason;
+  const row = item as unknown as Record<string, unknown>;
+  const title = pickUnsuffixed<string>(row, "title", language) ?? item.title;
+  const reason = pickUnsuffixed<string>(row, "reason", language) ?? item.reason;
 
   return (
     <Link

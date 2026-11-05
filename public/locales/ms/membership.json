@@ -1,0 +1,75 @@
+{
+  "title": "Keahlian",
+  "currentPlan": "Pelan semasa",
+  "plan": {
+    "premium": "Premium",
+    "trial": "Percubaan percuma",
+    "free": "Percuma"
+  },
+  "cancelsOn": "Dibatalkan pada {{date}}",
+  "expires": "Tamat {{date}}",
+  "trialEnds_one": "Percubaan tamat dalam {{count}} hari",
+  "trialEnds_other": "Percubaan tamat dalam {{count}} hari",
+  "status": {
+    "TRIAL": "PERCUBAAN",
+    "ACTIVE": "AKTIF",
+    "CANCELLED": "DIBATALKAN",
+    "PENDING": "MENUNGGU",
+    "COMPLETED": "SELESAI",
+    "FAILED": "GAGAL",
+    "EXPIRED": "TAMAT"
+  },
+  "freeNotice": "Pelan percuma merangkumi 3 Bacaan Dalaman setiap 7 hari dan 7 hari sejarah daftar emosi.",
+  "manage": {
+    "title": "Urus langganan",
+    "reactivate": "Aktifkan semula Premium",
+    "cancel": "Batalkan langganan"
+  },
+  "pricing": {
+    "premiumLabel": "Premium",
+    "monthly": "Bulanan",
+    "yearly": "Tahunan",
+    "monthlyNote": "Dicaj setiap bulan.",
+    "yearlyNote": "Dicaj sekali setahun.",
+    "yearlyDiscount": "-20%"
+  },
+  "includes": {
+    "title": "Premium merangkumi",
+    "items": [
+      "Bacaan Dalaman tanpa had",
+      "Sejarah penuh daftar emosi & bacaan",
+      "Penjelasan warna mendalam + sejarah warna anda",
+      "Bacaan Dalaman mendalam — kerja, hubungan, pertumbuhan diri, pengurusan konflik",
+      "Aliran kemajuan bulanan"
+    ]
+  },
+  "trial": {
+    "starting": "Memulakan…",
+    "start": "Mulakan percubaan percuma 7 hari"
+  },
+  "subscribe": {
+    "redirecting": "Mengalihkan ke pembayaran…",
+    "cta": "Langgan · {{price}}",
+    "note": "Anda akan dialihkan ke Xendit untuk melengkapkan pembayaran dengan selamat."
+  },
+  "billing": {
+    "title": "Sejarah bil",
+    "print": "Cetak",
+    "invoice": "Invois"
+  },
+  "paymentTitle": "Pembayaran",
+  "success": {
+    "confirming": "Mengesahkan pembayaran anda…",
+    "confirmedTitle": "Anda kini Premium",
+    "confirmedBody": "Pembayaran anda telah disahkan dan Premium kini aktif.",
+    "viewMembership": "Lihat keahlian",
+    "pendingTitle": "Masih mengesahkan",
+    "pendingBody": "Pembayaran mungkin mengambil sedikit masa untuk disahkan. Sila semak semula halaman keahlian anda sebentar lagi.",
+    "backToMembership": "Kembali ke keahlian"
+  },
+  "failed": {
+    "title": "Pembayaran tidak berjaya",
+    "body": "Tiada caj dikenakan. Anda boleh cuba lagi dari halaman keahlian anda.",
+    "backToMembership": "Kembali ke keahlian"
+  }
+}

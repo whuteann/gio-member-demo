@@ -22,6 +22,7 @@ import StepProgress from "@/components/session/StepProgress";
 import NoteComposer from "@/components/session/NoteComposer";
 import CompletionMandala from "@/components/session/CompletionMandala";
 import PreparingSession from "@/components/session/PreparingSession";
+import { pickUnsuffixed } from "@/lib/languageFallback";
 
 // Question-to-question transition. `custom` carries the direction of travel
 // (+1 forward, -1 back) so the slide always moves the way the user went.
@@ -98,7 +99,7 @@ export default function CheckInPage() {
   }
 
   const current = questions[step];
-  const questionText = (language === "zh" ? current.text_zh : current.text) ?? current.text;
+  const questionText = pickUnsuffixed<string>(current as unknown as Record<string, unknown>, "text", language) ?? current.text;
   const dimensionMeta = DIMENSIONS.find((d) => d.key === current?.dimension)!;
   const currentColor = DIMENSION_HEX[current.dimension];
   const ambientColor = phase === "questions" ? currentColor : phase === "note" ? GOLD_HEX : SECONDARY_HEX;
@@ -115,7 +116,7 @@ export default function CheckInPage() {
     setSubmitting(true);
     const answers = questions.map((q, i) => ({
       dimension: q.dimension,
-      question_text: (language === "zh" ? q.text_zh : q.text) ?? q.text,
+      question_text: pickUnsuffixed<string>(q as unknown as Record<string, unknown>, "text", language) ?? q.text,
       value: values[i],
     }));
     try {

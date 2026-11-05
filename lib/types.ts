@@ -5,7 +5,7 @@
 
 import type { SpecificationOut } from "@/lib/api/types";
 
-export type Language = "en" | "zh";
+export type Language = "en" | "zh" | "ms";
 
 export type SubscriptionPlan = "FREE" | "PREMIUM";
 export type BillingCycle = "MONTHLY" | "ANNUAL";
@@ -161,8 +161,10 @@ export interface RecommendationItem {
   referenceId: string | null;
   title: string;
   titleZh?: string | null;
+  titleMs?: string | null;
   reason: string;
   reasonZh?: string | null;
+  reasonMs?: string | null;
   rank: number;
   imageUrl?: string;
   price?: number;
@@ -179,24 +181,35 @@ export type FiveTraits = [string, string, string, string, string];
 
 export interface ColourMeaning {
   key: ColourKey;
+  swatch: string;
+  // Each text field exists once per language. Read them through
+  // localizedColour() in lib/colourDisplay.ts rather than picking a suffix
+  // by hand — three languages is where `isZh ? a : b` stops working.
   name: string;
   nameZh: string;
-  swatch: string;
+  nameMs: string;
   traits: [string, string, string];
   traitsZh: [string, string, string];
+  traitsMs: [string, string, string];
   description: string;
   descriptionZh: string;
+  descriptionMs: string;
   article: string;
   articleZh: string;
+  articleMs: string;
   benefit: string;
   benefitZh: string;
+  benefitMs: string;
   affirmations: [string, string];
   affirmationsZh: [string, string];
+  affirmationsMs: [string, string];
   // Colour Breakdown detail panel (see components/ui/ColourBreakdown).
   positiveTraits: FiveTraits;
   positiveTraitsZh: FiveTraits;
+  positiveTraitsMs: FiveTraits;
   negativeTraits: FiveTraits;
   negativeTraitsZh: FiveTraits;
+  negativeTraitsMs: FiveTraits;
 }
 
 export type RecommendationTrigger = "CHECK_IN" | "INNER_READING";

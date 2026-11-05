@@ -4,12 +4,14 @@ import { useTranslation } from "react-i18next";
 import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useApiResource } from "@/lib/useApiResource";
 import { useLanguage } from "@/lib/useLanguage";
+import { dateLocaleFor } from "@/lib/dateLocale";
 import { isPremiumActive } from "@/lib/api/entitlement";
 import { listCheckIns } from "@/lib/api/reflections";
 import AppShell from "@/components/layout/AppShell";
 import Card from "@/components/ui/Card";
 import Chip from "@/components/ui/Chip";
 import EntitlementGate from "@/components/ui/EntitlementGate";
+import { pickUnsuffixed } from "@/lib/languageFallback";
 
 const DIMS = ["emotional_energy", "mental_clarity", "inner_pressure", "grounding"] as const;
 
@@ -17,7 +19,7 @@ export default function CheckInHistoryPage() {
   const { settled, token, subscription } = useAuthGuard();
   const { t } = useTranslation("checkIn");
   const { language } = useLanguage();
-  const dateLocale = language === "zh" ? "zh-CN" : "en-US";
+  const dateLocale = dateLocaleFor(language);
   const premium = subscription ? isPremiumActive(subscription) : false;
 
   const { data: sessions, loading } = useApiResource(token ? () => listCheckIns(token) : null, [token]);
@@ -51,11 +53,11 @@ export default function CheckInHistoryPage() {
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="truncate text-sm font-semibold text-foreground">
-                        {(language === "zh" ? session.title_zh : session.title) ?? session.title ?? (session.completed_at ? new Date(session.completed_at).toLocaleDateString(dateLocale, { weekday: "short", month: "short", day: "numeric" }) : "—")}
+                        {pickUnsuffixed<string>(session as unknown as Record<string, unknown>, "title", language) ?? (session.completed_at ? new Date(session.completed_at).toLocaleDateString(dateLocale, { weekday: "short", month: "short", day: "numeric" }) : "—")}
                       </p>
                       {session.category ? <Chip tone="neutral">{session.category}</Chip> : null}
                     </div>
-                    <p className="truncate text-xs text-foreground-muted">{(language === "zh" ? session.subtitle_zh : session.subtitle) ?? session.subtitle ?? session.summary ?? t("history.questions", { count: session.answers.length })}</p>
+                    <p className="truncate text-xs text-foreground-muted">{pickUnsuffixed<string>(session as unknown as Record<string, unknown>, "subtitle", language) ?? session.summary ?? t("history.questions", { count: session.answers.length })}</p>
                   </div>
                   <div className="flex flex-none items-center gap-2">
                     <div className="hidden gap-1 sm:flex">

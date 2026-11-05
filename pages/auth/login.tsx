@@ -7,7 +7,7 @@ import AuthLayout from "@/components/layout/AuthLayout";
 import TextField from "@/components/ui/TextField";
 import PhoneNumberField from "@/components/ui/PhoneNumberField";
 import Button from "@/components/ui/Button";
-import LanguageSlider from "@/components/ui/LanguageSlider";
+import LanguageSelect from "@/components/ui/LanguageSelect";
 import { useAppDispatch } from "@/store/hooks";
 import { setCredentials } from "@/store/authSlice";
 import { useLanguage } from "@/lib/useLanguage";
@@ -64,7 +64,7 @@ export default function LoginPage() {
           </>
         }
       >
-        <LanguageSlider value={language} onChange={setLanguage} className="mb-5" />
+        <LanguageSelect value={language} onChange={setLanguage} className="mb-5" />
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <PhoneNumberField
             label={t("login.phoneNumber")}

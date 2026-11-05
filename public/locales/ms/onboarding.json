@@ -1,0 +1,44 @@
+{
+  "language": {
+    "welcome": "Selamat datang ke Auren",
+    "intro": "Mari sediakan ruang anda. Seterusnya, kami akan menggunakan tarikh lahir anda untuk mendedahkan Personaliti Teras dan warna penyokong anda.",
+    "preferredLanguage": "Bahasa pilihan",
+    "english": "English",
+    "chinese": "中文 (Mandarin)",
+    "malay": "Bahasa Melayu",
+    "consent": "Saya bersetuju Auren menyimpan sejarah daftar emosi dan bacaan saya untuk memperibadikan pengalaman saya. Nota peribadi tidak sekali-kali digunakan untuk konteks AI atau cadangan.",
+    "continue": "Teruskan"
+  },
+  "birthdate": {
+    "title": "Bilakah anda dilahirkan?",
+    "intro": "Auren membaca tarikh lahir anda untuk menerbitkan Personaliti Teras anda dan warna penyokong yang sepadan — bacaan AI yang sama menjadi asas kepada seluruh aplikasi ini.",
+    "label": "Tarikh lahir",
+    "reveal": "Dedahkan Personaliti Teras saya",
+    "error": "Terdapat masalah semasa membaca tarikh lahir anda. Sila cuba lagi."
+  },
+  "reading": {
+    "title": "Membaca kod kelahiran anda",
+    "body": "Menerbitkan Personaliti Teras anda dan warna untuk menyokongnya — ini mengambil masa sedikit lebih lama daripada biasa, namun berbaloi ditunggu."
+  },
+  "results": {
+    "loading": "Memuatkan Personaliti Teras anda…",
+    "sections": {
+      "overview": "Gambaran",
+      "colour": "Warna",
+      "birthday": "Hari Lahir",
+      "lifePath": "Laluan Hidup",
+      "talent": "Bakat",
+      "colours": "Warna"
+    },
+    "supportiveColour": "Warna penyokong anda",
+    "birthdayNumber": "Nombor Hari Lahir",
+    "lifePathNumber": "Nombor Laluan Hidup",
+    "talentNumber": "Nombor Bakat",
+    "startFirstReading": "Mulakan Bacaan Dalaman pertama saya",
+    "goToDashboard": "Pergi ke Papan Pemuka"
+  },
+  "meta": {
+    "title": "Selamat datang — Auren",
+    "resultsTitle": "Personaliti Teras anda — Auren"
+  }
+}

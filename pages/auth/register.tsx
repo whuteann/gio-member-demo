@@ -7,7 +7,7 @@ import AuthLayout from "@/components/layout/AuthLayout";
 import TextField from "@/components/ui/TextField";
 import PhoneNumberField from "@/components/ui/PhoneNumberField";
 import Button from "@/components/ui/Button";
-import LanguageSlider from "@/components/ui/LanguageSlider";
+import LanguageSelect from "@/components/ui/LanguageSelect";
 import { useLanguage } from "@/lib/useLanguage";
 import { register as apiRegister } from "@/lib/api/auth";
 import { ApiError } from "@/lib/api/client";
@@ -68,7 +68,7 @@ export default function RegisterPage() {
           </>
         }
       >
-        <LanguageSlider value={language} onChange={setLanguage} className="mb-5" />
+        <LanguageSelect value={language} onChange={setLanguage} className="mb-5" />
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <TextField
             label={t("register.displayName")}

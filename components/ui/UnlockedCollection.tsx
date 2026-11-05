@@ -4,6 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { UnlockedItemOut } from "@/lib/api/types";
 import type { Language } from "@/lib/types";
 import { EASE_IN_OUT, EASE_SOFT_BACK } from "@/lib/sessionMotion";
+import { pickSuffixed } from "@/lib/languageFallback";
 
 interface Section {
   label: string;
@@ -71,7 +72,7 @@ export default function UnlockedCollection({
     ) : null;
   }
   const current = flat[index];
-  const text = (language === "zh" ? current.text_zh : current.text_en) ?? current.text_en;
+  const text = pickSuffixed<string>(current as unknown as Record<string, unknown>, "text", language);
 
   function go(delta: number) {
     setIndex((i) => (i + delta + flat.length) % flat.length);

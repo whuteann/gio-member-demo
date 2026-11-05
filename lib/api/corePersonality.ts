@@ -1,7 +1,8 @@
 import { api } from "./client";
+import type { Language } from "@/lib/types";
 import type { CorePersonalityResultOut } from "./types";
 
-export function calculateCorePersonality(token: string, params: { date_of_birth: string; language: "en" | "zh" }) {
+export function calculateCorePersonality(token: string, params: { date_of_birth: string; language: Language }) {
   return api.post<CorePersonalityResultOut>("/core-personality/calculate", params, { token });
 }
 

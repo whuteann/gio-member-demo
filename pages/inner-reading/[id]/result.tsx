@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useApiResource } from "@/lib/useApiResource";
 import { useLanguage } from "@/lib/useLanguage";
+import { dateLocaleFor } from "@/lib/dateLocale";
 import { getInnerReading } from "@/lib/api/reflections";
 import { COLOUR_LIBRARY, DIMENSIONS } from "@/lib/blueprints";
 import { colourKeyForFocus } from "@/lib/recommendation";
@@ -56,7 +57,7 @@ export default function InnerReadingResultPage() {
   const router = useRouter();
   const { t } = useTranslation("innerReading");
   const { language } = useLanguage();
-  const dateLocale = language === "zh" ? "zh-CN" : "en-US";
+  const dateLocale = dateLocaleFor(language);
   const id = typeof router.query.id === "string" ? router.query.id : null;
 
   const { data: reading, loading, error } = useApiResource(

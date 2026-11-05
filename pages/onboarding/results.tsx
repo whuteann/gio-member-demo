@@ -8,6 +8,7 @@ import { useApiResource } from "@/lib/useApiResource";
 import { getCurrentCorePersonality } from "@/lib/api/corePersonality";
 import { ApiError } from "@/lib/api/client";
 import { COLOUR_LIBRARY } from "@/lib/blueprints";
+import { localizedColour } from "@/lib/colourDisplay";
 import { colourScores, localized, localizedPoints, topColourKey } from "@/lib/corePersonalityDisplay";
 import { EASE_OUT } from "@/lib/sessionMotion";
 import Button from "@/components/ui/Button";
@@ -64,7 +65,6 @@ export default function OnboardingResultsPage() {
   // so switching language never blanks a card. Same source as
   // core-personality.tsx, ColourBreakdown and the colour-psychology pages.
   const { language } = useLanguage();
-  const isZh = language === "zh";
 
   if (!settled || !token || !user) return null;
   if (loading) {
@@ -116,11 +116,11 @@ export default function OnboardingResultsPage() {
                     aria-hidden
                   />
                   <div>
-                    <p className="text-sm font-semibold text-foreground">{isZh ? colour.nameZh : colour.name}</p>
-                    <p className="text-xs text-foreground-muted">{(isZh ? colour.traitsZh : colour.traits).join(" • ")}</p>
+                    <p className="text-sm font-semibold text-foreground">{localizedColour(colour, "name", language)}</p>
+                    <p className="text-xs text-foreground-muted">{(localizedColour(colour, "traits", language)).join(" • ")}</p>
                   </div>
                 </div>
-                <p className="text-sm leading-relaxed text-foreground-muted">{isZh ? colour.benefitZh : colour.benefit}</p>
+                <p className="text-sm leading-relaxed text-foreground-muted">{localizedColour(colour, "benefit", language)}</p>
               </Card>
             </motion.div>
 
