@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import type { UnlockedItemOut } from "@/lib/api/types";
 import type { Language } from "@/lib/types";
+import { pickSuffixed } from "@/lib/languageFallback";
 
 interface Section {
   key: string;
@@ -50,7 +51,7 @@ export default function UnlockedGallery({ sections, language }: { sections: Sect
     if (!normalizedQuery) return sortedItems;
     return sortedItems.filter((item) => {
       if (!item.unlocked) return false;
-      const text = (language === "zh" ? item.text_zh : item.text_en) ?? item.text_en ?? "";
+      const text = pickSuffixed<string>(item as unknown as Record<string, unknown>, "text", language) ?? "";
       return text.toLowerCase().includes(normalizedQuery);
     });
   }, [sortedItems, normalizedQuery, language]);
@@ -114,7 +115,9 @@ export default function UnlockedGallery({ sections, language }: { sections: Sect
             <li className="px-3.5 py-6 text-center text-sm text-foreground-muted">{t("ui.noMatches")}</li>
           ) : (
             pageItems.map((item) => {
-              const text = item.unlocked ? ((language === "zh" ? item.text_zh : item.text_en) ?? item.text_en) : null;
+              const text = item.unlocked
+                ? pickSuffixed<string>(item as unknown as Record<string, unknown>, "text", language)
+                : null;
               return (
                 <li
                   key={item.item_id}

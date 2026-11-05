@@ -1,0 +1,128 @@
+{
+  "meta": {
+    "title": "Bacaan Dalaman — Auren"
+  },
+  "loading": "Memuatkan Bacaan Dalaman anda…",
+  "header": {
+    "title": "Bacaan Dalaman",
+    "subtitle": "Luangkan beberapa minit untuk memahami keadaan dalaman anda sekarang."
+  },
+  "estimatedTime": {
+    "label": "Anggaran masa",
+    "value": "3–5 minit"
+  },
+  "premiumChip": "🔒 Premium",
+  "startNewReading": "Mulakan Bacaan Baharu",
+  "locked": {
+    "title": "Buka Lebih Banyak Bacaan Dalaman",
+    "body": "Anda telah menggunakan Bacaan Dalaman percuma anda. Naik taraf ke Premium untuk bacaan tanpa had, sejarah penuh dan cadangan penuh.",
+    "cta": "Naik taraf ke Premium"
+  },
+  "begin": {
+    "title": "Mulakan Bacaan Dalaman Anda",
+    "body": "Jawab beberapa soalan mudah dengan jujur. Auren akan membantu anda memahami apa yang sedang berlaku dalam diri anda dan apa yang paling anda perlukan hari ini.",
+    "cta": "Mulakan Bacaan Dalaman",
+    "features": [
+      {
+        "label": "Peribadi & Selamat",
+        "body": "Jawapan anda disulitkan dan peribadi."
+      },
+      {
+        "label": "Wawasan Diperibadikan",
+        "body": "Terima wawasan yang disesuaikan untuk anda."
+      },
+      {
+        "label": "Kejelasan Lebih Baik",
+        "body": "Fahami fikiran, emosi dan keperluan anda."
+      }
+    ]
+  },
+  "recent": {
+    "title": "Bacaan Terkini",
+    "viewAll": "Lihat semua",
+    "empty": "Bacaan Dalaman yang anda lengkapkan akan dipaparkan di sini.",
+    "exploreAll": "Terokai semua bacaan anda →",
+    "today": "Hari ini",
+    "yesterday": "Semalam"
+  },
+  "whatIs": {
+    "title": "Apakah itu Bacaan Dalaman?",
+    "body": "Bacaan Dalaman ialah amalan refleksi yang direka untuk membantu anda memahami fikiran, emosi dan keperluan anda sekarang. Semakin kerap anda berefleksi, semakin tepat dan bermakna wawasan yang anda terima."
+  },
+  "beforeYouBegin": {
+    "title": "Sebelum anda bermula",
+    "tips": [
+      {
+        "title": "Cari ruang yang tenang",
+        "body": "Berikan diri anda masa tanpa gangguan."
+      },
+      {
+        "title": "Jujur dengan diri sendiri",
+        "body": "Tiada jawapan betul atau salah."
+      },
+      {
+        "title": "Fokus pada masa kini",
+        "body": "Jawab berdasarkan perasaan anda sekarang."
+      },
+      {
+        "title": "Ambil masa anda",
+        "body": "Tiada yang perlu digesa. Bernafas dan ikut rentak."
+      }
+    ]
+  },
+  "streak": {
+    "title": "Rentetan Bacaan Anda",
+    "days": "hari",
+    "activeMessage": "Teruskan! Konsistensi membina kesedaran yang lebih mendalam.",
+    "emptyMessage": "Mulakan hari ini untuk memulakan rentetan anda."
+  },
+  "suggestedFocus": {
+    "title": "Fokus Bacaan Yang Disyorkan",
+    "learnMore": "Ketahui lebih lanjut tentang fokus ini →"
+  },
+  "history": {
+    "title": "Sejarah Bacaan Dalaman",
+    "loading": "Memuatkan sejarah bacaan anda…",
+    "newReading": "+ Bacaan Dalaman Baharu",
+    "newReadingLocked": "🔒 Bacaan baharu (Premium)",
+    "empty": "Belum ada bacaan.",
+    "today": "Hari ini"
+  },
+  "session": {
+    "loading": "Menyediakan bacaan anda…",
+    "notFoundTitle": "Bacaan tidak dijumpai",
+    "backToHistory": "Kembali ke sejarah",
+    "progressLabel": "Bacaan Dalaman",
+    "premiumUnlimited": "Premium — tanpa had",
+    "weeklyCount": "{{used}} daripada {{limit}} minggu ini",
+    "weeklyLimitTitle": "Anda telah menggunakan Bacaan Dalaman percuma anda minggu ini",
+    "weeklyLimitBody": "Pelan percuma merangkumi 3 Bacaan Dalaman setiap 7 hari. Naik taraf ke Premium untuk bacaan tanpa had, serta sejarah penuh dan cadangan penuh.",
+    "weeklyLimitCta": "Lihat pelan Premium",
+    "back": "Kembali",
+    "next": "Seterusnya",
+    "completeCta": "Lengkapkan Bacaan",
+    "readingTitle": "Membaca keadaan dalaman anda",
+    "readingBody": "Menimbang apa yang anda kongsikan dengan corak terkini anda."
+  },
+  "result": {
+    "pageTitle": "Bacaan Dalaman Anda",
+    "loading": "Memuatkan bacaan anda…",
+    "notFoundTitle": "Bacaan tidak dijumpai",
+    "backToHistory": "Kembali ke sejarah",
+    "dimensions": "Dimensi",
+    "yourReading": "Bacaan anda",
+    "latestInsight": "Wawasan Terkini",
+    "reflectionQuestion": "💡 Soalan Refleksi",
+    "inDepthTitle": "Bacaan Mendalam",
+    "lifeAreas": {
+      "work": "Kerja",
+      "relationships": "Hubungan",
+      "personal_growth": "Pertumbuhan Diri",
+      "conflict_management": "Pengurusan Konflik"
+    },
+    "unlockTitle": "Buka bacaan mendalam anda",
+    "unlockBody": "Premium mendedahkan pecahan penuh merangkumi Kerja, Hubungan, Pertumbuhan Diri dan Pengurusan Konflik.",
+    "seeRecommendations": "Lihat cadangan",
+    "dashboard": "Papan Pemuka"
+  }
+}

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import type { RecommendationOut } from "@/lib/api/types";
 import type { Language } from "@/lib/types";
 import ProductCard from "./ProductCard";
+import { pickSuffixed, pickUnsuffixed } from "@/lib/languageFallback";
 
 /**
  * The compact "letter form" card for /colour-psychology: pills connecting
@@ -21,13 +22,18 @@ export default function RecommendationLetter({
   language: Language;
 }) {
   const { t } = useTranslation("colourPsychology");
-  const isZh = language === "zh";
+  // `letter_*` is suffixed in every language (letter_en/_zh/_ms); the
+  // other fields keep English in the unsuffixed column — two storage
+  // conventions, two pickers, both walking the same fallback chain.
+  const row = recommendation as unknown as Record<string, unknown>;
+  const colourName =
+    pickUnsuffixed<string>(row, "colour_name", language) ?? recommendation.colour_name;
 
   const productItems = recommendation.items.filter((i) => i.type === "PRODUCT");
   const [feature, ...otherProducts] = productItems;
 
-  const focusLabel = isZh ? recommendation.current_focus_zh : recommendation.current_focus;
-  const letter = (isZh ? recommendation.letter_zh : recommendation.letter_en) ?? recommendation.summary;
+  const focusLabel = pickUnsuffixed<string>(row, "current_focus", language);
+  const letter = pickSuffixed<string>(row, "letter", language) ?? recommendation.summary;
 
   return (
     <div className="flex flex-col gap-4">
@@ -35,7 +41,7 @@ export default function RecommendationLetter({
         <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-muted px-2.5 py-1 text-[11px] font-semibold text-foreground-muted">
           <span aria-hidden>{t("recommendationLetter.colourPill")}</span>
           <span className="h-2 w-2 rounded-full" style={{ background: recommendation.colour_swatch }} aria-hidden />
-          {isZh ? recommendation.colour_name_zh : recommendation.colour_name}
+          {colourName}
         </span>
         {focusLabel ? (
           <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-semibold text-primary">
@@ -64,7 +70,7 @@ export default function RecommendationLetter({
           </p>
           <ProductCard
             language={language}
-            colourName={isZh ? recommendation.colour_name_zh : recommendation.colour_name}
+            colourName={colourName}
             colourSwatch={recommendation.colour_swatch}
             item={{
               id: String(feature.rank),
@@ -72,8 +78,10 @@ export default function RecommendationLetter({
               referenceId: feature.reference_id,
               title: feature.title,
               titleZh: feature.title_zh,
+              titleMs: feature.title_ms,
               reason: feature.reason,
               reasonZh: feature.reason_zh,
+              reasonMs: feature.reason_ms,
               rank: feature.rank,
               imageUrl: feature.image_url ?? undefined,
               price: feature.price ?? undefined,
@@ -98,7 +106,7 @@ export default function RecommendationLetter({
             <ProductCard
               key={item.rank}
               language={language}
-              colourName={isZh ? recommendation.colour_name_zh : recommendation.colour_name}
+              colourName={colourName}
               colourSwatch={recommendation.colour_swatch}
               item={{
                 id: String(item.rank),
@@ -106,8 +114,10 @@ export default function RecommendationLetter({
                 referenceId: item.reference_id,
                 title: item.title,
                 titleZh: item.title_zh,
+                titleMs: item.title_ms,
                 reason: item.reason,
                 reasonZh: item.reason_zh,
+                reasonMs: item.reason_ms,
                 rank: item.rank,
                 imageUrl: item.image_url ?? undefined,
                 price: item.price ?? undefined,

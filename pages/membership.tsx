@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useApiResource } from "@/lib/useApiResource";
 import { useLanguage } from "@/lib/useLanguage";
+import { dateLocaleFor } from "@/lib/dateLocale";
 import { useAppDispatch } from "@/store/hooks";
 import { setSubscription } from "@/store/authSlice";
 import { getMe } from "@/lib/api/auth";
@@ -36,7 +37,7 @@ export default function MembershipPage() {
   const { settled, token, subscription } = useAuthGuard();
   const { t } = useTranslation("membership");
   const { language } = useLanguage();
-  const dateLocale = language === "zh" ? "zh-CN" : "en-US";
+  const dateLocale = dateLocaleFor(language);
   const dispatch = useAppDispatch();
   const [processing, setProcessing] = useState(false);
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("MONTHLY");

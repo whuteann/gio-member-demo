@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useApiResource } from "@/lib/useApiResource";
 import { useLanguage } from "@/lib/useLanguage";
+import { dateLocaleFor } from "@/lib/dateLocale";
 import { localizedReading } from "@/lib/readingDisplay";
 import { isPremiumActive, INNER_READING_WEEKLY_FREE_LIMIT, readingsUsedThisWeek } from "@/lib/api/entitlement";
 import { getLatestSnapshot, listInnerReadings } from "@/lib/api/reflections";
@@ -27,7 +28,7 @@ export default function InnerReadingHubPage() {
   const { settled, token, subscription } = useAuthGuard();
   const { t } = useTranslation("innerReading");
   const { language } = useLanguage();
-  const dateLocale = language === "zh" ? "zh-CN" : "en-US";
+  const dateLocale = dateLocaleFor(language);
 
   const features = t("begin.features", { returnObjects: true }) as { label: string; body: string }[];
   const beforeTips = t("beforeYouBegin.tips", { returnObjects: true }) as { title: string; body: string }[];

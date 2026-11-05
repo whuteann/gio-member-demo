@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useLanguage } from "@/lib/useLanguage";
 import { COLOUR_LIBRARY } from "@/lib/blueprints";
+import { localizedColour } from "@/lib/colourDisplay";
 import type { ColourKey } from "@/lib/types";
 import AppShell from "@/components/layout/AppShell";
 import Card from "@/components/ui/Card";
@@ -20,10 +21,9 @@ export default function ColourMeaningPage() {
   const router = useRouter();
   const { t } = useTranslation("colourPsychology");
   const { language } = useLanguage();
-  const isZh = language === "zh";
   const key = typeof router.query.key === "string" ? router.query.key : null;
   const colour = isColourKey(key) ? COLOUR_LIBRARY[key] : null;
-  const name = colour ? (isZh ? colour.nameZh : colour.name) : null;
+  const name = colour ? (localizedColour(colour, "name", language)) : null;
 
   if (!settled) return null;
 
@@ -43,27 +43,27 @@ export default function ColourMeaningPage() {
               <div>
                 <h1 className="font-display text-3xl font-semibold text-foreground">{name}</h1>
                 <div className="mt-2 flex flex-wrap gap-1.5">
-                  {(isZh ? colour.traitsZh : colour.traits).map((tr) => (
+                  {(localizedColour(colour, "traits", language)).map((tr) => (
                     <Chip key={tr} tone="primary">{tr}</Chip>
                   ))}
                 </div>
               </div>
 
-              <p className="text-base font-medium leading-relaxed text-foreground">{isZh ? colour.descriptionZh : colour.description}</p>
+              <p className="text-base font-medium leading-relaxed text-foreground">{localizedColour(colour, "description", language)}</p>
 
               <Card>
                 <h2 className="mb-2 font-display text-lg font-semibold text-foreground">{t("detail.aboutTitle", { name })}</h2>
-                <p className="text-sm leading-relaxed text-foreground-muted">{isZh ? colour.articleZh : colour.article}</p>
+                <p className="text-sm leading-relaxed text-foreground-muted">{localizedColour(colour, "article", language)}</p>
               </Card>
 
               <Card>
                 <h2 className="mb-2 font-display text-lg font-semibold text-foreground">{t("detail.whenTitle")}</h2>
-                <p className="text-sm leading-relaxed text-foreground-muted">{isZh ? colour.benefitZh : colour.benefit}</p>
+                <p className="text-sm leading-relaxed text-foreground-muted">{localizedColour(colour, "benefit", language)}</p>
               </Card>
 
               <Card className="flex flex-col gap-2">
                 <h2 className="font-display text-lg font-semibold text-foreground">{t("detail.affirmationsTitle")}</h2>
-                {(isZh ? colour.affirmationsZh : colour.affirmations).map((a) => (
+                {(localizedColour(colour, "affirmations", language)).map((a) => (
                   <p key={a} className="text-sm font-medium text-foreground">&ldquo;{a}&rdquo;</p>
                 ))}
               </Card>

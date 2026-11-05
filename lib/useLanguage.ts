@@ -14,11 +14,16 @@ export function detectInitialLanguage(): Language {
   if (typeof window === "undefined") return "en";
   try {
     const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (stored === "en" || stored === "zh") return stored;
+    if (stored === "en" || stored === "zh" || stored === "ms") return stored;
   } catch {
     // localStorage unavailable (private mode, disabled storage, etc.)
   }
-  return navigator.language?.toLowerCase().startsWith("zh") ? "zh" : "en";
+  const browser = navigator.language?.toLowerCase() ?? "";
+  if (browser.startsWith("zh")) return "zh";
+  // Malaysia's locale is commonly ms-MY, but a Malaysian device set to
+  // English reports en-MY — only the language subtag means Malay.
+  if (browser.startsWith("ms")) return "ms";
+  return "en";
 }
 
 /**

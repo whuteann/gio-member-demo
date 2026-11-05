@@ -1,0 +1,50 @@
+{
+  "title": "Jurnal",
+  "loading": "Memuatkan jurnal anda…",
+  "today": {
+    "title": "Refleksi Hari Ini",
+    "subtitle": "Tulis dengan bebas — fikiran, perasaan, atau apa sahaja yang bermain di minda anda. Menyokong markdown biasa.",
+    "placeholder": "Tulis apa yang terlintas di fikiran…",
+    "save": "Simpan Catatan",
+    "saving": "Menyimpan…"
+  },
+  "stats": {
+    "entries": "Catatan",
+    "sameAsLastWeek": "Sama seperti minggu lepas",
+    "deltaFromLastWeek": "{{sign}} {{count}} berbanding minggu lepas",
+    "topMood": "Mood Paling Kerap",
+    "topTheme": "Tema Utama"
+  },
+  "entries": {
+    "title": "Catatan Anda",
+    "empty": "Belum ada catatan jurnal — tulis refleksi pertama anda di atas."
+  },
+  "moods": {
+    "Calm": "Tenang",
+    "Hopeful": "Penuh harapan",
+    "Tired": "Letih",
+    "Anxious": "Cemas",
+    "Grateful": "Bersyukur",
+    "Content": "Puas hati",
+    "Overwhelmed": "Terbeban",
+    "Energised": "Bertenaga",
+    "Frustrated": "Kecewa",
+    "Sad": "Sedih",
+    "Peaceful": "Damai",
+    "Excited": "Teruja"
+  },
+  "themes": {
+    "Growth": "Pertumbuhan",
+    "Responsibility": "Tanggungjawab",
+    "Relationships": "Hubungan",
+    "Self-Care": "Penjagaan Diri",
+    "Work": "Kerja",
+    "Clarity": "Kejelasan",
+    "Rest": "Rehat",
+    "Gratitude": "Kesyukuran",
+    "Health": "Kesihatan",
+    "Creativity": "Kreativiti",
+    "Family": "Keluarga",
+    "Identity": "Identiti"
+  }
+}

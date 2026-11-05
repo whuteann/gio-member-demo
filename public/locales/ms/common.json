@@ -1,0 +1,93 @@
+{
+  "loading": "Memuatkan…",
+  "error": "Sesuatu tidak kena. Sila cuba lagi.",
+  "save": "Simpan",
+  "cancel": "Batal",
+  "back": "Kembali",
+  "continue": "Teruskan",
+  "next": "Seterusnya",
+  "close": "Tutup",
+  "language": "Bahasa",
+  "english": "English",
+  "chinese": "中文",
+  "malay": "Bahasa Melayu",
+  "nav": {
+    "home": "Utama",
+    "checkIn": "Daftar Emosi",
+    "reading": "Bacaan",
+    "forYou": "Untuk Anda",
+    "progress": "Kemajuan",
+    "profile": "Profil",
+    "membership": "Keahlian",
+    "corePersonality": "Personaliti Teras",
+    "journal": "Jurnal",
+    "colourPsychology": "Psikologi Warna",
+    "checkInHistory": "Sejarah Daftar Emosi",
+    "readingHistory": "Sejarah Bacaan",
+    "premium": "Premium",
+    "free": "Percuma",
+    "logout": "Log keluar",
+    "openMenu": "Buka menu"
+  },
+  "dimensions": {
+    "emotional_energy": {
+      "label": "Tenaga Emosi",
+      "lowLabel": "Kehabisan",
+      "highLabel": "Bertenaga"
+    },
+    "mental_clarity": {
+      "label": "Kejelasan Minda",
+      "lowLabel": "Kabur",
+      "highLabel": "Jelas"
+    },
+    "inner_pressure": {
+      "label": "Tekanan Dalaman",
+      "lowLabel": "Ringan",
+      "highLabel": "Berat"
+    },
+    "grounding": {
+      "label": "Keteguhan",
+      "lowLabel": "Goyah",
+      "highLabel": "Teguh"
+    }
+  },
+  "colourOfTheDay": "Warna Hari Ini",
+  "entitlementGate": {
+    "title": "Ini ialah ciri Premium",
+    "cta": "Lihat pelan Premium",
+    "rewardsBody": "Ahli Premium boleh membuka dan menebus ganjaran yang layak."
+  },
+  "ui": {
+    "close": "Tutup",
+    "previous": "Sebelumnya",
+    "next": "Seterusnya",
+    "previousPage": "Halaman sebelumnya",
+    "nextPage": "Halaman seterusnya",
+    "jumpToSection": "Lompat ke bahagian",
+    "countryCode": "Kod negara",
+    "currentStreak": "rentetan semasa",
+    "date": "Tarikh",
+    "colourJourneyAlt": "Komposisi abstrak yang dijana daripada warna penyokong terkini anda",
+    "unlockedEmpty": "Lengkapkan satu daftar emosi atau bacaan untuk mula membuka afirmasi, wawasan dan refleksi.",
+    "unlockedLocked": "Teruskan berefleksi untuk membuka yang ini.",
+    "noMatches": "Tiada padanan — cuba carian lain.",
+    "unlockedCount": "{{count}} / {{total}} dibuka"
+  },
+  "rewards": {
+    "metaTitle": "Ganjaran — Auren",
+    "title": "Ganjaran",
+    "loading": "Memuatkan ganjaran anda…",
+    "redeemed": "Ditebus",
+    "unlocked": "Dibuka",
+    "locked": "Berkunci",
+    "redeem": "Tebus"
+  },
+  "garden": {
+    "seed": "Benih",
+    "sprouting": "Bertunas",
+    "budding": "Berkuntum",
+    "blooming": "Berkembang",
+    "fullBloom": "Mekar penuh",
+    "thisWeek": "{{label}} minggu ini"
+  }
+}

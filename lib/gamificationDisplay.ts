@@ -1,5 +1,6 @@
 import type { Language } from "@/lib/types";
 import type { BadgeOut, RewardOut } from "@/lib/api/types";
+import { pickUnsuffixed } from "@/lib/languageFallback";
 
 type Localizable = BadgeOut | RewardOut;
 type TextField<T> = T extends BadgeOut ? "title" | "description" : "title" | "description" | "requirement";
@@ -7,22 +8,20 @@ type TextField<T> = T extends BadgeOut ? "title" | "description" : "title" | "de
 /**
  * Badge and reward copy in the app's language.
  *
- * Same shape and same both-directions fallback as localizedReading() in
- * lib/readingDisplay.ts: the English side has no `_en` suffix (it lives in
- * the unsuffixed field), and a missing translation falls back to the other
- * language rather than rendering an empty tile.
+ * Same storage shape as localizedReading() in lib/readingDisplay.ts — the
+ * English side has no `_en` suffix — and the same fallback chain, so a
+ * definition nobody has translated yet renders in another language instead
+ * of as an empty tile.
  *
  * These come from static definitions in gio-backend's content.py, not the
- * database — so `_zh` is null only for a definition nobody has translated
- * yet, never because a background job is still running.
+ * database, so a missing `_zh`/`_ms` means an untranslated definition, never
+ * a background job still running.
  */
 export function localizedGamification<T extends Localizable>(
   item: T,
   field: TextField<T>,
-  lang: Language
+  lang: Language,
+  preferred?: Language | null
 ): string {
-  const record = item as unknown as Record<string, string | null>;
-  const zh = record[`${field}_zh`];
-  const en = record[field];
-  return (lang === "zh" ? zh ?? en : en ?? zh) ?? "";
+  return pickUnsuffixed<string>(item as unknown as Record<string, unknown>, field, lang, preferred) ?? "";
 }

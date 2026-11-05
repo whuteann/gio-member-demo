@@ -4,11 +4,13 @@ import { useTranslation } from "react-i18next";
 import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useApiResource } from "@/lib/useApiResource";
 import { useLanguage } from "@/lib/useLanguage";
+import { dateLocaleFor } from "@/lib/dateLocale";
 import { getLatestRecommendation, listRecommendations } from "@/lib/api/recommendations";
 import { getCurrentCorePersonality } from "@/lib/api/corePersonality";
 import { isPremiumActive } from "@/lib/api/entitlement";
 import { ApiError } from "@/lib/api/client";
-import { COLOUR_LIBRARY, COLOUR_ORDER, FOCUS_COLOUR_REASON } from "@/lib/blueprints";
+import { COLOUR_LIBRARY, COLOUR_ORDER, FOCUS_COLOUR_REASON, localizedFocusReason } from "@/lib/blueprints";
+import { localizedColour } from "@/lib/colourDisplay";
 import { localized } from "@/lib/corePersonalityDisplay";
 import { colourKeyForFocus } from "@/lib/recommendation";
 import AppShell from "@/components/layout/AppShell";
@@ -23,8 +25,7 @@ export default function ColourPsychologyPage() {
   const { settled, token, subscription } = useAuthGuard();
   const { t } = useTranslation("colourPsychology");
   const { language } = useLanguage();
-  const isZh = language === "zh";
-  const dateLocale = isZh ? "zh-CN" : "en-US";
+  const dateLocale = dateLocaleFor(language);
   const premium = subscription ? isPremiumActive(subscription) : false;
   const howToTips = t("howTo.tips", { returnObjects: true }) as { title: string; body: string }[];
   const HOW_TO_ICONS = ["👕", "🌿", "🪴", "🔔"];
@@ -93,19 +94,19 @@ export default function ColourPsychologyPage() {
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-foreground-muted">
                     {t("current.label")}
                   </p>
-                  <h2 className="font-display text-2xl font-semibold text-foreground">{isZh ? currentColour.nameZh : currentColour.name}</h2>
+                  <h2 className="font-display text-2xl font-semibold text-foreground">{localizedColour(currentColour, "name", language)}</h2>
                   <div className="flex flex-wrap gap-1.5">
-                    {(isZh ? currentColour.traitsZh : currentColour.traits).map((tr) => (
+                    {(localizedColour(currentColour, "traits", language)).map((tr) => (
                       <Chip key={tr} tone="neutral">{tr}</Chip>
                     ))}
                   </div>
-                  <p className="text-sm text-foreground-muted">{isZh ? currentColour.descriptionZh : currentColour.description}</p>
+                  <p className="text-sm text-foreground-muted">{localizedColour(currentColour, "description", language)}</p>
                   <div className="rounded-xl bg-surface-muted p-3">
                     <p className="text-[10px] font-semibold uppercase tracking-wide text-foreground-muted">
                       {t("current.affirmationLabel")}
                     </p>
                     <p className="mt-1 text-sm font-medium text-foreground">
-                      {(isZh ? currentColour.affirmationsZh : currentColour.affirmations).join(" ")}
+                      {(localizedColour(currentColour, "affirmations", language)).join(" ")}
                     </p>
                   </div>
                 </div>
@@ -116,7 +117,7 @@ export default function ColourPsychologyPage() {
                       {focusReason ? (
                         <div className="flex items-start gap-2">
                           <span aria-hidden>{focusReason.icon}</span>
-                          <p className="text-xs text-foreground-muted">{isZh ? focusReason.textZh : focusReason.text}</p>
+                          <p className="text-xs text-foreground-muted">{localizedFocusReason(focusReason, language)}</p>
                         </div>
                       ) : null}
                       {personalitySubtitle ? (
@@ -127,20 +128,20 @@ export default function ColourPsychologyPage() {
                       ) : null}
                       <div className="flex items-start gap-2">
                         <span aria-hidden>🌱</span>
-                        <p className="text-xs text-foreground-muted">{isZh ? currentColour.benefitZh : currentColour.benefit}</p>
+                        <p className="text-xs text-foreground-muted">{localizedColour(currentColour, "benefit", language)}</p>
                       </div>
                     </>
                   ) : (
                     <div className="flex items-start gap-2">
                       <span aria-hidden>🌱</span>
-                      <p className="text-xs text-foreground-muted">{isZh ? currentColour.benefitZh : currentColour.benefit}</p>
+                      <p className="text-xs text-foreground-muted">{localizedColour(currentColour, "benefit", language)}</p>
                     </div>
                   )}
                   <Link
                     href={`/colour-psychology/${currentColour.key}`}
                     className="text-sm font-semibold text-primary"
                   >
-                    {t("current.learnMore", { name: (isZh ? currentColour.nameZh : currentColour.name).toLowerCase() })}
+                    {t("current.learnMore", { name: (localizedColour(currentColour, "name", language)).toLowerCase() })}
                   </Link>
                 </div>
               </Card>
@@ -175,9 +176,9 @@ export default function ColourPsychologyPage() {
                         ) : null}
                       </div>
                       <div className="flex flex-1 flex-col gap-1 p-3">
-                        <p className="text-sm font-semibold text-foreground">{isZh ? colour.nameZh : colour.name}</p>
+                        <p className="text-sm font-semibold text-foreground">{localizedColour(colour, "name", language)}</p>
                         <p className="line-clamp-2 text-[11px] leading-snug text-foreground-muted">
-                          {(isZh ? colour.traitsZh : colour.traits).join(" • ")}
+                          {(localizedColour(colour, "traits", language)).join(" • ")}
                         </p>
                       </div>
                     </Link>
@@ -243,7 +244,7 @@ export default function ColourPsychologyPage() {
                           <p className="text-[10px] text-foreground-muted">
                             {new Date(entry.generated_at).toLocaleDateString(dateLocale, { month: "short", day: "numeric" })}
                           </p>
-                          <p className="text-[10px] text-foreground-muted">{(isZh ? colour?.nameZh : colour?.name) ?? entry.colour_name}</p>
+                          <p className="text-[10px] text-foreground-muted">{(localizedColour(colour, "name", language)) ?? entry.colour_name}</p>
                         </div>
                       );
                     })}

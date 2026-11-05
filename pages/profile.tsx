@@ -8,11 +8,10 @@ import { useAppDispatch } from "@/store/hooks";
 import { clearCredentials, setUser } from "@/store/authSlice";
 import { changePassword, updateMe } from "@/lib/api/auth";
 import { ApiError } from "@/lib/api/client";
-import type { Language } from "@/lib/types";
 import AppShell from "@/components/layout/AppShell";
 import Card from "@/components/ui/Card";
 import TextField from "@/components/ui/TextField";
-import SelectField from "@/components/ui/SelectField";
+import LanguageSelect from "@/components/ui/LanguageSelect";
 import Button from "@/components/ui/Button";
 import Chip from "@/components/ui/Chip";
 import GioLinkSection from "@/components/profile/GioLinkSection";
@@ -137,14 +136,10 @@ export default function ProfilePage() {
                 <p className="text-xs leading-relaxed text-foreground-muted">{t("details.emailMissingNotice")}</p>
               ) : null}
               {detailsError ? <p className="text-sm font-medium text-danger">{detailsError}</p> : null}
-              <SelectField
-                label={t("details.preferredLanguage")}
-                value={language}
-                onChange={(e) => setLanguage(e.target.value as Language)}
-              >
-                <option value="en">English</option>
-                <option value="zh">中文 (Mandarin)</option>
-              </SelectField>
+              <div className="flex flex-col gap-1.5">
+                <span className="text-sm font-semibold text-foreground">{t("details.preferredLanguage")}</span>
+                <LanguageSelect value={language} onChange={setLanguage} />
+              </div>
               <Button type="submit">{saved ? t("details.saved") : t("details.save")}</Button>
             </form>
           </Card>

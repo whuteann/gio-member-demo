@@ -1,0 +1,95 @@
+{
+  "meta": {
+    "title": "Daftar Emosi — Auren"
+  },
+  "loading": "Memuatkan daftar emosi anda…",
+  "header": {
+    "title": "Daftar Emosi",
+    "subtitle": "Sedikit ruang untuk menyedari perasaan anda hari ini."
+  },
+  "hero": {
+    "eyebrowDone": "Anda telah meluangkan masa untuk diri sendiri hari ini",
+    "eyebrowPending": "Saat refleksi harian anda",
+    "titleDone": "Bagaimana perasaan anda sekarang?",
+    "titlePending": "Bagaimana perasaan anda hari ini?",
+    "body": "Berhenti seketika. Sedari tenaga anda, fikiran anda, dan apa yang anda perlukan. Setiap perasaan ada tempatnya di sini.",
+    "ctaAgain": "Daftar Semula",
+    "ctaBegin": "Mula Daftar",
+    "meta": "4 soalan · Lebih kurang 1 minit"
+  },
+  "week": {
+    "title": "Minggu ini",
+    "count": "{{count}} / 7 hari",
+    "days": [
+      "I",
+      "S",
+      "R",
+      "K",
+      "J",
+      "S",
+      "A"
+    ],
+    "ariaToday": ", hari ini",
+    "ariaCompleted": "selesai",
+    "ariaPending": "tiada daftar emosi",
+    "footerDone": "Daftar emosi hari ini telah selesai. Kembalilah bila-bila anda perlukan seketika.",
+    "footerPending": "Satu jeda kecil, mengikut rentak anda sendiri."
+  },
+  "recent": {
+    "title": "Daftar Emosi Terkini",
+    "viewHistory": "Lihat sejarah",
+    "today": "Hari ini",
+    "questionsAnswered": "{{count}} soalan dijawab",
+    "emptyTitle": "Saat pertama anda bermula di sini.",
+    "emptyBody": "Daftar emosi yang anda lengkapkan akan muncul di sini apabila perjalanan anda berkembang."
+  },
+  "history": {
+    "title": "Sejarah Daftar Emosi",
+    "loading": "Memuatkan sejarah daftar emosi anda…",
+    "newCheckIn": "+ Daftar Emosi Baharu",
+    "empty": "Belum ada daftar emosi.",
+    "questions": "{{count}} soalan",
+    "premiumTitle": "Lebih banyak sejarah dengan Premium",
+    "premiumBody": "Pelan percuma menunjukkan daftar emosi 7 hari lepas — Premium membuka sejarah penuh anda."
+  },
+  "session": {
+    "loadingQuestions": "Menyediakan soalan hari ini untuk anda…",
+    "back": "Kembali",
+    "next": "Seterusnya",
+    "continue": "Teruskan",
+    "completeCta": "Lengkapkan Daftar Emosi",
+    "completing": "Sedang mendaftar…",
+    "backToHub": "← Daftar Emosi",
+    "notePrompt": "Ada apa-apa yang ingin anda catat secara peribadi?",
+    "notePlaceholder": "Pilihan — ini kekal peribadi dan tidak sekali-kali digunakan untuk cadangan.",
+    "noteSealed": "Termeterai. Hanya anda boleh membacanya, dan ia tidak pernah sampai ke konteks AI atau cadangan.",
+    "noteOpen": "Nota peribadi dikecualikan daripada konteks AI dan cadangan.",
+    "noteWordCount_one": "{{count}} perkataan",
+    "noteWordCount_other": "{{count}} perkataan",
+    "yourCheckIn": "Daftar emosi anda",
+    "doneTitle": "Daftar emosi selesai",
+    "xpAwarded": "+{{count}} XP",
+    "bonusAwarded": "+10 XP bonus misi",
+    "milestone": "Rentetan {{count}} hari!",
+    "newBadge": "Lencana baharu diperoleh",
+    "recommendationsNote": "Cadangan anda telah dikemas kini berdasarkan daftar emosi ini.",
+    "goDashboard": "Papan Pemuka",
+    "seeRecommendations": "Lihat cadangan"
+  },
+  "result": {
+    "pageTitle": "Daftar Emosi Anda",
+    "loading": "Memuatkan daftar emosi anda…",
+    "notFoundTitle": "Daftar emosi tidak dijumpai",
+    "backToHistory": "Kembali ke sejarah",
+    "fallbackComplete": "Daftar emosi selesai",
+    "dimensions": "Dimensi",
+    "latestInsight": "Wawasan Terkini",
+    "reflectionQuestion": "💡 Soalan Refleksi",
+    "reminder": "🌿 Peringatan untuk anda",
+    "friendlyAdvice": "🤝 Nasihat mesra",
+    "affirmation": "✨ Afirmasi",
+    "yourNote": "Nota anda",
+    "seeRecommendations": "Lihat cadangan",
+    "dashboard": "Papan Pemuka"
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "title": "Personaliti Teras",
+  "loading": "Memuatkan Personaliti Teras anda…",
+  "notStarted": "Lengkapkan proses permulaan untuk melihat Personaliti Teras anda.",
+  "tabs": {
+    "overview": "Gambaran",
+    "colour": "Pecahan Warna",
+    "collection": "Koleksi"
+  },
+  "collection": {
+    "title": "Koleksi Terbuka",
+    "subtitle": "Setiap slot yang anda peroleh setakat ini — dan yang masih menanti untuk ditemui.",
+    "loading": "Memuatkan koleksi anda…",
+    "affirmations": "Afirmasi",
+    "insights": "Wawasan",
+    "reflections": "Refleksi"
+  },
+  "sections": {
+    "birthdayNumber": "Nombor Hari Lahir",
+    "lifePathNumber": "Nombor Laluan Hidup",
+    "talentNumber": "Nombor Bakat"
+  },
+  "tree": {
+    "title": "Pokok Pertumbuhan Anda",
+    "subtitle": "Setiap afirmasi, wawasan dan refleksi yang anda buka akan menghiasi pokok anda.",
+    "affirmation": "Afirmasi",
+    "insight": "Wawasan",
+    "reflection": "Refleksi"
+  },
+  "rail": {
+    "overview": "Gambaran",
+    "birthday": "Hari Lahir",
+    "lifePath": "Laluan Hidup",
+    "talent": "Bakat"
+  },
+  "colourBreakdown": {
+    "title": "Pecahan Warna Anda",
+    "subtitle": "Sejauh mana anda selari dengan setiap warna penyokong sekarang. Ketik satu warna untuk membaca lebih lanjut.",
+    "dominant": "Warna dominan anda — {{name}}",
+    "positive": "✦ Positif",
+    "negative": "▽ Negatif"
+  },
+  "colourAffinity": {
+    "label": "Keserasian Warna"
+  },
+  "numerology": {
+    "moreAboutYou": "Lebih lanjut tentang anda",
+    "birthdayNumber": "Nombor Hari Lahir",
+    "birthdayNumberSub": "Daripada hari anda dilahirkan",
+    "light": "☀️ Cahaya",
+    "dark": "🌑 Bayang",
+    "lifePathNumber": "Nombor Laluan Hidup",
+    "lifePathNumberSub": "Daripada tarikh lahir penuh anda",
+    "careerFields": "🧭 Bidang Kerjaya Yang Sesuai",
+    "talentNumber": "Nombor Bakat",
+    "talentNumberSub": "Jumlah mentah, dipermudah",
+    "abilities": "🛠️ Potensi Kebolehan",
+    "weaknesses": "⚠️ Potensi Kelemahan"
+  }
+}

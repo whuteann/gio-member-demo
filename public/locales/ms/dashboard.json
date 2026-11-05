@@ -1,0 +1,97 @@
+{
+  "greeting": "Hai, {{name}}",
+  "title": "Papan Pemuka",
+  "loading": "Memuatkan papan pemuka anda…",
+  "installPrompt": {
+    "title": "Semat Auren ke skrin utama anda",
+    "subtitle": "Daftar emosi harian lebih pantas, tanpa bar pelayar",
+    "iosInstructions": "Ketik Kongsi, kemudian \"Add to Home Screen\"",
+    "add": "Tambah",
+    "dismiss": "Tolak"
+  },
+  "innerState": {
+    "title": "Keadaan dalaman anda",
+    "defaultFocus": "Mengekalkan keseimbangan",
+    "empty": "Lengkapkan satu daftar emosi atau Bacaan Dalaman untuk melihat petikan pertama anda."
+  },
+  "latestInsight": {
+    "title": "Wawasan Terkini",
+    "viewFull": "Lihat Bacaan Penuh",
+    "reflectionQuestion": "Soalan Refleksi",
+    "empty": "Lengkapkan satu Bacaan Dalaman untuk mendapatkan wawasan peribadi pertama anda."
+  },
+  "today": {
+    "title": "Hari Ini",
+    "checkIn": "Daftar Emosi",
+    "done": "Selesai",
+    "pending": "Belum selesai",
+    "checkInNow": "Daftar sekarang",
+    "viewHistory": "Lihat sejarah daftar emosi"
+  },
+  "innerReading": {
+    "title": "Bacaan Dalaman",
+    "emptyFree": "Bacaan Dalaman pertama anda adalah percuma dan membuka cadangan anda.",
+    "viewLatest": "Lihat bacaan terkini",
+    "startFree": "Mulakan bacaan percuma",
+    "weeklyLimitReached": "Anda telah menggunakan 3 bacaan percuma anda minggu ini."
+  },
+  "personality": {
+    "title": "Personaliti Anda",
+    "viewProfile": "Lihat Profil",
+    "empty": "Lengkapkan penilaian asas anda untuk melihat Personaliti Teras anda."
+  },
+  "forYou": {
+    "title": "Untuk anda",
+    "seeAll": "Lihat semua",
+    "empty": "Lengkapkan satu daftar emosi atau bacaan untuk mendapatkan cadangan pertama anda."
+  },
+  "trend": {
+    "title": "Aliran Kemajuan",
+    "thisWeek": "Minggu ini, satu titik setiap hari.",
+    "thisMonth": "Bulan ini, satu titik setiap hari.",
+    "weekly": "Mingguan",
+    "monthly": "Bulanan",
+    "monthlyLocked": "Aliran bulanan memerlukan Premium",
+    "freeNotice": "Pelan percuma menunjukkan aliran mingguan anda.",
+    "upgrade": "Naik taraf ke Premium",
+    "upgradeSuffix": "untuk bertukar ke paparan bulanan penuh."
+  },
+  "progress": {
+    "title": "Kemajuan",
+    "xp": "{{count}} XP",
+    "viewProgress": "Lihat kemajuan"
+  },
+  "recentReadings": {
+    "title": "Bacaan Terkini",
+    "viewAll": "Lihat Semua",
+    "empty": "Bacaan Dalaman yang anda lengkapkan akan dipaparkan di sini.",
+    "exploreAll": "Terokai semua bacaan anda →"
+  },
+  "journal": {
+    "title": "Teruskan Refleksi Anda",
+    "newEntry": "Catatan Jurnal Baharu",
+    "prompt": "Apakah yang paling banyak mengambil tenaga emosi anda hari ini?",
+    "placeholder": "Tulis apa yang terlintas di fikiran…",
+    "viewJournal": "Lihat Jurnal",
+    "saved": "Disimpan ✓",
+    "savePrivately": "🔒 Simpan Secara Peribadi"
+  },
+  "premium": {
+    "title": "Naik taraf ke Premium",
+    "body": "Buka Bacaan Dalaman berulang, sejarah penuh, cadangan penuh dan butiran Personaliti Teras sepenuhnya.",
+    "viewPlans": "Lihat pelan"
+  },
+  "languageSwitcher": {
+    "label": "Bahasa sistem"
+  },
+  "collection": {
+    "title": "Koleksi Anda",
+    "subtitle": "Afirmasi, wawasan dan refleksi yang anda buka sepanjang perjalanan.",
+    "affirmations": "Afirmasi",
+    "insights": "Wawasan",
+    "reflections": "Refleksi"
+  },
+  "meta": {
+    "title": "Papan Pemuka — Auren"
+  }
+}

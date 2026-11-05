@@ -1,6 +1,7 @@
 import { COLOUR_ORDER } from "@/lib/blueprints";
 import type { ColourKey, Language } from "@/lib/types";
 import type { CorePersonalityResultOut, NumberPoint } from "@/lib/api/types";
+import { pickSuffixed } from "@/lib/languageFallback";
 
 export const COLOUR_SCORE_FIELD: Record<ColourKey, keyof CorePersonalityResultOut> = {
   scarlet: "scarlet_score",
@@ -38,14 +39,16 @@ export type LocalizedField = "title" | "subtitle" | "overview" | "summary";
 export function localized<F extends LocalizedField>(
   personality: CorePersonalityResultOut,
   field: F,
-  lang: Language
+  lang: Language,
+  preferred?: Language | null
 ): string {
-  const key = `${field}_${lang}` as `${F}_en` | `${F}_zh`;
-  // Falls back to English (same convention as lib/snapshotDisplay.ts's
-  // localizedSnapshot) rather than going blank — a personality whose zh
-  // backfill hasn't landed yet still shows something when the UI language
-  // is switched, instead of an empty card.
-  return personality[key] ?? personality[`${field}_en`] ?? "";
+  // One suffixed column per language, English included. Walks
+  // lib/languageFallback's chain instead of dropping straight to English:
+  // a personality whose Malay pass hasn't landed should show the account's
+  // other language before falling all the way back, and never an empty card.
+  return (
+    pickSuffixed<string>(personality as unknown as Record<string, unknown>, field, lang, preferred) ?? ""
+  );
 }
 
 export type LocalizedPointsField = "birthday_number_points" | "life_path_number_points" | "talent_number_points";
@@ -53,8 +56,10 @@ export type LocalizedPointsField = "birthday_number_points" | "life_path_number_
 export function localizedPoints<F extends LocalizedPointsField>(
   personality: CorePersonalityResultOut,
   field: F,
-  lang: Language
+  lang: Language,
+  preferred?: Language | null
 ): NumberPoint[] {
-  const key = `${field}_${lang}` as `${F}_en` | `${F}_zh`;
-  return personality[key] ?? personality[`${field}_en`] ?? [];
+  return (
+    pickSuffixed<NumberPoint[]>(personality as unknown as Record<string, unknown>, field, lang, preferred) ?? []
+  );
 }

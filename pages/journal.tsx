@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 import { useAuthGuard } from "@/lib/useAuthGuard";
 import { useApiResource } from "@/lib/useApiResource";
 import { useLanguage } from "@/lib/useLanguage";
+import { dateLocaleFor } from "@/lib/dateLocale";
 import { createJournalEntry, getJournalInsights, listJournalEntries } from "@/lib/api/journal";
 import AppShell from "@/components/layout/AppShell";
 import Card from "@/components/ui/Card";
@@ -40,7 +41,7 @@ export default function JournalPage() {
   const { settled, token } = useAuthGuard();
   const { t } = useTranslation("journal");
   const { language } = useLanguage();
-  const dateLocale = language === "zh" ? "zh-CN" : "en-US";
+  const dateLocale = dateLocaleFor(language);
   const [draft, setDraft] = useState("");
   const [saving, setSaving] = useState(false);
 

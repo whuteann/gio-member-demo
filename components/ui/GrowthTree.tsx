@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { UnlockedItemOut } from "@/lib/api/types";
 import type { ColourKey, Language } from "@/lib/types";
+import { pickSuffixed } from "@/lib/languageFallback";
 
 // Same uploaded tree illustrations as ColourOfTheDay (public/icons) — reused
 // here rather than duplicated, keyed by the member's Core Personality colour
@@ -67,7 +68,7 @@ export default function GrowthTree({
         <img src={TREE_ICON[colourKey]} alt="" className="h-full w-full object-contain" />
         {shown.map((item, i) => {
           const pos = LOBE_POSITIONS[i];
-          const text = (language === "zh" ? item.text_zh : item.text_en) ?? item.text_en;
+          const text = pickSuffixed<string>(item as unknown as Record<string, unknown>, "text", language);
           const isOpen = openId === item.item_id;
           return (
             <div

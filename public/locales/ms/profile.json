@@ -1,0 +1,61 @@
+{
+  "title": "Profil",
+  "linkage": {
+    "title": "Pautan Auren",
+    "linked": "Terpaut",
+    "body": "Akaun Ahli Auren anda dipautkan dengan identiti GioByQuartzic anda.",
+    "gid": "GID: {{gid}}"
+  },
+  "gioLink": {
+    "title": "Sambungkan akaun Gio anda",
+    "linked": "Tersambung",
+    "linkedBody": "Akaun Auren anda tersambung dengan akaun Gio (bracelet-website).",
+    "body": "Sudah mempunyai akaun gelang GioByQuartzic? Sambungkannya dengan akaun Auren ini.",
+    "phoneLabel": "Nombor telefon akaun Gio",
+    "passwordLabel": "Kata laluan akaun Gio",
+    "continue": "Teruskan",
+    "verify": "Sahkan",
+    "confirmLink": "Sahkan sambungan",
+    "notFound": "Tiada akaun Gio dijumpai dengan nombor telefon ini.",
+    "invalidCredentials": "Nombor telefon atau kata laluan tidak sah.",
+    "genericError": "Sesuatu tidak kena. Sila cuba lagi.",
+    "statusCheckFailed": "Tidak dapat menyemak status sambungan Gio anda sekarang.",
+    "retry": "Cuba lagi",
+    "openGio": "Buka akaun Gio saya",
+    "handoffError": "Tidak dapat membuka akaun Gio anda sekarang. Sila cuba lagi.",
+    "ssoSigningIn": "Sedang log masuk anda...",
+    "ssoMissingToken": "Pautan ini tiada token log masuknya.",
+    "ssoExpired": "Pautan log masuk ini telah tamat tempoh. Sila kembali dan cuba lagi.",
+    "ssoBackToLogin": "Kembali ke log masuk"
+  },
+  "details": {
+    "title": "Butiran",
+    "displayName": "Nama paparan",
+    "email": "E-mel",
+    "emailMissingNotice": "Tambah alamat e-mel supaya anda boleh menetapkan semula kata laluan jika terlupa.",
+    "preferredLanguage": "Bahasa pilihan",
+    "timezone": "Zon waktu",
+    "save": "Simpan perubahan",
+    "saved": "Disimpan ✓",
+    "saveFailed": "Tidak dapat menyimpan perubahan anda. Sila cuba lagi."
+  },
+  "password": {
+    "title": "Tukar kata laluan",
+    "newPassword": "Kata laluan baharu",
+    "confirmPassword": "Sahkan kata laluan baharu",
+    "mismatch": "Kata laluan tidak sepadan.",
+    "tooShort": "Kata laluan mestilah sekurang-kurangnya 6 aksara.",
+    "genericError": "Sesuatu tidak kena. Sila cuba lagi.",
+    "updating": "Mengemas kini…",
+    "updated": "Dikemas kini ✓",
+    "update": "Kemas kini kata laluan"
+  },
+  "privacy": {
+    "title": "Privasi",
+    "body": "Nota peribadi daftar emosi sentiasa disimpan berasingan dan dikecualikan daripada konteks AI dan cadangan — ini tidak boleh diubah."
+  },
+  "logout": "Log keluar",
+  "meta": {
+    "sso": "Sedang log masuk — Auren"
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "meta": {
+    "title": "Psikologi Warna — Auren"
+  },
+  "loading": "Memuatkan profil warna anda…",
+  "header": {
+    "title": "Psikologi Warna",
+    "subtitle": "Warna mempengaruhi cara kita berfikir, merasa dan bertindak balas. Temui warna yang menyokong keadaan dan pertumbuhan anda sekarang."
+  },
+  "current": {
+    "label": "Warna penyokong anda sekarang",
+    "affirmationLabel": "Afirmasi untuk anda",
+    "whyTitle": "Mengapa warna ini untuk anda?",
+    "learnMore": "Ketahui lebih lanjut tentang {{name}} →",
+    "empty": "Lengkapkan satu daftar emosi atau Bacaan Dalaman untuk mendapatkan warna penyokong pertama anda."
+  },
+  "explore": {
+    "title": "Terokai Makna Warna"
+  },
+  "recommended": {
+    "title": "Disyorkan untuk Anda",
+    "subtitle": "Pilihan terpilih yang selari dengan tenaga anda sekarang.",
+    "empty": "Tiada padanan produk buat masa ini."
+  },
+  "howTo": {
+    "title": "Cara menggunakan warna secara sedar",
+    "tips": [
+      {
+        "title": "Pakai",
+        "body": "Gunakan pada pakaian atau aksesori harian anda."
+      },
+      {
+        "title": "Lihat",
+        "body": "Luangkan masa di kawasan hijau semula jadi atau persekitaran yang sepadan."
+      },
+      {
+        "title": "Dekatkan",
+        "body": "Letakkan di ruang kerja atau barangan harian anda."
+      },
+      {
+        "title": "Jadikan peringatan",
+        "body": "Gunakan sebagai isyarat visual yang lembut sepanjang hari anda."
+      }
+    ]
+  },
+  "history": {
+    "title": "Sejarah warna anda",
+    "empty": "Corak warna anda akan terbina di sini apabila anda terus mendaftar emosi dan membuat refleksi.",
+    "gateTitle": "Lihat corak warna anda",
+    "gateBody": "Premium mendedahkan bagaimana warna penyokong anda berubah dari masa ke masa, bukan hanya hari ini."
+  },
+  "detail": {
+    "back": "← Kembali ke Psikologi Warna",
+    "notFound": "Warna tidak dijumpai.",
+    "aboutTitle": "Tentang {{name}}",
+    "whenTitle": "Bila ia disyorkan",
+    "affirmationsTitle": "Afirmasi"
+  },
+  "recommendationLetter": {
+    "pageTitle": "Saranan Anda",
+    "colourPill": "Warna Hari Ini",
+    "focusPill": "Tunjang Fokus",
+    "materialPill": "Keserasian Bahan",
+    "featureTitle": "Pilihan utama untuk anda",
+    "featureBadge": "Pilihan Utama",
+    "moreProducts": "Turut sepadan",
+    "phoneCaseTitle": "Pilihan sarung telefon",
+    "phoneCaseCardTitle": "Sepadan untuk telefon anda",
+    "phoneCaseCardSubtitle": "Satu barangan harian kecil dengan semangat yang sama seperti pilihan hari ini.",
+    "primaryCaseBadge": "Pilihan teratas",
+    "secondaryCaseTitle": "Juga untuk anda",
+    "more": "Baca surat penuh →",
+    "notFound": "Saranan tidak dijumpai."
+  }
+}
