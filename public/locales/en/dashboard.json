@@ -43,7 +43,8 @@
   "forYou": {
     "title": "For you",
     "seeAll": "See all",
-    "empty": "Complete a check-in or reading to get your first recommendations."
+    "empty": "Complete a check-in or reading to get your first recommendations.",
+    "noProducts": "No product suggestions are available right now. See all for your colour and routine."
   },
   "trend": {
     "title": "Progress Trend",

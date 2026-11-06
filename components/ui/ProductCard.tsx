@@ -17,6 +17,7 @@ export default function ProductCard({
   language = "en",
   colourName,
   colourSwatch,
+  compact = false,
 }: {
   item: RecommendationItem;
   language?: Language;
@@ -25,6 +26,8 @@ export default function ProductCard({
    * today), so it's passed down rather than carried on `item`. */
   colourName?: string;
   colourSwatch?: string;
+  /** Short dashboard preview; the destination page keeps the full copy. */
+  compact?: boolean;
 }) {
   // This shape is camelCase (lib/types.ts::RecommendationItem), so the
   // snake_case helpers don't apply directly — remap, then use the same
@@ -38,21 +41,22 @@ export default function ProductCard({
   return (
     <Link
       href={item.destinationUrl ?? "#"}
-      className="group flex gap-4 overflow-hidden rounded-2xl border border-border bg-surface p-3 transition-shadow hover:shadow-[0_10px_30px_-18px_rgba(38,43,33,0.4)]"
+      className="@container group block min-w-0 overflow-hidden rounded-2xl border border-border bg-surface p-3 transition-shadow hover:shadow-[0_10px_30px_-18px_rgba(38,43,33,0.4)]"
     >
+      <div className="flex min-w-0 flex-col gap-4 @min-[22rem]:flex-row">
       {item.imageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={item.imageUrl}
           alt={title}
-          className="h-24 w-24 flex-none rounded-xl object-cover transition-transform duration-300 group-hover:scale-105"
+          className="h-40 w-full flex-none rounded-xl object-cover transition-transform duration-300 group-hover:scale-105 @min-[22rem]:h-24 @min-[22rem]:w-24"
         />
       ) : null}
       <div className="flex min-w-0 flex-1 flex-col gap-2">
-        <div className="flex items-start justify-between gap-2">
-          <p className="font-display text-sm font-semibold leading-snug text-foreground">{title}</p>
+        <div className="flex min-w-0 flex-wrap items-start justify-between gap-x-2 gap-y-1">
+          <p className="min-w-0 flex-[1_1_10rem] break-words font-display text-sm font-semibold leading-snug text-foreground">{title}</p>
           {typeof item.price === "number" ? (
-            <p className="flex-none text-sm font-semibold text-accent">{formatPrice(item.price, item.currency ?? "MYR")}</p>
+            <p className="max-w-full break-words text-sm font-semibold text-accent">{formatPrice(item.price, item.currency ?? "MYR")}</p>
           ) : null}
         </div>
 
@@ -69,7 +73,7 @@ export default function ProductCard({
                 {item.category}
               </span>
             ) : null}
-            {item.materialTag ? (
+            {item.materialTag && item.materialTag.trim().toLowerCase() !== item.category?.trim().toLowerCase() ? (
               <span className="inline-flex items-center rounded-full bg-surface-muted px-2 py-0.5 text-[10px] font-semibold text-foreground-muted">
                 {item.materialTag}
               </span>
@@ -80,13 +84,13 @@ export default function ProductCard({
         {/* Styled as a line lifted from a letter — a quote mark + serif
             italic, not plain descriptive copy (see
             gio-backend/app/services/ai_recommendation.py). */}
-        <p className="border-l-2 border-gold/40 pl-2.5 font-display text-xs italic leading-relaxed text-foreground-muted">
+        <p className={`break-words border-l-2 border-gold/40 pl-2.5 font-display text-xs italic leading-relaxed text-foreground-muted ${compact ? "line-clamp-3" : ""}`}>
           <span aria-hidden>&ldquo;</span>
           {reason}
           <span aria-hidden>&rdquo;</span>
         </p>
 
-        {specs.length > 0 ? (
+        {!compact && specs.length > 0 ? (
           <dl className="flex flex-col gap-0.5 border-t border-border pt-2">
             {specs.map((spec, i) => (
               <div key={i} className="flex justify-between gap-3 text-[11px]">
@@ -96,6 +100,7 @@ export default function ProductCard({
             ))}
           </dl>
         ) : null}
+      </div>
       </div>
     </Link>
   );
