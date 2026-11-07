@@ -182,7 +182,8 @@ export default function RecommendationMagazine({
             </div>
           ) : null}
 
-          <PhoneCaseSection items={phoneCaseItems} language={language} />
+          <PhoneCaseSection items={phoneCaseItems} language={language}
+            status={recommendation.phone_case_status} colourName={colourName} />
         </div>
       </div>
     </div>

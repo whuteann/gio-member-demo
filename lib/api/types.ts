@@ -391,6 +391,7 @@ export interface RecommendationOut {
   colour_name_zh: string;
   colour_name_ms: string;
   colour_swatch: string;
+  phone_case_status?: "READY" | "NO_MATCH" | "UNAVAILABLE" | null;
   material_affinity: string | null;
   letter_en: string | null;
   letter_zh: string | null;

@@ -38,8 +38,8 @@ function PrimaryCaseCard({ item, language }: { item: RecommendationItemOut; lang
         <span className="inline-flex w-fit items-center rounded-full bg-gold px-2 py-0.5 text-[10px] font-semibold text-white">
           {t("recommendationLetter.primaryCaseBadge")}
         </span>
-        <div className="flex items-start justify-between gap-2">
-          <p className="font-display text-base font-semibold leading-snug text-foreground">{title}</p>
+        <div className="flex flex-wrap items-start justify-between gap-2">
+          <p className="min-w-0 basis-full break-words font-display text-base font-semibold leading-snug text-foreground">{title}</p>
           {typeof item.price === "number" ? (
             <p className="flex-none text-sm font-semibold text-accent">{formatPrice(item.price, item.currency ?? "MYR")}</p>
           ) : null}
@@ -111,14 +111,25 @@ function SecondaryCaseRow({ item, language }: { item: RecommendationItemOut; lan
  * present) renders as a smaller, compact row beneath it — never the same
  * visual weight, so "primary" reads as primary at a glance.
  *
- * Renders nothing at all when `items` is empty. It used to substitute a
- * hardcoded demo case so the section always had something to show; an
- * invented product is worse than an absent one, however it is labelled.
- * Only items the API actually returned are ever displayed.
+ * Empty matches are explained explicitly; only real API items are shown.
  */
-export default function PhoneCaseSection({ items, language }: { items: RecommendationItemOut[]; language: Language }) {
+export default function PhoneCaseSection({ items, language, status, colourName }: {
+  items: RecommendationItemOut[];
+  language: Language;
+  status?: "READY" | "NO_MATCH" | "UNAVAILABLE" | null;
+  colourName?: string;
+}) {
   const { t } = useTranslation("colourPsychology");
-  if (items.length === 0) return null;
+  if (items.length === 0) {
+    if (!status) return null;
+    return (
+      <p className="rounded-xl bg-surface-muted p-3 text-sm leading-relaxed text-foreground-muted">
+        {status === "NO_MATCH"
+          ? t("recommendationLetter.noColourMatch", { colour: colourName ?? "" })
+          : t("recommendationLetter.caseUnavailable")}
+      </p>
+    );
+  }
   const [primary, secondary] = items;
 
   return (
@@ -128,6 +139,9 @@ export default function PhoneCaseSection({ items, language }: { items: Recommend
           {t("recommendationLetter.phoneCaseTitle")}
         </p>
       </div>
+      <p className="text-xs leading-relaxed text-foreground-muted">
+        {t("recommendationLetter.colourMatchFirst", { colour: colourName ?? "" })}
+      </p>
       {primary ? <PrimaryCaseCard item={primary} language={language} /> : null}
       {secondary ? (
         <div className="flex flex-col gap-1.5">

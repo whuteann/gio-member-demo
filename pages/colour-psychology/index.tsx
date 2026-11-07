@@ -206,6 +206,8 @@ export default function ColourPsychologyPage() {
                 <PhoneCaseSection
                   items={recommendation.items.filter((i) => i.type === "PHONE_CASE")}
                   language={language}
+                  status={recommendation.phone_case_status}
+                  colourName={currentColour ? localizedColour(currentColour, "name", language) : recommendation.colour_name}
                 />
               </Card>
             ) : null}
