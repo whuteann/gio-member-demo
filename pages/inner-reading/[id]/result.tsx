@@ -62,7 +62,8 @@ export default function InnerReadingResultPage() {
 
   const { data: reading, loading, error } = useApiResource(
     token && id ? () => getInnerReading(token, id) : null,
-    [token, id]
+    [token, id, language],
+    { pollWhile: (result) => !result.languages_ready?.includes(language) }
   );
 
   if (!settled || !token || !id) return null;

@@ -92,7 +92,11 @@ export default function DashboardPage() {
       : null,
     // Pick up language versions that finished in the background since the
     // dashboard opened, instead of only translating the old response.
-    [token, effectiveTrendPeriod, language]
+    [token, effectiveTrendPeriod, language],
+    { pollWhile: (result) => Boolean(
+      (result.personality && !result.personality.languages_ready?.includes(language)) ||
+      (result.readings[0] && !result.readings[0].languages_ready?.includes(language))
+    ) }
   );
 
   if (!settled || !token) return null;

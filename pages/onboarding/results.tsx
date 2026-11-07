@@ -50,12 +50,14 @@ export default function OnboardingResultsPage() {
   const router = useRouter();
   const { t } = useTranslation("onboarding");
   const { settled, token, user } = useAuthGuard();
+  const { language } = useLanguage();
 
   const { data: personality, loading } = useApiResource(
     token
       ? () => getCurrentCorePersonality(token).catch((e) => (e instanceof ApiError && e.status === 404 ? null : Promise.reject(e)))
       : null,
-    [token]
+    [token, language],
+    { pollWhile: (result) => Boolean(result && !result.languages_ready?.includes(language)) }
   );
 
   // Everything on this page follows the app language — the AI copy, the
@@ -64,7 +66,6 @@ export default function OnboardingResultsPage() {
   // already falls back to English for a personality whose backfill hasn't,
   // so switching language never blanks a card. Same source as
   // core-personality.tsx, ColourBreakdown and the colour-psychology pages.
-  const { language } = useLanguage();
 
   if (!settled || !token || !user) return null;
   if (loading) {
