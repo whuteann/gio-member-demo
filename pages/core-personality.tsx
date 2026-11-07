@@ -36,7 +36,8 @@ export default function CorePersonalityPage() {
     token
       ? () => getCurrentCorePersonality(token).catch((e) => (e instanceof ApiError && e.status === 404 ? null : Promise.reject(e)))
       : null,
-    [token]
+    [token, language],
+    { pollWhile: (result) => Boolean(result && !result.languages_ready?.includes(language)) }
   );
   const { data: unlocks } = useApiResource(token ? () => getUnlockedContent(token) : null, [token]);
 
