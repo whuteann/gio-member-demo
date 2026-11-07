@@ -43,7 +43,8 @@
   "forYou": {
     "title": "Untuk anda",
     "seeAll": "Lihat semua",
-    "empty": "Lengkapkan satu daftar emosi atau bacaan untuk mendapatkan cadangan pertama anda."
+    "empty": "Lengkapkan satu daftar emosi atau bacaan untuk mendapatkan cadangan pertama anda.",
+    "noProducts": "Tiada cadangan produk buat masa ini. Lihat semua untuk warna dan rutin anda."
   },
   "trend": {
     "title": "Aliran Kemajuan",

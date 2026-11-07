@@ -15,7 +15,7 @@ import FallingLeaves from "@/components/ui/FallingLeaves";
 import StreakFlame from "@/components/ui/StreakFlame";
 import GardenIllustration from "@/components/ui/GardenIllustration";
 import InstallPrompt from "@/components/ui/InstallPrompt";
-import ProductCard from "@/components/ui/ProductCard";
+import DashboardRecommendations from "@/components/ui/DashboardRecommendations";
 import TrendChart from "@/components/ui/TrendChart";
 import UnlockedCollection from "@/components/ui/UnlockedCollection";
 import { COLOUR_LIBRARY, DIMENSIONS } from "@/lib/blueprints";
@@ -346,34 +346,7 @@ export default function DashboardPage() {
                 {t("forYou.seeAll")}
               </Link>
             </div>
-            {recommendation ? (
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {recommendation.items.slice(0, 3).map((item) => (
-                  <ProductCard
-                    key={`${item.type}-${item.rank}`}
-                    language={userLanguage}
-                    item={{
-                      id: String(item.rank),
-                      type: item.type as "COLOUR" | "ROUTINE" | "SCENT" | "WEARABLE" | "PRODUCT",
-                      referenceId: item.reference_id,
-                      title: item.title,
-                      titleZh: item.title_zh,
-                      reason: item.reason,
-                      reasonZh: item.reason_zh,
-                      rank: item.rank,
-                      imageUrl: item.image_url ?? undefined,
-                      price: item.price ?? undefined,
-                      currency: item.currency,
-                      destinationUrl: item.destination_url ?? undefined,
-                      materialTag: item.material_tag,
-                      category: item.category,
-                    }}
-                  />
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-foreground-muted">{t("forYou.empty")}</p>
-            )}
+            <DashboardRecommendations recommendation={recommendation} language={userLanguage} />
           </Card>
 
           <Card className="flex flex-col gap-4 lg:col-span-3">
