@@ -18,6 +18,7 @@ import InstallPrompt from "@/components/ui/InstallPrompt";
 import DashboardRecommendations from "@/components/ui/DashboardRecommendations";
 import TrendChart from "@/components/ui/TrendChart";
 import UnlockedCollection from "@/components/ui/UnlockedCollection";
+import ContentLanguageNotice from "@/components/ui/ContentLanguageNotice";
 import { COLOUR_LIBRARY, DIMENSIONS } from "@/lib/blueprints";
 import { localized, topColourKey } from "@/lib/corePersonalityDisplay";
 import { localizedSnapshot } from "@/lib/snapshotDisplay";
@@ -89,7 +90,9 @@ export default function DashboardPage() {
           };
         }
       : null,
-    [token, effectiveTrendPeriod]
+    // Pick up language versions that finished in the background since the
+    // dashboard opened, instead of only translating the old response.
+    [token, effectiveTrendPeriod, language]
   );
 
   if (!settled || !token) return null;
@@ -168,7 +171,7 @@ export default function DashboardPage() {
       <Head><title>{t("meta.title")}</title></Head>
       <FallingLeaves colourKey={currentColourKey} />
       <AppShell title={t("greeting", { name: user?.display_name.split(" ")[0] ?? "" })}>
-        <div className="grid gap-5 lg:grid-cols-3">
+        <div className="grid min-w-0 grid-cols-1 gap-5 lg:grid-cols-3">
           <InstallPrompt />
           <Card className="flex flex-col gap-1 lg:col-span-3">
             <h2 className="font-display text-lg font-semibold text-foreground">{t("collection.title")}</h2>
@@ -185,14 +188,14 @@ export default function DashboardPage() {
           </Card>
 
           <Card className="lg:col-span-2">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="font-display text-lg font-semibold text-foreground">{t("innerState.title")}</h2>
               {snapshot ? (
                 <Chip tone="primary">{localizedSnapshot(snapshot, "current_focus", userLanguage) ?? t("innerState.defaultFocus")}</Chip>
               ) : null}
             </div>
             {snapshot ? (
-              <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-5">
+              <div className="mt-4 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:gap-5">
                 {(() => {
                   const dimValue = (dim: (typeof DIMENSIONS)[number]) => dimValueOf(snapshot, dim.key);
                   // Splits a two-word English label across two lines.
@@ -246,7 +249,7 @@ export default function DashboardPage() {
           </Card>
 
           <Card className="flex flex-col gap-3">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="font-display text-lg font-semibold text-foreground">{t("latestInsight.title")}</h2>
               {latestReading ? (
                 <Link href={`/inner-reading/${latestReading.id}/result`} className="text-sm font-semibold text-primary">
@@ -256,6 +259,7 @@ export default function DashboardPage() {
             </div>
             {latestInsight ? (
               <>
+                <ContentLanguageNotice content={latestReading!} fields={["insight", "reflection_question"]} language={userLanguage} />
                 <p className="text-2xl leading-none text-accent">&ldquo;</p>
                 <p className="-mt-3 text-sm font-medium text-foreground">{latestInsight}</p>
                 {latestReflectionQuestion ? (
@@ -292,7 +296,10 @@ export default function DashboardPage() {
           <Card className="flex flex-col gap-3">
             <h2 className="font-display text-lg font-semibold text-foreground">{t("innerReading.title")}</h2>
             {latestReading ? (
-              <p className="text-sm text-foreground-muted line-clamp-3">{latestNarrative}</p>
+              <>
+                <ContentLanguageNotice content={latestReading} fields={["narrative"]} language={userLanguage} />
+                <p className="text-sm text-foreground-muted line-clamp-3">{latestNarrative}</p>
+              </>
             ) : (
               <p className="text-sm text-foreground-muted">{t("innerReading.emptyFree")}</p>
             )}
@@ -307,7 +314,7 @@ export default function DashboardPage() {
           </Card>
 
           <Card className="flex flex-col gap-3">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="font-display text-lg font-semibold text-foreground">{t("personality.title")}</h2>
               <Link href="/core-personality" className="text-sm font-semibold text-primary">
                 {t("personality.viewProfile")}
@@ -315,6 +322,7 @@ export default function DashboardPage() {
             </div>
             {personality ? (
               <>
+                <ContentLanguageNotice content={personality} fields={["title", "subtitle", "overview"]} language={userLanguage} englishSuffixed />
                 <div className="flex items-center gap-3">
                   <div
                     className="flex h-14 w-14 flex-none items-center justify-center rounded-full border border-border"
@@ -340,7 +348,7 @@ export default function DashboardPage() {
           </Card>
 
           <Card className="flex flex-col gap-3 lg:col-span-2">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="font-display text-lg font-semibold text-foreground">{t("forYou.title")}</h2>
               <Link href="/colour-psychology" className="text-sm font-semibold text-primary">
                 {t("forYou.seeAll")}
@@ -394,11 +402,11 @@ export default function DashboardPage() {
           </Card>
 
           <Card className="flex flex-col gap-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="font-display text-lg font-semibold text-foreground">{t("progress.title")}</h2>
               <Chip tone="gold">{t("progress.xp", { count: progress.xp_total })}</Chip>
             </div>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <StreakFlame current={progress.streak.current} />
               <GardenIllustration stage={progress.garden.stage} size="sm" />
             </div>
@@ -416,7 +424,7 @@ export default function DashboardPage() {
           </Card>
 
           <Card className="flex flex-col gap-3 lg:col-span-2">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="font-display text-lg font-semibold text-foreground">{t("recentReadings.title")}</h2>
               <Link href="/inner-reading/history" className="text-sm font-semibold text-primary">
                 {t("recentReadings.viewAll")}
@@ -459,7 +467,7 @@ export default function DashboardPage() {
           </Card>
 
           <Card className="flex flex-col gap-3">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="font-display text-lg font-semibold text-foreground">{t("journal.title")}</h2>
               <Link href="/journal" className="text-sm font-semibold text-primary">
                 {t("journal.newEntry")}

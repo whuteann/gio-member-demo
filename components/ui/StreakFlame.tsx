@@ -8,7 +8,7 @@ export default function StreakFlame({ current }: { current: number }) {
         🔥
       </span>
       <div>
-        <p className="font-display text-lg font-semibold leading-tight text-foreground">{current} day{current === 1 ? "" : "s"}</p>
+        <p className="font-display text-lg font-semibold leading-tight text-foreground">{t("ui.streakDays", { count: current })}</p>
         <p className="text-xs text-foreground-muted">{t("ui.currentStreak")}</p>
       </div>
     </div>
