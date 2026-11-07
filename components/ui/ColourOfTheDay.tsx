@@ -36,7 +36,7 @@ export default function ColourOfTheDay({
   return (
     <div className={`flex flex-col items-center gap-2 ${className}`}>
       {label ? (
-        <p className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
+        <p className="max-w-28 text-center text-xs font-semibold uppercase tracking-wide text-foreground-muted">
           {t("colourOfTheDay")}
         </p>
       ) : null}

@@ -89,7 +89,7 @@ export default function UnlockedCollection({
         >
           ‹
         </button>
-        <div className="flex min-h-[104px] w-full max-w-xs flex-col items-center justify-center gap-2 overflow-hidden text-center">
+        <div className="flex min-h-[104px] min-w-0 flex-1 max-w-xs flex-col items-center justify-center gap-2 overflow-hidden text-center">
           <AnimatePresence mode="wait">
             <motion.div
               key={index}

@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useState, type PointerEvent as ReactPointerEvent } from "react";
 import type { DimensionKey } from "@/lib/types";
 import type { TrendPoint } from "@/lib/trend";
+import { useLanguage } from "@/lib/useLanguage";
 
 export interface TrendSeriesMeta {
   key: DimensionKey;
@@ -30,6 +31,8 @@ export default function TrendChart({
   dimensions: TrendSeriesMeta[];
 }) {
   const { t } = useTranslation("common");
+  const { language } = useLanguage();
+  const dateFormat = new Intl.DateTimeFormat(language, { weekday: "short" });
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
   const [showTable, setShowTable] = useState(false);
 
@@ -75,7 +78,7 @@ export default function TrendChart({
           viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
           className="w-full"
           role="img"
-          aria-label={`Trend of ${dimensions.map((d) => d.label).join(", ")} over ${n} days`}
+          aria-label={t("ui.trendSummary", { dimensions: dimensions.map((d) => t(`dimensions.${d.key}.label`)).join(", "), count: n })}
         >
           {Y_TICKS.map((t) => (
             <g key={t}>
@@ -103,7 +106,7 @@ export default function TrendChart({
                 className="fill-foreground-muted"
                 fontSize={9}
               >
-                {p.label}
+                {/^[0-9]+$/.test(p.label) ? p.label : dateFormat.format(new Date(`${p.date}T12:00:00`))}
               </text>
             ) : null
           )}
@@ -216,7 +219,7 @@ export default function TrendChart({
           onClick={() => setShowTable((v) => !v)}
           className="text-xs font-semibold text-primary"
         >
-          {showTable ? "Hide table" : "View as table"}
+          {t(showTable ? "ui.hideTable" : "ui.viewAsTable")}
         </button>
       </div>
 
